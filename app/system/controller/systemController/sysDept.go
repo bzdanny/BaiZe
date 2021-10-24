@@ -24,7 +24,7 @@ func DeptList(c *gin.Context) {
 func DeptGetInfo(c *gin.Context) {
 	deptId, err := strconv.ParseInt(c.Param("deptId"), 10, 64)
 	if err != nil {
-		zap.L().Error("登录参数错误", zap.Error(err))
+		zap.L().Error("参数错误", zap.Error(err))
 		c.JSON(http.StatusOK, commonModels.ParameterError())
 		return
 	}

@@ -37,7 +37,8 @@ func GetInfo(c *gin.Context) {
 func GetRouters(c *gin.Context) {
 	loginUser := commonController.GetCurrentLoginUser(c)
 	menus := systemService.SelectMenuTreeByUserId(loginUser.User.UserId)
-	c.JSON(http.StatusOK, commonModels.SuccessData(systemService.BuildMenus(menus)))
+	buildMenus := systemService.BuildMenus(menus)
+	c.JSON(http.StatusOK, commonModels.SuccessData(buildMenus))
 
 }
 func Logout(c *gin.Context) {

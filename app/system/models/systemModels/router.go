@@ -12,7 +12,7 @@ type RouterVo struct {
 
 	Component string `json:"component"`
 
-	AlwaysShow bool `json:"always_show"`
+	AlwaysShow bool `json:"alwaysShow"`
 
 	Meta MetaVo `json:"meta"`
 

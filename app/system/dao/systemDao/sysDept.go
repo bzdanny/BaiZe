@@ -40,7 +40,7 @@ func SelectDeptList(dept *systemModels.SysDeptDQL) (sysDeptList []*systemModels.
 	return
 }
 func SelectDeptById(deptId int64) (dept *systemModels.SysDeptVo) {
-	whereSql := ` where menu_id = ?`
+	whereSql := ` from sys_dept d where d.dept_id = ?`
 	dept = new(systemModels.SysDeptVo)
 	err := mysql.MysqlDb.Get(dept, DeptSql+whereSql, deptId)
 	if err == sql.ErrNoRows {

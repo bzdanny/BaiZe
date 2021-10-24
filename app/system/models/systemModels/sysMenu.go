@@ -62,7 +62,7 @@ func (m SysMenuVo) GetComponent() (component string) {
 
 	if m.Component != nil && len(*m.Component) != 0 && !m.IsMenuFrame() {
 		component = *m.Component
-	} else if (m.Component == nil || len(*m.Component) != 0) && m.IsParentView() {
+	} else if (m.Component == nil || len(*m.Component) == 0) && m.IsParentView() {
 		component = userConstants.ParentView
 	} else {
 		component = userConstants.Layout

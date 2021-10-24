@@ -134,8 +134,8 @@ func UserGetInfoById(c *gin.Context) {
 		}
 	}
 	m["roles"] = roleList
-	m["postIds"] = systemService.SelectPostListByUserId(userId)
-	m["roleIds"] = systemService.SelectRoleListByUserId(userId)
+	m["postIds"] = slicesUtils.IntSlicesToString(systemService.SelectPostListByUserId(userId))
+	m["roleIds"] = slicesUtils.IntSlicesToString(systemService.SelectRoleListByUserId(userId))
 	m["sysUser"] = systemService.SelectUserById(userId)
 	c.JSON(http.StatusOK, commonModels.SuccessData(m))
 
