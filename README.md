@@ -46,12 +46,12 @@
 
 <table>
     <tr>
-        <td><img src="https://gitee.com/smell2/bai-ze/raw/imgs/202110241805797.jpg"/></td>
-        <td><img src="https://gitee.com/smell2/bai-ze/raw/imgs/202110241806256.jpg"/></td>
+        <td><img src="https://gitee.com/smell2/BaiZe/raw/imgs/202110241805797.jpg"/></td>
+        <td><img src="https://gitee.com/smell2/BaiZe/raw/imgs/202110241806256.jpg"/></td>
     </tr>
     <tr>
-        <td><img src="https://gitee.com/smell2/bai-ze/raw/imgs/202110242322137.png"/></td>
-        <td><img src="https://gitee.com/smell2/bai-ze/raw/imgs/202110242323820.png"/></td>
+        <td><img src="https://gitee.com/smell2/BaiZe/raw/imgs/202110242322137.png"/></td>
+        <td><img src="https://gitee.com/smell2/BaiZe/raw/imgs/202110242323820.png"/></td>
     </tr>
   
 </table>
