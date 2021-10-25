@@ -258,3 +258,22 @@ func HasChildByMenuId(menuId int64) int {
 	}
 	return count
 }
+func SelectMenuListByRoleId(roleId int64, menuCheckStrictly bool) (roleIds []string) {
+	var err error
+	roleIds = make([]string, 0, 2)
+	sqlstr := `select m.menu_id
+		from sys_menu m
+            left join sys_role_menu rm on m.menu_id = rm.menu_id
+        where rm.role_id = ?`
+	if menuCheckStrictly {
+		sqlstr += " and m.menu_id not in (select m.parent_id from sys_menu m inner join sys_role_menu rm on m.menu_id = rm.menu_id and rm.role_id = ?)"
+		err = mysql.MysqlDb.Select(&roleIds, sqlstr, roleId, roleId)
+	} else {
+		err = mysql.MysqlDb.Select(&roleIds, sqlstr, roleId)
+	}
+
+	if err != nil {
+		panic(err)
+	}
+	return
+}

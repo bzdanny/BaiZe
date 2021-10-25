@@ -7,11 +7,12 @@ import (
 )
 
 func InitSysMenuRouter(router *gin.RouterGroup) {
-	systemUser := router.Group("/system/menu")
-	systemUser.GET("/list", middlewares.HasPermission("system:menu:list"), systemController.MenuList)
-	systemUser.GET("/:menuId", middlewares.HasPermission("system:menu:query"), systemController.MenuGetInfo)
-	systemUser.GET("/treeselect", systemController.MenuTreeSelect)
-	systemUser.POST("", middlewares.HasPermission("system:menu:add"), systemController.MenuAdd)
-	systemUser.PUT("", middlewares.HasPermission("system:menu:edit"), systemController.MenuEdit)
-	systemUser.DELETE("/:menuId", middlewares.HasPermission("system:menu:remove"), systemController.MenuRemove)
+	menu := router.Group("/system/menu")
+	menu.GET("/list", middlewares.HasPermission("system:menu:list"), systemController.MenuList)
+	menu.GET("/:menuId", middlewares.HasPermission("system:menu:query"), systemController.MenuGetInfo)
+	menu.GET("/treeselect", systemController.MenuTreeSelect)
+	menu.POST("", middlewares.HasPermission("system:menu:add"), systemController.MenuAdd)
+	menu.PUT("", middlewares.HasPermission("system:menu:edit"), systemController.MenuEdit)
+	menu.DELETE("/:menuId", middlewares.HasPermission("system:menu:remove"), systemController.MenuRemove)
+	menu.GET("/roleMenuTreeselect/:roleId", systemController.RoleMenuTreeselect)
 }

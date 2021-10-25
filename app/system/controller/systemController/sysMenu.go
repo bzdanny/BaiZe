@@ -79,3 +79,16 @@ func MenuRemove(c *gin.Context) {
 
 	c.JSON(http.StatusOK, commonModels.Success())
 }
+func RoleMenuTreeselect(c *gin.Context) {
+	roleId, err := strconv.ParseInt(c.Param("roleId"), 10, 64)
+	if err != nil {
+		zap.L().Error("参数错误", zap.Error(err))
+		c.JSON(http.StatusOK, commonModels.ParameterError())
+	}
+	userId := commonController.GetCurrentLoginUser(c).User.UserId
+
+	m := make(map[string]interface{})
+	m["checkedKeys"] = systemService.SelectMenuListByRoleId(roleId)
+	m["menus"] = systemService.SelectMenuList(new(systemModels.SysMenuDQL), userId)
+	c.JSON(http.StatusOK, commonModels.SuccessData(m))
+}

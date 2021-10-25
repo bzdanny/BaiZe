@@ -141,3 +141,7 @@ func HasChildByMenuId(menuId int64) bool {
 func CheckMenuExistRole(menuId int64) bool {
 	return systemDao.CheckMenuExistRole(menuId) > 0
 }
+func SelectMenuListByRoleId(roleId int64) []string {
+	role := systemDao.SelectRoleById(roleId)
+	return systemDao.SelectMenuListByRoleId(roleId, role.MenuCheckStrictly)
+}
