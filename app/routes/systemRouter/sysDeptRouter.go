@@ -10,6 +10,7 @@ func InitSysDeptRouter(router *gin.RouterGroup) {
 	systemDept := router.Group("/system/dept")
 	systemDept.GET("/list", middlewares.HasPermission("system:dept:list"), systemController.DeptList)
 	systemDept.GET("/:deptId", middlewares.HasPermission("system:dept:query"), systemController.DeptGetInfo)
+	systemDept.GET("/roleDeptTreeselect/:roleId", middlewares.HasPermission("system:dept:query"), systemController.RoleDeptTreeselect)
 	systemDept.POST("", middlewares.HasPermission("system:dept:add"), systemController.DeptAdd)
 	systemDept.PUT("", middlewares.HasPermission("system:dept:edit"), systemController.DeptEdit)
 	systemDept.DELETE("/:deptId", middlewares.HasPermission("system:dept:remove"), systemController.DeptRemove)

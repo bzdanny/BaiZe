@@ -31,6 +31,17 @@ func DeptGetInfo(c *gin.Context) {
 	menu := systemService.SelectDeptById(deptId)
 	c.JSON(http.StatusOK, commonModels.SuccessData(menu))
 }
+func RoleDeptTreeselect(c *gin.Context) {
+	roleId, err := strconv.ParseInt(c.Param("roleId"), 10, 64)
+	if err != nil {
+		zap.L().Error("参数错误", zap.Error(err))
+		c.JSON(http.StatusOK, commonModels.ParameterError())
+	}
+	m := make(map[string]interface{})
+	m["checkedKeys"] = systemService.SelectDeptListByRoleId(roleId)
+	m["depts"] = systemService.SelectDeptList(new(systemModels.SysDeptDQL))
+	c.JSON(http.StatusOK, commonModels.SuccessData(m))
+}
 
 func DeptAdd(c *gin.Context) {
 	loginUser := commonController.GetCurrentLoginUser(c)

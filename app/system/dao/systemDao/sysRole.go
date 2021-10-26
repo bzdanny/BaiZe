@@ -136,11 +136,11 @@ func InsertRole(sysRole *systemModels.SysRoleDML) {
 		key += ",data_scope"
 		value += ",:data_scope"
 	}
-	if sysRole.MenuCheckStrictly != "" {
+	if sysRole.MenuCheckStrictly != nil {
 		key += ",menu_check_strictly"
 		value += ",:menu_check_strictly"
 	}
-	if sysRole.DeptCheckStrictly != "" {
+	if sysRole.DeptCheckStrictly != nil {
 		key += ",dept_check_strictly"
 		value += ",:dept_check_strictly"
 	}
@@ -169,16 +169,16 @@ func UpdateRole(sysRole *systemModels.SysRoleDML) {
 	if sysRole.RoleKey != "" {
 		updateSQL += ",role_key = :role_key"
 	}
-	if sysRole.RoleSort != "" {
+	if sysRole.RoleSort != -1 {
 		updateSQL += ",role_sort = :role_sort"
 	}
 	if sysRole.DataScope != "" {
 		updateSQL += ",data_scope = :data_scope"
 	}
-	if sysRole.MenuCheckStrictly != "" {
+	if sysRole.MenuCheckStrictly != nil {
 		updateSQL += ",menu_check_strictly = :menu_check_strictly"
 	}
-	if sysRole.DeptCheckStrictly != "" {
+	if sysRole.DeptCheckStrictly != nil {
 		updateSQL += ",dept_check_strictly = :dept_check_strictly"
 	}
 	if sysRole.Remake != "" {
@@ -187,7 +187,7 @@ func UpdateRole(sysRole *systemModels.SysRoleDML) {
 	if sysRole.Status != "" {
 		updateSQL += ",status = :status"
 	}
-	updateSQL += " where user_id = :user_id"
+	updateSQL += " where role_id = :role_id"
 
 	_, err := mysql.MysqlDb.NamedExec(updateSQL, sysRole)
 	if err != nil {

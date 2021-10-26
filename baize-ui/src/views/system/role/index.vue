@@ -250,8 +250,9 @@
 
 <script>
 import { listRole, getRole, delRole, addRole, updateRole, exportRole, dataScope, changeRoleStatus } from "@/api/system/role";
-import { treeselect as menuTreeselect, roleMenuTreeselect } from "@/api/system/menu";
-import { treeselect as deptTreeselect, roleDeptTreeselect } from "@/api/system/dept";
+import {  roleMenuTreeselect } from "@/api/system/menu";
+import {  roleDeptTreeselect } from "@/api/system/dept";
+
 
 export default {
   name: "Role",
@@ -393,15 +394,15 @@ export default {
     /** 根据角色ID查询菜单树结构 */
     getRoleMenuTreeselect(roleId) {
       return roleMenuTreeselect(roleId).then(response => {
-        this.menuOptions = this.handleTree(response.data.menus, "menuId");
-        console.log( this.menuOptions)
+        this.menuOptions = this.handleProps(response.data.menus, "menuId","menuName");
         return response;
       });
     },
     /** 根据角色ID查询部门树结构 */
     getRoleDeptTreeselect(roleId) {
       return roleDeptTreeselect(roleId).then(response => {
-        this.deptOptions = response.depts;
+        this.deptOptions =this.handleProps(response.data.depts, "deptId","deptName");
+        console.log(this.deptOptions)
         return response;
       });
     },
@@ -543,7 +544,7 @@ export default {
         this.openDataScope = true;
         this.$nextTick(() => {
           roleDeptTreeselect.then(res => {
-            this.$refs.dept.setCheckedKeys(res.checkedKeys);
+            this.$refs.dept.setCheckedKeys(res.data.checkedKeys);
           });
         });
         this.title = "分配数据权限";

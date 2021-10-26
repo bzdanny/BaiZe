@@ -44,3 +44,7 @@ func HasChildByDeptId(deptId int64) bool {
 func CheckDeptExistUser(deptId int64) bool {
 	return systemDao.CheckDeptExistUser(deptId) > 0
 }
+func SelectDeptListByRoleId(roleId int64) []string {
+	role := systemDao.SelectRoleById(roleId)
+	return systemDao.SelectDeptListByRoleId(roleId, role.DeptCheckStrictly)
+}

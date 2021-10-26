@@ -25,7 +25,7 @@ type SysRoleVo struct {
 	RoleId            int64   `json:"roleId,string" db:"role_id"`
 	RoleName          string  `json:"roleName" db:"role_name"`
 	RoleKey           string  `json:"roleKey" db:"role_key"`
-	RoleSort          string  `json:"roleSort" db:"role_sort"`
+	RoleSort          int     `json:"roleSort" db:"role_sort"`
 	DataScope         string  `json:"dataScope" db:"data_scope"`
 	MenuCheckStrictly bool    `json:"menuCheckStrictly" db:"menu_check_strictly"`
 	DeptCheckStrictly bool    `json:"deptCheckStrictly" db:"dept_check_strictly"`
@@ -49,17 +49,17 @@ func SysRoleDMLListToRows(roles []*SysRoleVo) (rows [][]string) {
 }
 
 type SysRoleDML struct {
-	RoleId            int64   `json:"RoleId,string" db:"role_id"`
-	RoleName          string  `json:"roleName" db:"role_name"`
-	RoleKey           string  `json:"roleKey" db:"role_key"`
-	RoleSort          string  `json:"roleSort" db:"role_sort"`
-	DataScope         string  `json:"dataScope" db:"data_scope"`
-	MenuCheckStrictly string  `json:"menuCheckStrictly" db:"menu_check_strictly"`
-	DeptCheckStrictly string  `json:"deptCheckStrictly" db:"dept_check_strictly" `
-	Status            string  `json:"status" db:"status"`
-	Remake            string  `json:"remake" db:"remake "`
-	MenuIds           []int64 `json:"menuIds"`
-	DeptIds           []int64 `json:"deptIds"`
+	RoleId            int64    `json:"RoleId,string" db:"role_id"`
+	RoleName          string   `json:"roleName" db:"role_name"`
+	RoleKey           string   `json:"roleKey" db:"role_key"`
+	RoleSort          int      `json:"roleSort" db:"role_sort"`
+	DataScope         string   `json:"dataScope" db:"data_scope"`
+	MenuCheckStrictly *bool    `json:"menuCheckStrictly" db:"menu_check_strictly"`
+	DeptCheckStrictly *bool    `json:"deptCheckStrictly" db:"dept_check_strictly" `
+	Status            string   `json:"status" db:"status"`
+	Remake            string   `json:"remake" db:"remake "`
+	MenuIds           []string `json:"menuIds"`
+	DeptIds           []string `json:"deptIds"`
 	commonModels.BaseEntityDML
 }
 

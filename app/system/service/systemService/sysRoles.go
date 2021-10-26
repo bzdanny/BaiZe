@@ -6,6 +6,7 @@ import (
 	"baize/app/system/models/systemModels"
 	"baize/app/utils/exceLize"
 	"baize/app/utils/snowflake"
+	"strconv"
 	"strings"
 )
 
@@ -57,7 +58,8 @@ func insertRoleDept(sysRole *systemModels.SysRoleDML) {
 	if len(deptIds) != 0 {
 		list := make([]*systemModels.SysRoleDept, 0, len(deptIds))
 		for _, deptId := range deptIds {
-			list = append(list, &systemModels.SysRoleDept{RoleId: sysRole.RoleId, DeptId: deptId})
+			intDeptId, _ := strconv.ParseInt(deptId, 10, 64)
+			list = append(list, &systemModels.SysRoleDept{RoleId: sysRole.RoleId, DeptId: intDeptId})
 		}
 		systemDao.BatchRoleDept(list)
 	}
@@ -103,7 +105,8 @@ func InsertRoleMenu(sysRole *systemModels.SysRoleDML) {
 	if len(menuIds) != 0 {
 		list := make([]*systemModels.SysRoleMenu, 0, len(menuIds))
 		for _, menuId := range menuIds {
-			list = append(list, &systemModels.SysRoleMenu{RoleId: sysRole.RoleId, MenuId: menuId})
+			intMenuId, _ := strconv.ParseInt(menuId, 10, 64)
+			list = append(list, &systemModels.SysRoleMenu{RoleId: sysRole.RoleId, MenuId: intMenuId})
 		}
 		systemDao.BatchRoleMenu(list)
 	}

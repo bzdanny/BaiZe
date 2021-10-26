@@ -158,3 +158,26 @@ func CheckDeptExistUser(deptId int64) int {
 	}
 	return count
 }
+
+func SelectDeptListByRoleId(roleId int64, deptCheckStrictly bool) (deptIds []string) {
+	var err error
+	deptIds = make([]string, 0, 2)
+	sqlstr := `select d.dept_id
+		from sys_dept d
+            left join sys_role_dept rd on d.dept_id = rd.dept_id
+        where rd.role_id = ?`
+	if deptCheckStrictly {
+		sqlstr += "  and d.dept_id not in (select d.parent_id from sys_dept d inner join sys_role_dept rd on d.dept_id = rd.dept_id and rd.role_id = ?)"
+	}
+	sqlstr += " order by d.parent_id, d.order_num"
+	if deptCheckStrictly {
+		err = mysql.MysqlDb.Select(&deptIds, sqlstr, roleId, roleId)
+	} else {
+		err = mysql.MysqlDb.Select(&deptIds, sqlstr, roleId)
+	}
+
+	if err != nil {
+		panic(err)
+	}
+	return
+}
