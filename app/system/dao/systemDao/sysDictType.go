@@ -95,7 +95,7 @@ func SelectDictTypeByIds(dictId []int64) (dictTypes []string) {
 }
 
 func InsertDictType(dictType *systemModels.SysDictTypeDML) {
-	insertSQL := `insert into sys_dict_data(dict_id,dict_name,dict_type,create_by,create_time,update_by,update_time %s)
+	insertSQL := `insert into sys_dict_type(dict_id,dict_name,dict_type,create_by,create_time,update_by,update_time %s)
 					values(:dict_id,:dict_name,:dict_type,:create_by,now(),:update_by,now() %s)`
 	key := ""
 	value := ""
@@ -119,7 +119,7 @@ func InsertDictType(dictType *systemModels.SysDictTypeDML) {
 }
 
 func UpdateDictType(dictType *systemModels.SysDictTypeDML) {
-	updateSQL := `update sys_dict_data set update_time = now() , update_by = :update_by`
+	updateSQL := `update sys_dict_type set update_time = now() , update_by = :update_by`
 
 	if dictType.DictName != "" {
 		updateSQL += ",dict_name = :dict_name"
@@ -144,7 +144,7 @@ func UpdateDictType(dictType *systemModels.SysDictTypeDML) {
 }
 
 func DeleteDictTypeByIds(dictIds []int64) (err error) {
-	query, i, err := sqlx.In("\tdelete from sys_dict_type where dict_id in (?)", dictIds)
+	query, i, err := sqlx.In("delete from sys_dict_type where dict_id in (?)", dictIds)
 	if err != nil {
 		panic(err)
 	}
@@ -156,7 +156,7 @@ func DeleteDictTypeByIds(dictIds []int64) (err error) {
 }
 func CheckDictTypeUnique(dictType string) int64 {
 	var dictId int64 = 0
-	err := mysql.MysqlDb.Get(&dictId, "select dict_id from sys_dict_type where menu_name=? and dict_type = ?", dictType)
+	err := mysql.MysqlDb.Get(&dictId, "select dict_id from sys_dict_type where dict_type = ?", dictType)
 	if err != nil && err != sql.ErrNoRows {
 		panic(err)
 	}

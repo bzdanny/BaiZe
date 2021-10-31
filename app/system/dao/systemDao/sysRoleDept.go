@@ -19,7 +19,7 @@ func DeleteRoleDept(ids []int64) {
 }
 
 func DeleteRoleDeptByRoleId(id int64) {
-	_, err := mysql.MysqlDb.Exec("delete from sys_role_dept where role_id=:", id)
+	_, err := mysql.MysqlDb.Exec("delete from sys_role_dept where role_id=? ", id)
 	if err != nil {
 		panic(err)
 	}

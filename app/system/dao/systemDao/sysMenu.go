@@ -85,7 +85,7 @@ func SelectMenuListByUserId(menu *systemModels.SysMenuDQL) (list []*systemModels
 }
 
 func InsertMenu(menu *systemModels.SysMenuDML) {
-	insertSQL := `insert into sys_role(menu_id,menu_name,parent_id,create_by,create_time,update_by,update_time %s)
+	insertSQL := `insert into sys_menu(menu_id,menu_name,parent_id,create_by,create_time,update_by,update_time %s)
 					values(:menu_id,:menu_name,:parent_id,:create_by,now(),:update_by,now() %s)`
 	key := ""
 	value := ""
@@ -143,7 +143,7 @@ func InsertMenu(menu *systemModels.SysMenuDML) {
 }
 
 func UpdateMenu(menu *systemModels.SysMenuDML) {
-	updateSQL := `update sys_role set update_time = now() , update_by = :update_by`
+	updateSQL := `update sys_menu set update_time = now() , update_by = :update_by`
 
 	if menu.ParentId != 0 {
 		updateSQL += ",parent_id = :parent_id"

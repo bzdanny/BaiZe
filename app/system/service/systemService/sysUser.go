@@ -65,7 +65,8 @@ func InsertUserPost(user *systemModels.SysUserDML) {
 	if len(posts) != 0 {
 		list := make([]*systemModels.SysUserPost, 0, len(posts))
 		for _, postId := range posts {
-			post := systemModels.NewSysUserPost(user.UserId, postId)
+			parseInt, _ := strconv.ParseInt(postId, 10, 64)
+			post := systemModels.NewSysUserPost(user.UserId, parseInt)
 			list = append(list, post)
 		}
 		systemDao.BatchUserPost(list)
@@ -78,7 +79,8 @@ func InsertUserRole(user *systemModels.SysUserDML) {
 	if len(roles) != 0 {
 		list := make([]*systemModels.SysUserRole, 0, len(roles))
 		for _, roleId := range roles {
-			role := systemModels.NewSysUserRole(user.UserId, roleId)
+			parseInt, _ := strconv.ParseInt(roleId, 10, 64)
+			role := systemModels.NewSysUserRole(user.UserId, parseInt)
 			list = append(list, role)
 		}
 		systemDao.BatchUserRole(list)

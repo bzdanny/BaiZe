@@ -17,19 +17,19 @@ type SysUserDQL struct {
 }
 
 type SysUserDML struct {
-	UserId      int64   `json:"userId,string" db:"user_id"`
-	DeptId      *int64  `json:"deptId,string" db:"dept_id"`
-	UserName    string  `json:"userName" db:"user_name"`
-	NickName    string  `json:"nickName" db:"nick_name"`
-	Email       string  `json:"email" db:"email"`
-	Avatar      string  `json:"avatar" db:"avatar"`
-	Phonenumber string  `json:"phonenumber" db:"phonenumber"`
-	Sex         string  `json:"sex" db:"sex"  binding:"required"`
-	Password    string  `json:"password" db:"password"`
-	Status      string  `json:"status" db:"status"`
-	Remake      string  `json:"remake" db:"remake "`
-	PostIds     []int64 `json:"postIds"`
-	RoleIds     []int64 `json:"roleIds"`
+	UserId      int64    `json:"userId,string" db:"user_id"`
+	DeptId      *int64   `json:"deptId,string" db:"dept_id"`
+	UserName    string   `json:"userName" db:"user_name"`
+	NickName    string   `json:"nickName" db:"nick_name"`
+	Email       string   `json:"email" db:"email"`
+	Avatar      string   `json:"avatar" db:"avatar"`
+	Phonenumber string   `json:"phonenumber" db:"phonenumber"`
+	Sex         string   `json:"sex" db:"sex"  binding:"required"`
+	Password    string   `json:"password" db:"password"`
+	Status      string   `json:"status" db:"status"`
+	Remake      string   `json:"remake" db:"remake "`
+	PostIds     []string `json:"postIds"`
+	RoleIds     []string `json:"roleIds"`
 	commonModels.BaseEntityDML
 }
 

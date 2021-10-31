@@ -76,7 +76,7 @@ func SelectDictDataList(dictData *systemModels.SysDictDataDQL) (list []*systemMo
 func SelectDictDataById(dictCode int64) (dictData *systemModels.SysDictDataVo) {
 
 	dictData = new(systemModels.SysDictDataVo)
-	err := mysql.MysqlDb.Get(dictData, selectDictDataSql+fromDictDataSql+" where dict_code = ？", dictCode)
+	err := mysql.MysqlDb.Get(dictData, selectDictDataSql+fromDictDataSql+" where dict_code = ?", dictCode)
 	if err == sql.ErrNoRows {
 		return nil
 	} else if err != nil {

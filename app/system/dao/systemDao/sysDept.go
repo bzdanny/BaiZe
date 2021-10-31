@@ -52,7 +52,7 @@ func SelectDeptById(deptId int64) (dept *systemModels.SysDeptVo) {
 }
 
 func InsertDept(dept *systemModels.SysDeptDML) {
-	insertSQL := `insert into sys_role(dept_id,parent_id,dept_name,create_by,create_time,update_by,update_time %s)
+	insertSQL := `insert into sys_dept(dept_id,parent_id,dept_name,create_by,create_time,update_by,update_time %s)
 					values(:dept_id,:parent_id,:dept_name,:create_by,now(),:update_by,now() %s)`
 	key := ""
 	value := ""
@@ -90,7 +90,7 @@ func InsertDept(dept *systemModels.SysDeptDML) {
 }
 
 func UpdateDept(dept *systemModels.SysDeptDML) {
-	updateSQL := `update sys_role set update_time = now() , update_by = :update_by`
+	updateSQL := `update sys_dept set update_time = now() , update_by = :update_by`
 
 	if dept.ParentId != 0 {
 		updateSQL += ",parent_id = :parent_id"

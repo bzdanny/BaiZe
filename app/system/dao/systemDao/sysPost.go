@@ -95,7 +95,7 @@ func InsertPost(post *systemModels.SysPostDML) {
 	key := ""
 	value := ""
 
-	if post.PostSort != "" {
+	if post.PostSort != nil {
 		key += ",post_sort"
 		value += ",:post_sort"
 	}
@@ -127,7 +127,7 @@ func UpdatePost(post *systemModels.SysPostDML) {
 	if post.PostName != "" {
 		updateSQL += ",post_name = :post_name"
 	}
-	if post.PostSort != "" {
+	if post.PostSort != nil {
 		updateSQL += ",post_sort = :post_sort"
 	}
 	if post.Status != "" {

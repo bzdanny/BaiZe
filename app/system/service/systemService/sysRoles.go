@@ -47,7 +47,6 @@ func UpdateRoleStatus(sysRole *systemModels.SysRoleDML) {
 }
 func AuthDataScope(sysRole *systemModels.SysRoleDML) {
 	systemDao.UpdateRole(sysRole)
-
 	systemDao.DeleteRoleDeptByRoleId(sysRole.RoleId)
 	insertRoleDept(sysRole)
 	return

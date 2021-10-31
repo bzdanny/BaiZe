@@ -26,7 +26,7 @@ type SysDeptVo struct {
 	commonModels.BaseEntity
 }
 type SysDeptDML struct {
-	DeptId    int64  `json:"DeptId,string" db:"parent_id"`
+	DeptId    int64  `json:"DeptId,string" db:"dept_id"`
 	ParentId  int64  `json:"parentId,string" db:"parent_id"`
 	DeptName  string `json:"deptName" db:"dept_name"`
 	Ancestors string `json:"ancestors" db:"ancestors"`
