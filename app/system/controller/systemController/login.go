@@ -3,6 +3,7 @@ package systemController
 import (
 	commonController "baize/app/common/commonController"
 	commonModels "baize/app/common/commonModels"
+	"baize/app/monitor/monitorService"
 	"baize/app/system/models/loginModels"
 	"baize/app/system/service/loginService"
 	"baize/app/system/service/systemService"
@@ -43,7 +44,7 @@ func GetRouters(c *gin.Context) {
 }
 func Logout(c *gin.Context) {
 	loginUser := commonController.GetCurrentLoginUser(c)
-	systemService.ForceLogout(loginUser.Token)
+	monitorService.ForceLogout(loginUser.Token)
 	c.JSON(http.StatusOK, commonModels.Success())
 
 }

@@ -3,9 +3,10 @@ package loginService
 import (
 	"baize/app/common/commonModels"
 	"baize/app/constant/userStatus"
+	"baize/app/monitor/monitorModels"
+	"baize/app/monitor/monitorService"
 	"baize/app/system/dao/systemDao"
 	"baize/app/system/models/loginModels"
-	"baize/app/system/models/systemModels"
 	"baize/app/system/service/systemService"
 	"baize/app/utils/bCryptPasswordEncoder"
 	"baize/app/utils/jwt"
@@ -17,7 +18,7 @@ import (
 )
 
 func Login(login *loginModels.LoginBody, c *gin.Context) *commonModels.ResponseData {
-	l := new(systemModels.Logininfor)
+	l := new(monitorModels.Logininfor)
 	l.InfoId = snowflake.GenID()
 	defer recordLoginInfo(l)
 	setUserAgent(l, c)
@@ -71,6 +72,6 @@ func Login(login *loginModels.LoginBody, c *gin.Context) *commonModels.ResponseD
 	return commonModels.SuccessData(tokenStr)
 }
 
-func recordLoginInfo(loginUser *systemModels.Logininfor) {
-	go systemService.InserLogininfor(loginUser)
+func recordLoginInfo(loginUser *monitorModels.Logininfor) {
+	go monitorService.InserLogininfor(loginUser)
 }

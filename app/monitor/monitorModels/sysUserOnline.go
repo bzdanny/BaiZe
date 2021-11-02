@@ -1,4 +1,4 @@
-package systemModels
+package monitorModels
 
 import (
 	"baize/app/system/models/loginModels"

@@ -1,9 +1,9 @@
-package systemDao
+package monitorDao
 
 import (
 	"baize/app/common/mysql"
 	"baize/app/constant/constants"
-	"baize/app/system/models/systemModels"
+	"baize/app/monitor/monitorModels"
 	"github.com/jmoiron/sqlx"
 	"go.uber.org/zap"
 )
@@ -11,7 +11,7 @@ import (
 var selectLogininforSql = `select info_id, user_name, ipaddr, login_location, browser, os, status, msg, login_time `
 var fromLogininforSql = ` from sys_logininfor`
 
-func InserLogininfor(logininfor *systemModels.Logininfor) {
+func InserLogininfor(logininfor *monitorModels.Logininfor) {
 
 	_, err := mysql.MysqlDb.NamedExec("insert into sys_logininfor (info_id,user_name, status, ipaddr, login_location, browser, os, msg, login_time) values (:info_id,:user_name, :status, :ipaddr, :login_location, :browser, :os, :msg, sysdate())", logininfor)
 	if err != nil {
@@ -19,7 +19,7 @@ func InserLogininfor(logininfor *systemModels.Logininfor) {
 	}
 	return
 }
-func SelectLogininforList(logininfor *systemModels.LogininforDQL) (list []*systemModels.Logininfor, total *int64) {
+func SelectLogininforList(logininfor *monitorModels.LogininforDQL) (list []*monitorModels.Logininfor, total *int64) {
 	whereSql := ``
 	if logininfor.IpAddr != "" {
 		whereSql += " AND ipaddr like concat('%', #{ipaddr}, '%')"
@@ -44,7 +44,7 @@ func SelectLogininforList(logininfor *systemModels.LogininforDQL) (list []*syste
 		countRow.Scan(total)
 	}
 	defer countRow.Close()
-	list = make([]*systemModels.Logininfor, 0, logininfor.Size)
+	list = make([]*monitorModels.Logininfor, 0, logininfor.Size)
 	if *total > logininfor.Offset {
 		if logininfor.Limit != "" {
 			whereSql += logininfor.Limit
@@ -54,7 +54,7 @@ func SelectLogininforList(logininfor *systemModels.LogininforDQL) (list []*syste
 			panic(err)
 		}
 		for listRows.Next() {
-			m := new(systemModels.Logininfor)
+			m := new(monitorModels.Logininfor)
 			listRows.StructScan(m)
 			list = append(list, m)
 		}

@@ -14,7 +14,7 @@ import (
 func main() {
 	var filePath string
 	if len(os.Args) <= 1 {
-		filePath = "config.yaml"
+		filePath = "./config.yaml"
 	} else {
 		filePath = os.Args[1]
 	}
