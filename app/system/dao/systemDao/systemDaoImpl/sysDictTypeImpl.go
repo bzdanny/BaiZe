@@ -1,7 +1,7 @@
-package systemDao
+package systemDaoImpl
 
 import (
-	mysql "baize/app/common/mysql"
+	"baize/app/common/mysql"
 	"baize/app/constant/constants"
 	"baize/app/system/models/systemModels"
 	"database/sql"
@@ -9,10 +9,23 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
+var sysDictTypeDaoImpl *sysDictTypeDao = &sysDictTypeDao{db: mysql.GetMysqlDb()}
+
+type sysDictTypeDao struct {
+	db **sqlx.DB
+}
+
+func GetSysDictTypeDao() *sysDictTypeDao {
+	return sysDictTypeDaoImpl
+}
+func (sysDictTypeDao *sysDictTypeDao) getDb() *sqlx.DB {
+	return *sysDictTypeDao.db
+}
+
 var selectDictTypeSql = `select dict_id, dict_name, dict_type, status, create_by, create_time, remark  `
 var fromDictTypeSql = ` from sys_dict_type`
 
-func SelectDictTypeList(dictType *systemModels.SysDictTypeDQL) (list []*systemModels.SysDictTypeVo, total *int64) {
+func (sysDictTypeDao *sysDictTypeDao) SelectDictTypeList(dictType *systemModels.SysDictTypeDQL) (list []*systemModels.SysDictTypeVo, total *int64) {
 	whereSql := ``
 	if dictType.DictName != "" {
 		whereSql += " AND dict_name like concat('%', :dictName, '%')"
@@ -28,7 +41,7 @@ func SelectDictTypeList(dictType *systemModels.SysDictTypeDQL) (list []*systemMo
 		whereSql = " where " + whereSql[4:]
 	}
 
-	countRow, err := mysql.MysqlDb.NamedQuery(constants.MysqlCount+fromDictTypeSql+whereSql, dictType)
+	countRow, err := sysDictTypeDao.getDb().NamedQuery(constants.MysqlCount+fromDictTypeSql+whereSql, dictType)
 	if err != nil {
 		panic(err)
 	}
@@ -42,7 +55,7 @@ func SelectDictTypeList(dictType *systemModels.SysDictTypeDQL) (list []*systemMo
 		if dictType.Limit != "" {
 			whereSql += dictType.Limit
 		}
-		listRows, err := mysql.MysqlDb.NamedQuery(selectDictTypeSql+fromDictTypeSql+whereSql, dictType)
+		listRows, err := sysDictTypeDao.getDb().NamedQuery(selectDictTypeSql+fromDictTypeSql+whereSql, dictType)
 		if err != nil {
 			panic(err)
 		}
@@ -56,20 +69,20 @@ func SelectDictTypeList(dictType *systemModels.SysDictTypeDQL) (list []*systemMo
 	return
 }
 
-func SelectDictTypeAll() (list []*systemModels.SysDictTypeVo) {
+func (sysDictTypeDao *sysDictTypeDao) SelectDictTypeAll() (list []*systemModels.SysDictTypeVo) {
 
 	list = make([]*systemModels.SysDictTypeVo, 0, 2)
-	err := mysql.MysqlDb.Select(&list, selectDictTypeSql+fromDictTypeSql)
+	err := sysDictTypeDao.getDb().Select(&list, selectDictTypeSql+fromDictTypeSql)
 	if err != nil {
 		panic(err)
 	}
 	return
 }
 
-func SelectDictTypeById(dictId int64) (dictType *systemModels.SysDictTypeVo) {
+func (sysDictTypeDao *sysDictTypeDao) SelectDictTypeById(dictId int64) (dictType *systemModels.SysDictTypeVo) {
 
 	dictType = new(systemModels.SysDictTypeVo)
-	err := mysql.MysqlDb.Get(dictType, selectDictTypeSql+fromDictTypeSql+" where dict_id = ?", dictId)
+	err := sysDictTypeDao.getDb().Get(dictType, selectDictTypeSql+fromDictTypeSql+" where dict_id = ?", dictId)
 	if err == sql.ErrNoRows {
 		return nil
 	} else if err != nil {
@@ -78,7 +91,7 @@ func SelectDictTypeById(dictId int64) (dictType *systemModels.SysDictTypeVo) {
 	return
 }
 
-func SelectDictTypeByIds(dictId []int64) (dictTypes []string) {
+func (sysDictTypeDao *sysDictTypeDao) SelectDictTypeByIds(dictId []int64) (dictTypes []string) {
 
 	dictTypes = make([]string, 0, 2)
 
@@ -87,14 +100,14 @@ func SelectDictTypeByIds(dictId []int64) (dictTypes []string) {
 		panic(err)
 	}
 	return
-	err = mysql.MysqlDb.Select(&dictTypes, query, i)
+	err = sysDictTypeDao.getDb().Select(&dictTypes, query, i)
 	if err != nil {
 		panic(err)
 	}
 	return
 }
 
-func InsertDictType(dictType *systemModels.SysDictTypeDML) {
+func (sysDictTypeDao *sysDictTypeDao) InsertDictType(dictType *systemModels.SysDictTypeDML) {
 	insertSQL := `insert into sys_dict_type(dict_id,dict_name,dict_type,create_by,create_time,update_by,update_time %s)
 					values(:dict_id,:dict_name,:dict_type,:create_by,now(),:update_by,now() %s)`
 	key := ""
@@ -111,14 +124,14 @@ func InsertDictType(dictType *systemModels.SysDictTypeDML) {
 	}
 
 	insertStr := fmt.Sprintf(insertSQL, key, value)
-	_, err := mysql.MysqlDb.NamedExec(insertStr, dictType)
+	_, err := sysDictTypeDao.getDb().NamedExec(insertStr, dictType)
 	if err != nil {
 		panic(err)
 	}
 	return
 }
 
-func UpdateDictType(dictType *systemModels.SysDictTypeDML) {
+func (sysDictTypeDao *sysDictTypeDao) UpdateDictType(dictType *systemModels.SysDictTypeDML) {
 	updateSQL := `update sys_dict_type set update_time = now() , update_by = :update_by`
 
 	if dictType.DictName != "" {
@@ -136,27 +149,27 @@ func UpdateDictType(dictType *systemModels.SysDictTypeDML) {
 
 	updateSQL += " where dict_id = :dict_id"
 
-	_, err := mysql.MysqlDb.NamedExec(updateSQL, dictType)
+	_, err := sysDictTypeDao.getDb().NamedExec(updateSQL, dictType)
 	if err != nil {
 		panic(err)
 	}
 	return
 }
 
-func DeleteDictTypeByIds(dictIds []int64) (err error) {
+func (sysDictTypeDao *sysDictTypeDao) DeleteDictTypeByIds(dictIds []int64) (err error) {
 	query, i, err := sqlx.In("delete from sys_dict_type where dict_id in (?)", dictIds)
 	if err != nil {
 		panic(err)
 	}
-	_, err = mysql.MysqlDb.Exec(query, i...)
+	_, err = sysDictTypeDao.getDb().Exec(query, i...)
 	if err != nil {
 		panic(err)
 	}
 	return
 }
-func CheckDictTypeUnique(dictType string) int64 {
+func (sysDictTypeDao *sysDictTypeDao) CheckDictTypeUnique(dictType string) int64 {
 	var dictId int64 = 0
-	err := mysql.MysqlDb.Get(&dictId, "select dict_id from sys_dict_type where dict_type = ?", dictType)
+	err := sysDictTypeDao.getDb().Get(&dictId, "select dict_id from sys_dict_type where dict_type = ?", dictType)
 	if err != nil && err != sql.ErrNoRows {
 		panic(err)
 	}

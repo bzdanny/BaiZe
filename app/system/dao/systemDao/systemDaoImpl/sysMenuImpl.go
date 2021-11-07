@@ -1,18 +1,32 @@
-package systemDao
+package systemDaoImpl
 
 import (
-	mysql "baize/app/common/mysql"
+	"baize/app/common/mysql"
 	"baize/app/system/models/systemModels"
 	"database/sql"
 	"fmt"
+	"github.com/jmoiron/sqlx"
 )
+
+var sysMenuDaoImpl *sysMenuDao = &sysMenuDao{db: mysql.GetMysqlDb()}
+
+type sysMenuDao struct {
+	db **sqlx.DB
+}
+
+func GetSysMenuDao() *sysMenuDao {
+	return sysMenuDaoImpl
+}
+func (sysMenuDao *sysMenuDao) getDb() *sqlx.DB {
+	return *sysMenuDao.db
+}
 
 var selectMenuSql = `select distinct m.menu_id, m.parent_id, m.menu_name, m.path, m.component, m.visible, m.status, ifnull(m.perms,'') as perms, m.is_frame, m.is_cache, m.menu_type, m.icon, m.order_num, m.create_time from sys_menu m`
 
-func SelectMenuById(menuId int64) (menu *systemModels.SysMenuVo) {
+func (sysMenuDao *sysMenuDao) SelectMenuById(menuId int64) (menu *systemModels.SysMenuVo) {
 	whereSql := ` where menu_id = ?`
 	menu = new(systemModels.SysMenuVo)
-	err := mysql.MysqlDb.Get(menu, selectMenuSql+whereSql, menuId)
+	err := sysMenuDao.getDb().Get(menu, selectMenuSql+whereSql, menuId)
 	if err == sql.ErrNoRows {
 		return nil
 	} else if err != nil {
@@ -21,7 +35,7 @@ func SelectMenuById(menuId int64) (menu *systemModels.SysMenuVo) {
 	return
 }
 
-func SelectMenuList(menu *systemModels.SysMenuDQL) (list []*systemModels.SysMenuVo) {
+func (sysMenuDao *sysMenuDao) SelectMenuList(menu *systemModels.SysMenuDQL) (list []*systemModels.SysMenuVo) {
 	whereSql := ``
 	if menu.MenuName != "" {
 		whereSql += " AND menu_name like concat('%', :menu_name, '%')"
@@ -38,7 +52,7 @@ func SelectMenuList(menu *systemModels.SysMenuDQL) (list []*systemModels.SysMenu
 	whereSql += " order by m.parent_id, m.order_num"
 
 	list = make([]*systemModels.SysMenuVo, 0, 2)
-	listRows, err := mysql.MysqlDb.NamedQuery(selectMenuSql+whereSql, menu)
+	listRows, err := sysMenuDao.getDb().NamedQuery(selectMenuSql+whereSql, menu)
 	if err != nil {
 		panic(err)
 	}
@@ -53,7 +67,7 @@ func SelectMenuList(menu *systemModels.SysMenuDQL) (list []*systemModels.SysMenu
 	return
 }
 
-func SelectMenuListByUserId(menu *systemModels.SysMenuDQL) (list []*systemModels.SysMenuVo) {
+func (sysMenuDao *sysMenuDao) SelectMenuListByUserId(menu *systemModels.SysMenuDQL) (list []*systemModels.SysMenuVo) {
 	whereSql := ` left join sys_role_menu rm on m.menu_id = rm.menu_id
 		left join sys_user_role ur on rm.role_id = ur.role_id
 		left join sys_role ro on ur.role_id = ro.role_id
@@ -69,7 +83,7 @@ func SelectMenuListByUserId(menu *systemModels.SysMenuDQL) (list []*systemModels
 	}
 	whereSql += " m.parent_id, m.order_num"
 	list = make([]*systemModels.SysMenuVo, 0, 2)
-	listRows, err := mysql.MysqlDb.NamedQuery(selectRoleSql+fromRoleSql+whereSql, menu)
+	listRows, err := sysMenuDao.getDb().NamedQuery(selectMenuSql+whereSql, menu)
 	if err != nil {
 		panic(err)
 	}
@@ -84,7 +98,7 @@ func SelectMenuListByUserId(menu *systemModels.SysMenuDQL) (list []*systemModels
 	return
 }
 
-func InsertMenu(menu *systemModels.SysMenuDML) {
+func (sysMenuDao *sysMenuDao) InsertMenu(menu *systemModels.SysMenuDML) {
 	insertSQL := `insert into sys_menu(menu_id,menu_name,parent_id,create_by,create_time,update_by,update_time %s)
 					values(:menu_id,:menu_name,:parent_id,:create_by,now(),:update_by,now() %s)`
 	key := ""
@@ -135,14 +149,14 @@ func InsertMenu(menu *systemModels.SysMenuDML) {
 	}
 
 	insertStr := fmt.Sprintf(insertSQL, key, value)
-	_, err := mysql.MysqlDb.NamedExec(insertStr, menu)
+	_, err := sysMenuDao.getDb().NamedExec(insertStr, menu)
 	if err != nil {
 		panic(err)
 	}
 	return
 }
 
-func UpdateMenu(menu *systemModels.SysMenuDML) {
+func (sysMenuDao *sysMenuDao) UpdateMenu(menu *systemModels.SysMenuDML) {
 	updateSQL := `update sys_menu set update_time = now() , update_by = :update_by`
 
 	if menu.ParentId != 0 {
@@ -186,22 +200,22 @@ func UpdateMenu(menu *systemModels.SysMenuDML) {
 	}
 	updateSQL += " where user_id = :user_id"
 
-	_, err := mysql.MysqlDb.NamedExec(updateSQL, menu)
+	_, err := sysMenuDao.getDb().NamedExec(updateSQL, menu)
 	if err != nil {
 		panic(err)
 	}
 	return
 }
 
-func DeleteMenuById(menuId int64) {
-	_, err := mysql.MysqlDb.Exec("delete from sys_menu where menu_id = ?", menuId)
+func (sysMenuDao *sysMenuDao) DeleteMenuById(menuId int64) {
+	_, err := sysMenuDao.getDb().Exec("delete from sys_menu where menu_id = ?", menuId)
 	if err != nil {
 		panic(err)
 	}
 	return
 }
 
-func SelectMenuPermsByUserId(userId int64) (perms []string) {
+func (sysMenuDao *sysMenuDao) SelectMenuPermsByUserId(userId int64) (perms []string) {
 	sqlStr := `	select distinct m.perms
 				from sys_menu m
 				left join sys_role_menu rm on m.menu_id = rm.menu_id
@@ -209,24 +223,24 @@ func SelectMenuPermsByUserId(userId int64) (perms []string) {
 				left join sys_role r on r.role_id = ur.role_id
 				where m.status = '0' and r.status = '0' and ur.user_id =  ?`
 	perms = make([]string, 0, 2)
-	err := mysql.MysqlDb.Select(&perms, sqlStr, userId)
+	err := sysMenuDao.getDb().Select(&perms, sqlStr, userId)
 	if err != nil {
 		panic(err)
 	}
 	return
 }
 
-func SelectMenuTreeAll() (sysMenus []*systemModels.SysMenuVo) {
+func (sysMenuDao *sysMenuDao) SelectMenuTreeAll() (sysMenus []*systemModels.SysMenuVo) {
 	whereSql := ` where m.menu_type in ('M', 'C') and m.status = 0
 		order by m.parent_id, m.order_num`
 	sysMenus = make([]*systemModels.SysMenuVo, 0, 2)
-	err := mysql.MysqlDb.Select(&sysMenus, selectMenuSql+whereSql)
+	err := sysMenuDao.getDb().Select(&sysMenus, selectMenuSql+whereSql)
 	if err != nil {
 		panic(err)
 	}
 	return
 }
-func SelectMenuTreeByUserId(userId int64) (sysMenus []*systemModels.SysMenuVo) {
+func (sysMenuDao *sysMenuDao) SelectMenuTreeByUserId(userId int64) (sysMenus []*systemModels.SysMenuVo) {
 	whereSql := ` left join sys_role_menu rm on m.menu_id = rm.menu_id
 			 left join sys_user_role ur on rm.role_id = ur.role_id
 			 left join sys_role ro on ur.role_id = ro.role_id
@@ -234,31 +248,31 @@ func SelectMenuTreeByUserId(userId int64) (sysMenus []*systemModels.SysMenuVo) {
 		where u.user_id = ? and m.menu_type in ('M', 'C') and m.status = 0  AND ro.status = 0
 		order by m.parent_id, m.order_num`
 	sysMenus = make([]*systemModels.SysMenuVo, 0, 2)
-	err := mysql.MysqlDb.Select(&sysMenus, selectMenuSql+whereSql, userId)
+	err := sysMenuDao.getDb().Select(&sysMenus, selectMenuSql+whereSql, userId)
 	if err != nil {
 		panic(err)
 	}
 	return
 }
 
-func CheckMenuNameUnique(menuName string, parentId int64) int64 {
+func (sysMenuDao *sysMenuDao) CheckMenuNameUnique(menuName string, parentId int64) int64 {
 	var roleId int64 = 0
-	err := mysql.MysqlDb.Get(&roleId, "select menu_id from sys_menu where menu_name=? and parent_id = ?", menuName, parentId)
+	err := sysMenuDao.getDb().Get(&roleId, "select menu_id from sys_menu where menu_name=? and parent_id = ?", menuName, parentId)
 	if err != nil && err != sql.ErrNoRows {
 		panic(err)
 	}
 	return roleId
 }
 
-func HasChildByMenuId(menuId int64) int {
+func (sysMenuDao *sysMenuDao) HasChildByMenuId(menuId int64) int {
 	var count = 0
-	err := mysql.MysqlDb.Get(&count, "select count(1) from sys_menu where parent_id = ?", menuId)
+	err := sysMenuDao.getDb().Get(&count, "select count(1) from sys_menu where parent_id = ?", menuId)
 	if err != nil && err != sql.ErrNoRows {
 		panic(err)
 	}
 	return count
 }
-func SelectMenuListByRoleId(roleId int64, menuCheckStrictly bool) (roleIds []string) {
+func (sysMenuDao *sysMenuDao) SelectMenuListByRoleId(roleId int64, menuCheckStrictly bool) (roleIds []string) {
 	var err error
 	roleIds = make([]string, 0, 2)
 	sqlstr := `select m.menu_id
@@ -267,9 +281,9 @@ func SelectMenuListByRoleId(roleId int64, menuCheckStrictly bool) (roleIds []str
         where rm.role_id = ?`
 	if menuCheckStrictly {
 		sqlstr += " and m.menu_id not in (select m.parent_id from sys_menu m inner join sys_role_menu rm on m.menu_id = rm.menu_id and rm.role_id = ?)"
-		err = mysql.MysqlDb.Select(&roleIds, sqlstr, roleId, roleId)
+		err = sysMenuDao.getDb().Select(&roleIds, sqlstr, roleId, roleId)
 	} else {
-		err = mysql.MysqlDb.Select(&roleIds, sqlstr, roleId)
+		err = sysMenuDao.getDb().Select(&roleIds, sqlstr, roleId)
 	}
 
 	if err != nil {

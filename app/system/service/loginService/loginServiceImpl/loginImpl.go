@@ -1,4 +1,4 @@
-package loginService
+package loginServiceImpl
 
 import (
 	"baize/app/common/commonModels"
@@ -6,18 +6,35 @@ import (
 	"baize/app/monitor/monitorModels"
 	"baize/app/monitor/monitorService"
 	"baize/app/system/dao/systemDao"
+	"baize/app/system/dao/systemDao/systemDaoImpl"
 	"baize/app/system/models/loginModels"
 	"baize/app/system/service/systemService"
+	"baize/app/system/service/systemService/systemServiceImpl"
+	"baize/app/utils/IpUtils"
+	"baize/app/utils/admin"
 	"baize/app/utils/bCryptPasswordEncoder"
 	"baize/app/utils/jwt"
 	"baize/app/utils/snowflake"
 	"baize/app/utils/token"
 	"github.com/gin-gonic/gin"
+	"github.com/mssola/user_agent"
 	uuid "github.com/satori/go.uuid"
 	"time"
 )
 
-func Login(login *loginModels.LoginBody, c *gin.Context) *commonModels.ResponseData {
+var instance *loginService = &loginService{userDao: systemDaoImpl.GetSysUserDao(), menuDao: systemDaoImpl.GetSysMenuDao(), roleService: systemServiceImpl.GetRoleService()}
+
+type loginService struct {
+	userDao     systemDao.IUserDao
+	menuDao     systemDao.IMenuDao
+	roleService systemService.IRoleService
+}
+
+func GetLoginService() *loginService {
+	return instance
+}
+
+func (loginService *loginService) Login(login *loginModels.LoginBody, c *gin.Context) *commonModels.ResponseData {
 	l := new(monitorModels.Logininfor)
 	l.InfoId = snowflake.GenID()
 	defer recordLoginInfo(l)
@@ -29,7 +46,7 @@ func Login(login *loginModels.LoginBody, c *gin.Context) *commonModels.ResponseD
 		l.Msg = "验证码错误"
 		return commonModels.Waring("验证码错误")
 	}
-	user := systemDao.SelectUserByUserName(login.Username)
+	user := loginService.userDao.SelectUserByUserName(login.Username)
 	if user == nil {
 		return commonModels.Waring("用户不存在/密码错误")
 	} else if userStatus.Deleted == user.DelFlag {
@@ -51,11 +68,11 @@ func Login(login *loginModels.LoginBody, c *gin.Context) *commonModels.ResponseD
 	l.UserName = user.UserName
 	loginUser := new(loginModels.LoginUser)
 	loginUser.User = user
-	roles := systemService.SelectBasicRolesByUserId(user.UserId)
-	byRoles, loginRoles := systemService.RolePermissionByRoles(roles)
+	roles := loginService.roleService.SelectBasicRolesByUserId(user.UserId)
+	byRoles, loginRoles := loginService.roleService.RolePermissionByRoles(roles)
 	loginUser.User.Roles = loginRoles
 	loginUser.RolePerms = byRoles
-	permission := GetMenuPermission(user.UserId)
+	permission := loginService.getMenuPermission(user.UserId)
 	loginUser.Permissions = permission
 
 	loginUser.User.LoginIp = l.IpAddr
@@ -68,10 +85,37 @@ func Login(login *loginModels.LoginBody, c *gin.Context) *commonModels.ResponseD
 
 	tokenStr := jwt.GenToken(loginUser.Token)
 	go token.RefreshToken(loginUser)
-	go systemService.UpdateLoginInformation(user.UserId, l.IpAddr)
+	go loginService.userDao.UpdateLoginInformation(user.UserId, l.IpAddr)
 	return commonModels.SuccessData(tokenStr)
 }
 
 func recordLoginInfo(loginUser *monitorModels.Logininfor) {
 	go monitorService.InserLogininfor(loginUser)
+}
+
+func setUserAgent(login *monitorModels.Logininfor, c *gin.Context) {
+	login.InfoId = snowflake.GenID()
+	ua := user_agent.New(c.Request.Header.Get("User-Agent"))
+	ip := c.ClientIP()
+	login.IpAddr = ip
+	login.Os = ua.OS()
+	login.LoginLocation = IpUtils.GetRealAddressByIP(ip)
+	login.Browser, _ = ua.Browser()
+
+}
+
+func (loginService *loginService) getMenuPermission(userId int64) []string {
+	perms := make([]string, 0, 1)
+	if admin.IsAdmin(userId) {
+		perms = append(perms, "*:*:*")
+	} else {
+		mysqlPerms := loginService.menuDao.SelectMenuPermsByUserId(userId)
+
+		for _, perm := range mysqlPerms {
+			if len(perm) != 0 {
+				perms = append(perms, perm)
+			}
+		}
+	}
+	return perms
 }

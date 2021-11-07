@@ -1,7 +1,7 @@
-package systemDao
+package systemDaoImpl
 
 import (
-	mysql "baize/app/common/mysql"
+	"baize/app/common/mysql"
 	"baize/app/constant/constants"
 	"baize/app/system/models/loginModels"
 	"baize/app/system/models/systemModels"
@@ -10,6 +10,19 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
+var sysRoleDaoImpl *sysRoleDao = &sysRoleDao{db: mysql.GetMysqlDb()}
+
+type sysRoleDao struct {
+	db **sqlx.DB
+}
+
+func GetSysRoleDao() *sysRoleDao {
+	return sysRoleDaoImpl
+}
+func (sysRoleDao *sysRoleDao) getDb() *sqlx.DB {
+	return *sysRoleDao.db
+}
+
 var selectRoleSql = ` select distinct r.role_id, r.role_name, r.role_key, r.role_sort, r.data_scope, r.menu_check_strictly, r.dept_check_strictly,
             r.status, r.del_flag, r.create_time, r.remark`
 var fromRoleSql = ` from sys_role r
@@ -17,7 +30,7 @@ var fromRoleSql = ` from sys_role r
 	        left join sys_user u on u.user_id = ur.user_id
 	        left join sys_dept d on u.dept_id = d.dept_id`
 
-func SelectRoleList(role *systemModels.SysRoleDQL) (roleList []*systemModels.SysRoleVo, total *int64) {
+func (sysRoleDao *sysRoleDao) SelectRoleList(role *systemModels.SysRoleDQL) (roleList []*systemModels.SysRoleVo, total *int64) {
 	whereSql := " where r.del_flag = '0'"
 	if role.RoleName != "" {
 		whereSql += " AND r.role_name like concat('%', :role_name, '%')"
@@ -39,7 +52,7 @@ func SelectRoleList(role *systemModels.SysRoleDQL) (roleList []*systemModels.Sys
 		whereSql += " AND " + role.DataScope
 	}
 	countSql := constants.MysqlCount + fromRoleSql + whereSql
-	countRow, err := mysql.MysqlDb.NamedQuery(countSql, role)
+	countRow, err := sysRoleDao.getDb().NamedQuery(countSql, role)
 	if err != nil {
 		panic(err)
 	}
@@ -51,7 +64,7 @@ func SelectRoleList(role *systemModels.SysRoleDQL) (roleList []*systemModels.Sys
 	if *total > role.Offset {
 		whereSql += " order by r.role_sort"
 		roleList = make([]*systemModels.SysRoleVo, 0, 2)
-		listRows, err := mysql.MysqlDb.NamedQuery(selectRoleSql+fromRoleSql+whereSql, role)
+		listRows, err := sysRoleDao.getDb().NamedQuery(selectRoleSql+fromRoleSql+whereSql, role)
 		if err != nil {
 			panic(err)
 		}
@@ -63,23 +76,23 @@ func SelectRoleList(role *systemModels.SysRoleDQL) (roleList []*systemModels.Sys
 	}
 	return
 }
-func SelectRoleById(roleId int64) (role *systemModels.SysRoleVo) {
+func (sysRoleDao *sysRoleDao) SelectRoleById(roleId int64) (role *systemModels.SysRoleVo) {
 	whereSql := ` where r.role_id = ?`
 	role = new(systemModels.SysRoleVo)
-	err := mysql.MysqlDb.Get(role, selectRoleSql+fromRoleSql+whereSql, roleId)
+	err := sysRoleDao.getDb().Get(role, selectRoleSql+fromRoleSql+whereSql, roleId)
 	if err != nil {
 		panic(err)
 	}
 	return
 }
 
-func SelectBasicRolesByUserId(userId int64) (roles []*systemModels.SysRole) {
+func (sysRoleDao *sysRoleDao) SelectBasicRolesByUserId(userId int64) (roles []*systemModels.SysRole) {
 	sqlStr := `select  r.role_id, r.role_name, r.role_key,r.data_scope
 				from sys_role r
 				left join sys_user_role ur  on r.role_id = ur.role_id
 				where  ur.user_id = ?`
 	roles = make([]*systemModels.SysRole, 0, 2)
-	err := mysql.MysqlDb.Select(&roles, sqlStr, userId)
+	err := sysRoleDao.getDb().Select(&roles, sqlStr, userId)
 	if err != nil {
 		panic(err)
 	}
@@ -87,39 +100,39 @@ func SelectBasicRolesByUserId(userId int64) (roles []*systemModels.SysRole) {
 	return
 }
 
-func SelectRolePermissionByUserId(userId int64) (roles []string) {
+func (sysRoleDao *sysRoleDao) SelectRolePermissionByUserId(userId int64) (roles []string) {
 	sqlStr := `select   r.role_key
 				from sys_role r
 				left join sys_user_role ur  on r.role_id = ur.role_id
 				where  ur.user_id = ?`
 	roles = make([]string, 0, 1)
-	err := mysql.MysqlDb.Select(&roles, sqlStr, userId)
+	err := sysRoleDao.getDb().Select(&roles, sqlStr, userId)
 	if err != nil {
 		panic(err)
 	}
 	return
 }
-func SelectRoleIdAndDataScopeByUserId(userId int64) (roles []*loginModels.Role) {
+func (sysRoleDao *sysRoleDao) SelectRoleIdAndDataScopeByUserId(userId int64) (roles []*loginModels.Role) {
 	sqlStr := `select  r.role_id, r.data_scope
 				from sys_role r
 				left join sys_user_role ur  on r.role_id = ur.role_id
 				where  ur.user_id = ?`
 	roles = make([]*loginModels.Role, 0, 2)
-	err := mysql.MysqlDb.Select(&roles, sqlStr, userId)
+	err := sysRoleDao.getDb().Select(&roles, sqlStr, userId)
 	if err != nil {
 		panic(err)
 	}
 	return
 }
 
-func SelectRoleListByUserId(userId int64) (list []int64) {
+func (sysRoleDao *sysRoleDao) SelectRoleListByUserId(userId int64) (list []int64) {
 	sqlStr := `select r.role_id
         from sys_role r
 	        left join sys_user_role ur on ur.role_id = r.role_id
 	        left join sys_user u on u.user_id = ur.user_id
 		where u.user_id = ?`
 	list = make([]int64, 0, 1)
-	err := mysql.MysqlDb.Select(&list, sqlStr, userId)
+	err := sysRoleDao.getDb().Select(&list, sqlStr, userId)
 	if err != nil {
 		panic(err)
 	}
@@ -127,7 +140,7 @@ func SelectRoleListByUserId(userId int64) (list []int64) {
 	return
 }
 
-func InsertRole(sysRole *systemModels.SysRoleDML) {
+func (sysRoleDao *sysRoleDao) InsertRole(sysRole *systemModels.SysRoleDML) {
 	insertSQL := `insert into sys_role(role_id,role_name,role_sort,create_by,create_time,update_by,update_time %s)
 					values(:role_id,:role_name,:role_sort,:create_by,now(),:update_by,now() %s)`
 	key := ""
@@ -153,14 +166,14 @@ func InsertRole(sysRole *systemModels.SysRoleDML) {
 		value += ",:remake"
 	}
 	insertStr := fmt.Sprintf(insertSQL, key, value)
-	_, err := mysql.MysqlDb.NamedExec(insertStr, sysRole)
+	_, err := sysRoleDao.getDb().NamedExec(insertStr, sysRole)
 	if err != nil {
 		panic(err)
 	}
 	return
 }
 
-func UpdateRole(sysRole *systemModels.SysRoleDML) {
+func (sysRoleDao *sysRoleDao) UpdateRole(sysRole *systemModels.SysRoleDML) {
 	updateSQL := `update sys_role set update_time = now() , update_by = :update_by`
 
 	if sysRole.RoleName != "" {
@@ -189,36 +202,36 @@ func UpdateRole(sysRole *systemModels.SysRoleDML) {
 	}
 	updateSQL += " where role_id = :role_id"
 
-	_, err := mysql.MysqlDb.NamedExec(updateSQL, sysRole)
+	_, err := sysRoleDao.getDb().NamedExec(updateSQL, sysRole)
 	if err != nil {
 		panic(err)
 	}
 	return
 }
 
-func DeleteRoleByIds(ids []int64) {
+func (sysRoleDao *sysRoleDao) DeleteRoleByIds(ids []int64) {
 	query, i, err := sqlx.In("update sys_role set del_flag = '2' where user_id in(?)", ids)
 	if err != nil {
 		panic(err)
 	}
-	_, err = mysql.MysqlDb.Exec(query, i...)
+	_, err = sysRoleDao.getDb().Exec(query, i...)
 	if err != nil {
 		panic(err)
 	}
 	return
 }
-func CheckRoleNameUnique(roleName string) int64 {
+func (sysRoleDao *sysRoleDao) CheckRoleNameUnique(roleName string) int64 {
 	var roleId int64 = 0
-	err := mysql.MysqlDb.Get(&roleId, "select role_id from sys_role where role_name = ?", roleName)
+	err := sysRoleDao.getDb().Get(&roleId, "select role_id from sys_role where role_name = ?", roleName)
 	if err != nil && err != sql.ErrNoRows {
 		panic(err)
 	}
 	return roleId
 }
 
-func CheckRoleKeyUnique(roleKey string) int64 {
+func (sysRoleDao *sysRoleDao) CheckRoleKeyUnique(roleKey string) int64 {
 	var roleId int64 = 0
-	err := mysql.MysqlDb.Get(&roleId, "select role_id from sys_role where role_key = ?", roleKey)
+	err := sysRoleDao.getDb().Get(&roleId, "select role_id from sys_role where role_key = ?", roleKey)
 	if err != nil && err != sql.ErrNoRows {
 		panic(err)
 	}

@@ -1,4 +1,4 @@
-package loginService
+package loginServiceImpl
 
 import (
 	"baize/app/system/models/systemModels"

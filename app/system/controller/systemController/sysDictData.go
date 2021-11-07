@@ -4,7 +4,6 @@ import (
 	"baize/app/common/commonController"
 	"baize/app/common/commonModels"
 	"baize/app/system/models/systemModels"
-	"baize/app/system/service/systemService"
 	"baize/app/utils/slicesUtils"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -19,7 +18,7 @@ func DictDataList(c *gin.Context) {
 	var page = commonModels.NewPageDomain()
 	c.ShouldBind(page)
 	dictData.SetLimit(page)
-	list, count := systemService.SelectDictDataList(dictData)
+	list, count := iDictData.SelectDictDataList(dictData)
 	c.JSON(http.StatusOK, commonModels.SuccessListData(list, count))
 
 }
@@ -33,12 +32,12 @@ func DictDataGetInfo(c *gin.Context) {
 		c.JSON(http.StatusOK, commonModels.ParameterError())
 		return
 	}
-	dictData := systemService.SelectDictDataById(dictCode)
+	dictData := iDictData.SelectDictDataById(dictCode)
 
 	c.JSON(http.StatusOK, commonModels.SuccessData(dictData))
 }
 func DictDataType(c *gin.Context) {
-	sysDictDataList := systemService.SelectDictDataByType(c.Param("dictType"))
+	sysDictDataList := iDictData.SelectDictDataByType(c.Param("dictType"))
 
 	c.JSON(http.StatusOK, commonModels.SuccessData(sysDictDataList))
 
@@ -49,7 +48,7 @@ func DictDataAdd(c *gin.Context) {
 	dictData := new(systemModels.SysDictDataDML)
 	c.ShouldBind(dictData)
 	dictData.SetCreateBy(loginUser.User.UserName)
-	systemService.InsertDictData(dictData)
+	iDictData.InsertDictData(dictData)
 
 	c.JSON(http.StatusOK, commonModels.Success())
 }
@@ -58,12 +57,12 @@ func DictDataEdit(c *gin.Context) {
 	dictData := new(systemModels.SysDictDataDML)
 	c.ShouldBind(dictData)
 	dictData.SetCreateBy(loginUser.User.UserName)
-	systemService.UpdateDictData(dictData)
+	iDictData.UpdateDictData(dictData)
 
 	c.JSON(http.StatusOK, commonModels.Success())
 }
 func DictDataRemove(c *gin.Context) {
 	var s slicesUtils.Slices = strings.Split(c.Param("dictCodes"), ",")
-	systemService.DeleteDictDataByIds(s.StrSlicesToInt())
+	iDictData.DeleteDictDataByIds(s.StrSlicesToInt())
 	c.JSON(http.StatusOK, commonModels.Success())
 }

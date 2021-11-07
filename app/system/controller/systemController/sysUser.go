@@ -4,7 +4,6 @@ import (
 	"baize/app/common/commonController"
 	"baize/app/common/commonModels"
 	"baize/app/system/models/systemModels"
-	"baize/app/system/service/systemService"
 	"baize/app/utils/admin"
 	"baize/app/utils/slicesUtils"
 	"github.com/360EntSecGroup-Skylar/excelize"
@@ -20,7 +19,7 @@ func ChangeStatus(c *gin.Context) {
 	sysUser := new(systemModels.SysUserDML)
 	c.ShouldBindJSON(sysUser)
 	sysUser.SetUpdateBy(loginUser.User.UserName)
-	systemService.UpdateuserStatus(sysUser)
+	iUser.UpdateuserStatus(sysUser)
 	c.JSON(http.StatusOK, commonModels.Success())
 }
 func ResetPwd(c *gin.Context) {
@@ -28,25 +27,25 @@ func ResetPwd(c *gin.Context) {
 	sysUser := new(systemModels.SysUserDML)
 	c.ShouldBindJSON(sysUser)
 	sysUser.SetUpdateBy(loginUser.User.UserName)
-	systemService.ResetPwd(sysUser)
+	iUser.ResetPwd(sysUser)
 	c.JSON(http.StatusOK, commonModels.Success())
 }
 func UserEdit(c *gin.Context) {
 	loginUser := commonController.GetCurrentLoginUser(c)
 	sysUser := new(systemModels.SysUserDML)
 	c.ShouldBindJSON(sysUser)
-	if systemService.CheckPhoneUnique(sysUser) {
+	if iUser.CheckPhoneUnique(sysUser) {
 		c.JSON(http.StatusOK, commonModels.Waring("新增用户'"+sysUser.UserName+"'失败，手机号码已存在"))
 		return
 	}
 
-	if systemService.CheckEmailUnique(sysUser) {
+	if iUser.CheckEmailUnique(sysUser) {
 		c.JSON(http.StatusOK, commonModels.Waring("新增用户'"+sysUser.UserName+"'失败，邮箱账号已存在"))
 		return
 	}
 
 	sysUser.SetUpdateBy(loginUser.User.UserName)
-	systemService.UpdateUser(sysUser)
+	iUser.UpdateUser(sysUser)
 	c.JSON(http.StatusOK, commonModels.Success())
 }
 
@@ -58,22 +57,22 @@ func UserAdd(c *gin.Context) {
 		c.JSON(http.StatusOK, commonModels.ParameterError())
 		return
 	}
-	if systemService.CheckUserNameUnique(sysUser.UserName) {
+	if iUser.CheckUserNameUnique(sysUser.UserName) {
 		c.JSON(http.StatusOK, commonModels.Waring("新增用户'"+sysUser.UserName+"'失败，登录账号已存在"))
 		return
 	}
-	if systemService.CheckPhoneUnique(sysUser) {
+	if iUser.CheckPhoneUnique(sysUser) {
 		c.JSON(http.StatusOK, commonModels.Waring("新增用户'"+sysUser.UserName+"'失败，手机号码已存在"))
 		return
 	}
 
-	if systemService.CheckEmailUnique(sysUser) {
+	if iUser.CheckEmailUnique(sysUser) {
 		c.JSON(http.StatusOK, commonModels.Waring("新增用户'"+sysUser.UserName+"'失败，邮箱账号已存在"))
 		return
 	}
 
 	sysUser.SetCreateBy(loginUser.User.UserName)
-	systemService.InsertUser(sysUser)
+	iUser.InsertUser(sysUser)
 
 	c.JSON(http.StatusOK, commonModels.Success())
 }
@@ -85,19 +84,19 @@ func UserList(c *gin.Context) {
 	c.ShouldBind(page)
 	user.SetLimit(page)
 	user.SetDataScope(loginUser, "d", "u")
-	list, count := systemService.SelectUserList(user)
+	list, count := iUser.SelectUserList(user)
 
 	c.JSON(http.StatusOK, commonModels.SuccessListData(list, count))
 
 }
 func UserGetInfo(c *gin.Context) {
 	m := make(map[string]interface{})
-	m["posts"] = systemService.SelectPostAll()
+	m["posts"] = iPost.SelectPostAll()
 	loginUser := commonController.GetCurrentLoginUser(c)
 	role := new(systemModels.SysRoleDQL)
 	c.ShouldBind(role)
 	role.SetDataScope(loginUser, "d", "")
-	roleList := systemService.SelectRoleAll(role)
+	roleList := iRole.SelectRoleAll(role)
 	if !admin.IsAdmin(commonController.GetCurrentLoginUser(c).User.UserId) {
 		for i, role := range roleList {
 			if role.RoleId == 1 {
@@ -117,13 +116,13 @@ func UserGetInfoById(c *gin.Context) {
 		c.JSON(http.StatusOK, commonModels.ParameterError())
 	}
 	m := make(map[string]interface{})
-	postList := systemService.SelectPostAll()
+	postList := iPost.SelectPostAll()
 	m["posts"] = postList
 	loginUser := commonController.GetCurrentLoginUser(c)
 	role := new(systemModels.SysRoleDQL)
 	c.ShouldBind(role)
 	role.SetDataScope(loginUser, "d", "")
-	roleList := systemService.SelectRoleAll(role)
+	roleList := iRole.SelectRoleAll(role)
 
 	if !admin.IsAdmin(commonController.GetCurrentLoginUser(c).User.UserId) {
 		for i, role := range roleList {
@@ -134,9 +133,9 @@ func UserGetInfoById(c *gin.Context) {
 		}
 	}
 	m["roles"] = roleList
-	m["postIds"] = slicesUtils.IntSlicesToString(systemService.SelectPostListByUserId(userId))
-	m["roleIds"] = slicesUtils.IntSlicesToString(systemService.SelectRoleListByUserId(userId))
-	m["sysUser"] = systemService.SelectUserById(userId)
+	m["postIds"] = slicesUtils.IntSlicesToString(iPost.SelectPostListByUserId(userId))
+	m["roleIds"] = slicesUtils.IntSlicesToString(iRole.SelectRoleListByUserId(userId))
+	m["sysUser"] = iUser.SelectUserById(userId)
 	c.JSON(http.StatusOK, commonModels.SuccessData(m))
 
 }
@@ -145,7 +144,7 @@ func UserRemove(c *gin.Context) {
 	var s slicesUtils.Slices = strings.Split(c.Param("userIds"), ",")
 	toInt := s.StrSlicesToInt()
 
-	systemService.DeleteUserByIds(toInt)
+	iUser.DeleteUserByIds(toInt)
 	c.JSON(http.StatusOK, commonModels.Success())
 }
 func UserImportData(c *gin.Context) {
@@ -158,7 +157,7 @@ func UserImportData(c *gin.Context) {
 	excelFile, _ := excelize.OpenReader(file)
 	rows := excelFile.GetRows("Sheet1")
 	loginUser := commonController.GetCurrentLoginUser(c)
-	data, num := systemService.UserImportData(rows, loginUser.User.UserName, loginUser.User.DeptId)
+	data, num := iUser.UserImportData(rows, loginUser.User.UserName, loginUser.User.DeptId)
 	if num > 0 {
 		c.JSON(http.StatusOK, commonModels.ErrorMsg(data))
 		return
@@ -172,7 +171,7 @@ func UserExport(c *gin.Context) {
 	user := new(systemModels.SysUserDQL)
 	c.ShouldBind(user)
 	user.SetDataScope(loginUser, "d", "u")
-	data := systemService.UserExport(user)
+	data := iUser.UserExport(user)
 	c.Header("Content-Type", "application/vnd.ms-excel")
 	c.Header("Content-Disposition", "attachment; filename=\"用户管理导出.xls\"")
 	c.Header("Content-Length", strconv.Itoa(len(data)))

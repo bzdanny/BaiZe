@@ -1,4 +1,4 @@
-package systemDao
+package systemDaoImpl
 
 import (
 	"baize/app/common/mysql"
@@ -9,22 +9,36 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
+var sysDictDataDaoImpl *sysDictDataDao = &sysDictDataDao{db: mysql.GetMysqlDb()}
+
+type sysDictDataDao struct {
+	db **sqlx.DB
+}
+
+func GetSysDictDataDao() *sysDictDataDao {
+	return sysDictDataDaoImpl
+}
+
+func (sysDictDataDao *sysDictDataDao) getDb() *sqlx.DB {
+	return *sysDictDataDao.db
+}
+
 var selectDictDataSql = `select dict_code, dict_sort, dict_label, dict_value, dict_type, css_class, list_class, is_default , status , create_by, create_time, remark `
 var fromDictDataSql = ` from sys_dict_data`
 
-func SelectDictDataByType(dictType string) (SysDictDataList []*systemModels.SysDictDataVo) {
+func (sysDictDataDao *sysDictDataDao) SelectDictDataByType(dictType string) (SysDictDataList []*systemModels.SysDictDataVo) {
 	whereSql := ` where status = '0' and dict_type = ? order by dict_sort asc`
 
 	SysDictDataList = make([]*systemModels.SysDictDataVo, 0, 0)
 
-	err := mysql.MysqlDb.Select(&SysDictDataList, selectDictDataSql+fromDictDataSql+whereSql, dictType)
+	err := sysDictDataDao.getDb().Select(&SysDictDataList, selectDictDataSql+fromDictDataSql+whereSql, dictType)
 	if err != nil {
 		panic(err)
 	}
 	return
 }
 
-func SelectDictDataList(dictData *systemModels.SysDictDataDQL) (list []*systemModels.SysDictDataVo, total *int64) {
+func (sysDictDataDao *sysDictDataDao) SelectDictDataList(dictData *systemModels.SysDictDataDQL) (list []*systemModels.SysDictDataVo, total *int64) {
 	whereSql := ``
 	if dictData.DictType != "" {
 		whereSql += " AND dict_type = :dict_type"
@@ -45,7 +59,7 @@ func SelectDictDataList(dictData *systemModels.SysDictDataDQL) (list []*systemMo
 	}
 	countSql := constants.MysqlCount + fromDictDataSql + whereSql
 
-	countRow, err := mysql.MysqlDb.NamedQuery(countSql, dictData)
+	countRow, err := sysDictDataDao.getDb().NamedQuery(countSql, dictData)
 	if err != nil {
 		panic(err)
 	}
@@ -59,7 +73,7 @@ func SelectDictDataList(dictData *systemModels.SysDictDataDQL) (list []*systemMo
 		if dictData.Limit != "" {
 			whereSql += dictData.Limit
 		}
-		listRows, err := mysql.MysqlDb.NamedQuery(selectDictDataSql+fromDictDataSql+whereSql, dictData)
+		listRows, err := sysDictDataDao.getDb().NamedQuery(selectDictDataSql+fromDictDataSql+whereSql, dictData)
 		if err != nil {
 			panic(err)
 		}
@@ -73,10 +87,10 @@ func SelectDictDataList(dictData *systemModels.SysDictDataDQL) (list []*systemMo
 	return
 }
 
-func SelectDictDataById(dictCode int64) (dictData *systemModels.SysDictDataVo) {
+func (sysDictDataDao *sysDictDataDao) SelectDictDataById(dictCode int64) (dictData *systemModels.SysDictDataVo) {
 
 	dictData = new(systemModels.SysDictDataVo)
-	err := mysql.MysqlDb.Get(dictData, selectDictDataSql+fromDictDataSql+" where dict_code = ?", dictCode)
+	err := sysDictDataDao.getDb().Get(dictData, selectDictDataSql+fromDictDataSql+" where dict_code = ?", dictCode)
 	if err == sql.ErrNoRows {
 		return nil
 	} else if err != nil {
@@ -85,7 +99,7 @@ func SelectDictDataById(dictCode int64) (dictData *systemModels.SysDictDataVo) {
 	return
 }
 
-func InsertDictData(dictData *systemModels.SysDictDataDML) {
+func (sysDictDataDao *sysDictDataDao) InsertDictData(dictData *systemModels.SysDictDataDML) {
 	insertSQL := `insert into sys_dict_data(dict_code,dict_sort,dict_label,dict_value,dict_type,create_by,create_time,update_by,update_time %s)
 					values(:dict_code,:dict_sort,:dict_label,:dict_value,:dict_type,:create_by,now(),:update_by,now() %s)`
 	key := ""
@@ -116,14 +130,14 @@ func InsertDictData(dictData *systemModels.SysDictDataDML) {
 	}
 
 	insertStr := fmt.Sprintf(insertSQL, key, value)
-	_, err := mysql.MysqlDb.NamedExec(insertStr, dictData)
+	_, err := sysDictDataDao.getDb().NamedExec(insertStr, dictData)
 	if err != nil {
 		panic(err)
 	}
 	return
 }
 
-func UpdateDictData(dictData *systemModels.SysDictDataDML) {
+func (sysDictDataDao *sysDictDataDao) UpdateDictData(dictData *systemModels.SysDictDataDML) {
 	updateSQL := `update sys_dict_data set update_time = now() , update_by = :update_by`
 
 	if dictData.DictSort != nil {
@@ -157,31 +171,31 @@ func UpdateDictData(dictData *systemModels.SysDictDataDML) {
 
 	updateSQL += " where dict_code = :dict_code"
 
-	_, err := mysql.MysqlDb.NamedExec(updateSQL, dictData)
+	_, err := sysDictDataDao.getDb().NamedExec(updateSQL, dictData)
 	if err != nil {
 		panic(err)
 	}
 	return
 }
 
-func DeleteDictDataByIds(dictCodes []int64) {
+func (sysDictDataDao *sysDictDataDao) DeleteDictDataByIds(dictCodes []int64) {
 	query, i, err := sqlx.In("delete from sys_dict_data where dict_code in (?)", dictCodes)
 	if err != nil {
 		panic(err)
 	}
-	_, err = mysql.MysqlDb.Exec(query, i...)
+	_, err = sysDictDataDao.getDb().Exec(query, i...)
 	if err != nil {
 		panic(err)
 	}
 	return
 }
-func CountDictDataByTypes(dictType []string) int {
+func (sysDictDataDao *sysDictDataDao) CountDictDataByTypes(dictType []string) int {
 	var count = 0
 	query, i, err := sqlx.In("select count(*) from sys_dict_data where dict_type in(?)", dictType)
 	if err != nil {
 		panic(err)
 	}
-	err = mysql.MysqlDb.Get(&count, query, i...)
+	err = sysDictDataDao.getDb().Get(&count, query, i...)
 	if err != nil {
 		panic(err)
 	}

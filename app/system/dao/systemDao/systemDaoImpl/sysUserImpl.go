@@ -1,7 +1,7 @@
-package systemDao
+package systemDaoImpl
 
 import (
-	mysql "baize/app/common/mysql"
+	"baize/app/common/mysql"
 	"baize/app/constant/constants"
 	"baize/app/system/models/loginModels"
 	"baize/app/system/models/systemModels"
@@ -10,9 +10,22 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-func CheckUserNameUnique(userName string) int {
+var sysUserDaoImpl *sysUserDao = &sysUserDao{db: mysql.GetMysqlDb()}
+
+type sysUserDao struct {
+	db **sqlx.DB
+}
+
+func GetSysUserDao() *sysUserDao {
+	return sysUserDaoImpl
+}
+func (userDao *sysUserDao) getDb() *sqlx.DB {
+	return *userDao.db
+}
+
+func (userDao *sysUserDao) CheckUserNameUnique(userName string) int {
 	var count = 0
-	err := mysql.MysqlDb.Get(&count, "select count(*) from sys_user where user_name = ?", userName)
+	err := userDao.getDb().Get(&count, "select count(*) from sys_user where user_name = ?", userName)
 	if err == sql.ErrNoRows {
 		return 0
 	} else if err != nil {
@@ -20,9 +33,9 @@ func CheckUserNameUnique(userName string) int {
 	}
 	return count
 }
-func CheckPhoneUnique(phonenumber string) int64 {
+func (userDao *sysUserDao) CheckPhoneUnique(phonenumber string) int64 {
 	var userId int64 = 0
-	err := mysql.MysqlDb.Get(&userId, "select user_id from sys_user where phonenumber = ?", phonenumber)
+	err := userDao.getDb().Get(&userId, "select user_id from sys_user where phonenumber = ?", phonenumber)
 	if err == sql.ErrNoRows {
 		return 0
 	} else if err != nil {
@@ -31,9 +44,9 @@ func CheckPhoneUnique(phonenumber string) int64 {
 	return userId
 }
 
-func CheckEmailUnique(email string) int64 {
+func (userDao *sysUserDao) CheckEmailUnique(email string) int64 {
 	var userId int64 = 0
-	err := mysql.MysqlDb.Get(&userId, "select user_id from sys_user where email = ?", email)
+	err := userDao.getDb().Get(&userId, "select user_id from sys_user where email = ?", email)
 	if err == sql.ErrNoRows {
 		return 0
 	} else if err != nil {
@@ -42,7 +55,7 @@ func CheckEmailUnique(email string) int64 {
 	return userId
 }
 
-func InsertUser(sysUser *systemModels.SysUserDML) {
+func (userDao *sysUserDao) InsertUser(sysUser *systemModels.SysUserDML) {
 	insertSQL := `insert into sys_user(user_id,user_name,nick_name,sex,password,status,create_by,create_time,update_by,update_time %s)
 					values(:user_id,:user_name,:nick_name,:sex,:password,:status,:create_by,now(),:update_by,now() %s)`
 	key := ""
@@ -68,14 +81,14 @@ func InsertUser(sysUser *systemModels.SysUserDML) {
 		value += ":remake"
 	}
 	insertStr := fmt.Sprintf(insertSQL, key, value)
-	_, err := mysql.MysqlDb.NamedExec(insertStr, sysUser)
+	_, err := userDao.getDb().NamedExec(insertStr, sysUser)
 	if err != nil {
 		panic(err)
 	}
 	return
 }
 
-func UpdateUser(sysUser *systemModels.SysUserDML) {
+func (userDao *sysUserDao) UpdateUser(sysUser *systemModels.SysUserDML) {
 	updateSQL := `update sys_user set update_time = now() , update_by = :update_by`
 
 	if sysUser.DeptId != nil {
@@ -107,14 +120,14 @@ func UpdateUser(sysUser *systemModels.SysUserDML) {
 	}
 	updateSQL += " where user_id = :user_id"
 
-	_, err := mysql.MysqlDb.NamedExec(updateSQL, sysUser)
+	_, err := userDao.getDb().NamedExec(updateSQL, sysUser)
 	if err != nil {
 		panic(err)
 	}
 	return
 }
 
-func SelectUserByUserName(userName string) (loginUser *loginModels.User) {
+func (userDao *sysUserDao) SelectUserByUserName(userName string) (loginUser *loginModels.User) {
 	sqlStr := `select u.user_id, u.dept_id, u.user_name, u.nick_name, u.email, u.avatar, u.phonenumber, u.password, u.sex, u.status, u.del_flag, u.login_ip, u.login_date,u.remark, u.create_time,
          d.parent_id, d.dept_name
         from sys_user u
@@ -123,7 +136,7 @@ func SelectUserByUserName(userName string) (loginUser *loginModels.User) {
 			`
 
 	loginUser = new(loginModels.User)
-	err := mysql.MysqlDb.Get(loginUser, sqlStr, userName)
+	err := userDao.getDb().Get(loginUser, sqlStr, userName)
 	if err == sql.ErrNoRows {
 		return nil
 	} else if err != nil {
@@ -131,7 +144,7 @@ func SelectUserByUserName(userName string) (loginUser *loginModels.User) {
 	}
 	return
 }
-func SelectUserById(userId int64) (sysUser *systemModels.SysUserVo) {
+func (userDao *sysUserDao) SelectUserById(userId int64) (sysUser *systemModels.SysUserVo) {
 	sqlStr := `select u.user_id, u.dept_id, u.nick_name, u.user_name, u.email, u.avatar, u.phonenumber, u.sex, u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark, d.dept_name, d.leader,  
         r.role_id
         from sys_user u
@@ -142,7 +155,7 @@ func SelectUserById(userId int64) (sysUser *systemModels.SysUserVo) {
 			`
 
 	sysUser = new(systemModels.SysUserVo)
-	err := mysql.MysqlDb.Get(sysUser, sqlStr, userId)
+	err := userDao.getDb().Get(sysUser, sqlStr, userId)
 	if err == sql.ErrNoRows {
 		return nil
 	} else if err != nil {
@@ -151,7 +164,7 @@ func SelectUserById(userId int64) (sysUser *systemModels.SysUserVo) {
 	return
 }
 
-func SelectUserList(user *systemModels.SysUserDQL) (sysUserList []*systemModels.SysUserVo, total *int64) {
+func (userDao *sysUserDao) SelectUserList(user *systemModels.SysUserDQL) (sysUserList []*systemModels.SysUserVo, total *int64) {
 	sql := "select u.user_id, u.dept_id, u.nick_name, u.user_name, u.email, u.avatar, u.phonenumber, u.sex, u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark, d.dept_name, d.leader"
 
 	whereSql := ` from sys_user u left join sys_dept d on u.dept_id = d.dept_id where u.del_flag = '0'`
@@ -178,7 +191,7 @@ func SelectUserList(user *systemModels.SysUserDQL) (sysUserList []*systemModels.
 	}
 	countSql := constants.MysqlCount + whereSql
 
-	countRow, err := mysql.MysqlDb.NamedQuery(countSql, user)
+	countRow, err := userDao.getDb().NamedQuery(countSql, user)
 	if err != nil {
 		panic(err)
 	}
@@ -193,7 +206,7 @@ func SelectUserList(user *systemModels.SysUserDQL) (sysUserList []*systemModels.
 		if user.Limit != "" {
 			whereSql += user.Limit
 		}
-		listRows, err := mysql.MysqlDb.NamedQuery(sql+whereSql, user)
+		listRows, err := userDao.getDb().NamedQuery(sql+whereSql, user)
 		if err != nil {
 			panic(err)
 		}
@@ -210,43 +223,43 @@ func SelectUserList(user *systemModels.SysUserDQL) (sysUserList []*systemModels.
 	return
 }
 
-func DeleteUserByIds(ids []int64) {
+func (userDao *sysUserDao) DeleteUserByIds(ids []int64) {
 	query, i, err := sqlx.In("update sys_user set del_flag = '2' where user_id in(?)", ids)
 	if err != nil {
 		panic(err)
 	}
-	_, err = mysql.MysqlDb.Exec(query, i...)
+	_, err = userDao.getDb().Exec(query, i...)
 	if err != nil {
 		panic(err)
 	}
 	return
 }
-func UpdateLoginInformation(userId int64, ip string) {
-	_, err := mysql.MysqlDb.Exec(`update sys_user set login_date = now() , login_ip = ?  where user_id = ?`, ip, userId)
+func (userDao *sysUserDao) UpdateLoginInformation(userId int64, ip string) {
+	_, err := userDao.getDb().Exec(`update sys_user set login_date = now() , login_ip = ?  where user_id = ?`, ip, userId)
 	if err != nil {
 		panic(err)
 	}
 }
-func UpdateUserAvatar(userId int64, avatar string) {
-	_, err := mysql.MysqlDb.Exec(`update sys_user set avatar = ?  where user_id = ?`, avatar, userId)
+func (userDao *sysUserDao) UpdateUserAvatar(userId int64, avatar string) {
+	_, err := userDao.getDb().Exec(`update sys_user set avatar = ?  where user_id = ?`, avatar, userId)
 	if err != nil {
 		panic(err)
 	}
 }
-func ResetUserPwd(userId int64, password string) {
-	_, err := mysql.MysqlDb.Exec(`update sys_user set password = ?  where user_id = ?`, password, userId)
+func (userDao *sysUserDao) ResetUserPwd(userId int64, password string) {
+	_, err := userDao.getDb().Exec(`update sys_user set password = ?  where user_id = ?`, password, userId)
 	if err != nil {
 		panic(err)
 	}
 }
-func SelectPasswordByUserId(userId int64) string {
+func (userDao *sysUserDao) SelectPasswordByUserId(userId int64) string {
 	sqlStr := `select password
         from sys_user 
 			where user_id = ?			
 			`
 
 	password := new(string)
-	err := mysql.MysqlDb.Get(password, sqlStr, userId)
+	err := userDao.getDb().Get(password, sqlStr, userId)
 	if err != nil {
 		panic(err)
 	}

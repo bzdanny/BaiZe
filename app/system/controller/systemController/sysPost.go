@@ -4,7 +4,6 @@ import (
 	"baize/app/common/commonController"
 	"baize/app/common/commonModels"
 	"baize/app/system/models/systemModels"
-	"baize/app/system/service/systemService"
 	"baize/app/utils/slicesUtils"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -20,7 +19,7 @@ func PostList(c *gin.Context) {
 	c.ShouldBind(post)
 	post.SetLimit(page)
 
-	list, count := systemService.SelectPostList(post)
+	list, count := iPost.SelectPostList(post)
 
 	c.JSON(http.StatusOK, commonModels.SuccessListData(list, count))
 
@@ -37,7 +36,7 @@ func PostGetInfo(c *gin.Context) {
 		c.JSON(http.StatusOK, commonModels.ParameterError())
 		return
 	}
-	sysUser := systemService.SelectPostById(postId)
+	sysUser := iPost.SelectPostById(postId)
 	c.JSON(http.StatusOK, commonModels.SuccessData(sysUser))
 }
 
@@ -50,7 +49,7 @@ func PostAdd(c *gin.Context) {
 		return
 	}
 	sysPost.SetCreateBy(loginUser.User.UserName)
-	systemService.InsertPost(sysPost)
+	iPost.InsertPost(sysPost)
 
 	c.JSON(http.StatusOK, commonModels.Success())
 }
@@ -60,14 +59,14 @@ func PostEdit(c *gin.Context) {
 	post := new(systemModels.SysPostDML)
 	c.ShouldBindJSON(post)
 	post.SetUpdateBy(loginUser.User.UserName)
-	systemService.UpdatePost(post)
+	iPost.UpdatePost(post)
 	c.JSON(http.StatusOK, commonModels.Success())
 
 }
 
 func PostRemove(c *gin.Context) {
 	var s slicesUtils.Slices = strings.Split(c.Param("postIds"), ",")
-	systemService.DeletePostByIds(s.StrSlicesToInt())
+	iPost.DeletePostByIds(s.StrSlicesToInt())
 	c.JSON(http.StatusOK, commonModels.Success())
 }
 

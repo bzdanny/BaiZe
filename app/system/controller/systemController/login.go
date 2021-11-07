@@ -1,12 +1,10 @@
 package systemController
 
 import (
-	commonController "baize/app/common/commonController"
-	commonModels "baize/app/common/commonModels"
+	"baize/app/common/commonController"
+	"baize/app/common/commonModels"
 	"baize/app/monitor/monitorService"
 	"baize/app/system/models/loginModels"
-	"baize/app/system/service/loginService"
-	"baize/app/system/service/systemService"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -20,7 +18,7 @@ func Login(c *gin.Context) {
 		c.JSON(http.StatusOK, commonModels.ParameterError())
 		return
 	}
-	data := loginService.Login(&login, c)
+	data := iLogin.Login(&login, c)
 
 	c.JSON(http.StatusOK, data)
 
@@ -37,8 +35,8 @@ func GetInfo(c *gin.Context) {
 }
 func GetRouters(c *gin.Context) {
 	loginUser := commonController.GetCurrentLoginUser(c)
-	menus := systemService.SelectMenuTreeByUserId(loginUser.User.UserId)
-	buildMenus := systemService.BuildMenus(menus)
+	menus := iMenu.SelectMenuTreeByUserId(loginUser.User.UserId)
+	buildMenus := iMenu.BuildMenus(menus)
 	c.JSON(http.StatusOK, commonModels.SuccessData(buildMenus))
 
 }
