@@ -8,6 +8,5 @@ import (
 )
 
 func GetInfoServer(c *gin.Context) {
-
 	c.JSON(http.StatusOK, commonModels.SuccessData(monitorModels.NewServer()))
 }

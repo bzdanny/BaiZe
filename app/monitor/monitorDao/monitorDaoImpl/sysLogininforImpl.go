@@ -1,4 +1,4 @@
-package monitorDao
+package monitorDaoImpl
 
 import (
 	"baize/app/common/mysql"
@@ -8,18 +8,31 @@ import (
 	"go.uber.org/zap"
 )
 
+var sysDeptDaoImpl *logininforDao = &logininforDao{db: mysql.GetMysqlDb()}
+
+type logininforDao struct {
+	db **sqlx.DB
+}
+
+func GetLogininforDao() *logininforDao {
+	return sysDeptDaoImpl
+}
+func (logininforDao *logininforDao) getDb() *sqlx.DB {
+	return *logininforDao.db
+}
+
 var selectLogininforSql = `select info_id, user_name, ipaddr, login_location, browser, os, status, msg, login_time `
 var fromLogininforSql = ` from sys_logininfor`
 
-func InserLogininfor(logininfor *monitorModels.Logininfor) {
+func (logininforDao *logininforDao) InserLogininfor(logininfor *monitorModels.Logininfor) {
 
-	_, err := mysql.MysqlDb.NamedExec("insert into sys_logininfor (info_id,user_name, status, ipaddr, login_location, browser, os, msg, login_time) values (:info_id,:user_name, :status, :ipaddr, :login_location, :browser, :os, :msg, sysdate())", logininfor)
+	_, err := logininforDao.getDb().NamedExec("insert into sys_logininfor (info_id,user_name, status, ipaddr, login_location, browser, os, msg, login_time) values (:info_id,:user_name, :status, :ipaddr, :login_location, :browser, :os, :msg, sysdate())", logininfor)
 	if err != nil {
 		zap.L().Error("登录信息保存错误", zap.Error(err))
 	}
 	return
 }
-func SelectLogininforList(logininfor *monitorModels.LogininforDQL) (list []*monitorModels.Logininfor, total *int64) {
+func (logininforDao *logininforDao) SelectLogininforList(logininfor *monitorModels.LogininforDQL) (list []*monitorModels.Logininfor, total *int64) {
 	whereSql := ``
 	if logininfor.IpAddr != "" {
 		whereSql += " AND ipaddr like concat('%', #{ipaddr}, '%')"
@@ -35,7 +48,7 @@ func SelectLogininforList(logininfor *monitorModels.LogininforDQL) (list []*moni
 		whereSql = " where " + whereSql[4:]
 	}
 
-	countRow, err := mysql.MysqlDb.NamedQuery(constants.MysqlCount+fromLogininforSql+whereSql, logininfor)
+	countRow, err := logininforDao.getDb().NamedQuery(constants.MysqlCount+fromLogininforSql+whereSql, logininfor)
 	if err != nil {
 		panic(err)
 	}
@@ -49,7 +62,7 @@ func SelectLogininforList(logininfor *monitorModels.LogininforDQL) (list []*moni
 		if logininfor.Limit != "" {
 			whereSql += logininfor.Limit
 		}
-		listRows, err := mysql.MysqlDb.NamedQuery(selectLogininforSql+fromLogininforSql+whereSql, logininfor)
+		listRows, err := logininforDao.getDb().NamedQuery(selectLogininforSql+fromLogininforSql+whereSql, logininfor)
 		if err != nil {
 			panic(err)
 		}
@@ -63,19 +76,19 @@ func SelectLogininforList(logininfor *monitorModels.LogininforDQL) (list []*moni
 	return
 
 }
-func DeleteLogininforByIds(infoIds []int64) {
+func (logininforDao *logininforDao) DeleteLogininforByIds(infoIds []int64) {
 	query, i, err := sqlx.In("delete from sys_logininfor where info_id in (?)", infoIds)
 	if err != nil {
 		panic(err)
 	}
-	_, err = mysql.MysqlDb.Exec(query, i...)
+	_, err = logininforDao.getDb().Exec(query, i...)
 	if err != nil {
 		panic(err)
 	}
 }
 
-func CleanLogininfor() {
-	_, err := mysql.MysqlDb.Exec("truncate table sys_logininfor")
+func (logininforDao *logininforDao) CleanLogininfor() {
+	_, err := logininforDao.getDb().Exec("truncate table sys_logininfor")
 	if err != nil {
 		panic(err)
 	}

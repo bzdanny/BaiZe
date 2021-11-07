@@ -4,11 +4,14 @@ import (
 	"baize/app/common/commonModels"
 	"baize/app/monitor/monitorModels"
 	"baize/app/monitor/monitorService"
+	"baize/app/monitor/monitorService/monitorServiceImpl"
 	"baize/app/utils/slicesUtils"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strings"
 )
+
+var iLoginfor monitorService.ILogininforService = monitorServiceImpl.GetLogininforService()
 
 func LogininforList(c *gin.Context) {
 	loginfor := new(monitorModels.LogininforDQL)
@@ -17,7 +20,7 @@ func LogininforList(c *gin.Context) {
 	c.ShouldBind(loginfor)
 	loginfor.SetLimit(page)
 
-	list, count := monitorService.SelectLogininforList(loginfor)
+	list, count := iLoginfor.SelectLogininforList(loginfor)
 
 	c.JSON(http.StatusOK, commonModels.SuccessListData(list, count))
 
@@ -29,12 +32,12 @@ func LogininforExport(c *gin.Context) {
 
 func LogininforRemove(c *gin.Context) {
 	var s slicesUtils.Slices = strings.Split(c.Param("infoIds"), ",")
-	monitorService.DeleteLogininforByIds(s.StrSlicesToInt())
+	iLoginfor.DeleteLogininforByIds(s.StrSlicesToInt())
 
 }
 
 func LogininforClean(c *gin.Context) {
-	monitorService.CleanLogininfor()
+	iLoginfor.CleanLogininfor()
 	c.JSON(http.StatusOK, commonModels.Success())
 
 }
