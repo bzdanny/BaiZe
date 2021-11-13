@@ -5,6 +5,7 @@ import (
 	"baize/app/common/commonModels"
 	"baize/app/genTable/genTableModels"
 	"baize/app/genTable/genTableService"
+	"baize/app/genTable/genTableService/genTableServiceImpl"
 	"baize/app/utils/slicesUtils"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -12,13 +13,16 @@ import (
 	"strings"
 )
 
+var iGenTableColumnService genTableService.IGenTableColumnService = genTableServiceImpl.GetGenTabletColumnService()
+var iGenTableService genTableService.IGenTableService = genTableServiceImpl.GetGenTabletService()
+
 func GenTableList(c *gin.Context) {
 	getTable := new(genTableModels.GenTableDQL)
 	c.ShouldBind(getTable)
 	var page = commonModels.NewPageDomain()
 	c.ShouldBind(page)
 	getTable.SetLimit(page)
-	list, count := genTableService.SelectGenTableList(getTable)
+	list, count := iGenTableService.SelectGenTableList(getTable)
 
 	c.JSON(http.StatusOK, commonModels.SuccessListData(list, count))
 
@@ -26,9 +30,9 @@ func GenTableList(c *gin.Context) {
 
 func GenTableGetInfo(c *gin.Context) {
 	talbleId, _ := strconv.ParseInt(c.Param("talbleId"), 10, 64)
-	genTable := genTableService.SelectGenTableById(talbleId)
-	tables := genTableService.SelectGenTableAll()
-	list := genTableService.SelectGenTableColumnListByTableId(talbleId)
+	genTable := iGenTableService.SelectGenTableById(talbleId)
+	tables := iGenTableService.SelectGenTableAll()
+	list := iGenTableColumnService.SelectGenTableColumnListByTableId(talbleId)
 	data := make(map[string]interface{})
 	data["info"] = genTable
 	data["rows"] = list
@@ -42,19 +46,19 @@ func DataList(c *gin.Context) {
 	var page = commonModels.NewPageDomain()
 	c.ShouldBind(page)
 	getTable.SetLimit(page)
-	list, count := genTableService.SelectDbTableList(getTable)
+	list, count := iGenTableService.SelectDbTableList(getTable)
 
 	c.JSON(http.StatusOK, commonModels.SuccessListData(list, count))
 
 }
 func ColumnList(c *gin.Context) {
 	talbleId, _ := strconv.ParseInt(c.Param("talbleId"), 10, 64)
-	list := genTableService.SelectGenTableColumnListByTableId(talbleId)
+	list := iGenTableColumnService.SelectGenTableColumnListByTableId(talbleId)
 	total := int64(len(list))
 	c.JSON(http.StatusOK, commonModels.SuccessListData(list, &total))
 }
 func ImportTable(c *gin.Context) {
-	genTableService.ImportTableSave(strings.Split(c.Query("tables"), ","), commonController.GetCurrentLoginUser(c).User.UserName)
+	iGenTableService.ImportTableSave(strings.Split(c.Query("tables"), ","), commonController.GetCurrentLoginUser(c).User.UserName)
 	c.JSON(http.StatusOK, commonModels.Success())
 }
 func EditSave(c *gin.Context) {
@@ -62,7 +66,7 @@ func EditSave(c *gin.Context) {
 	genTable := new(genTableModels.GenTableDML)
 	c.ShouldBindJSON(genTable)
 	genTable.SetUpdateBy(loginUser.User.UserName)
-	genTableService.UpdateGenTable(genTable)
+	iGenTableService.UpdateGenTable(genTable)
 
 	c.JSON(http.StatusOK, commonModels.Success())
 
@@ -70,14 +74,14 @@ func EditSave(c *gin.Context) {
 func GenTableRemove(c *gin.Context) {
 
 	var s slicesUtils.Slices = strings.Split(c.Param("tableIds"), ",")
-	genTableService.DeleteGenTableByIds(s.StrSlicesToInt())
+	iGenTableService.DeleteGenTableByIds(s.StrSlicesToInt())
 
 	c.JSON(http.StatusOK, commonModels.Success())
 }
 func Preview(c *gin.Context) {
 
 	tableId, _ := strconv.ParseInt(c.Param("tableId"), 10, 64)
-	genTableService.PreviewCode(tableId)
+	iGenTableService.PreviewCode(tableId)
 
 	c.JSON(http.StatusOK, commonModels.Success())
 }
