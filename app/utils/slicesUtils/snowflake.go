@@ -1,6 +1,8 @@
 package slicesUtils
 
-import "strconv"
+import (
+	"github.com/gogf/gf/util/gconv"
+)
 
 type Slices []string
 
@@ -16,9 +18,7 @@ func (sli Slices) Contains(str string) int {
 func (sli Slices) StrSlicesToInt() []int64 {
 	list := make([]int64, 0, len(sli))
 	for _, s := range sli {
-		i64, _ := strconv.ParseInt(s, 10, 64)
-
-		list = append(list, i64)
+		list = append(list, gconv.Int64(s))
 	}
 	return list
 }

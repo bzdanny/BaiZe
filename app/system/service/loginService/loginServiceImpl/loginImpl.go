@@ -5,6 +5,7 @@ import (
 	"baize/app/constant/userStatus"
 	"baize/app/monitor/monitorModels"
 	"baize/app/monitor/monitorService"
+	"baize/app/monitor/monitorService/monitorServiceImpl"
 	"baize/app/system/dao/systemDao"
 	"baize/app/system/dao/systemDao/systemDaoImpl"
 	"baize/app/system/models/loginModels"
@@ -22,12 +23,13 @@ import (
 	"time"
 )
 
-var instance *loginService = &loginService{userDao: systemDaoImpl.GetSysUserDao(), menuDao: systemDaoImpl.GetSysMenuDao(), roleService: systemServiceImpl.GetRoleService()}
+var instance *loginService = &loginService{userDao: systemDaoImpl.GetSysUserDao(), menuDao: systemDaoImpl.GetSysMenuDao(), roleService: systemServiceImpl.GetRoleService(), iLoginforService: monitorServiceImpl.GetLogininforService()}
 
 type loginService struct {
-	userDao     systemDao.IUserDao
-	menuDao     systemDao.IMenuDao
-	roleService systemService.IRoleService
+	userDao          systemDao.IUserDao
+	menuDao          systemDao.IMenuDao
+	roleService      systemService.IRoleService
+	iLoginforService monitorService.ILogininforService
 }
 
 func GetLoginService() *loginService {
@@ -36,8 +38,7 @@ func GetLoginService() *loginService {
 
 func (loginService *loginService) Login(login *loginModels.LoginBody, c *gin.Context) *commonModels.ResponseData {
 	l := new(monitorModels.Logininfor)
-	l.InfoId = snowflake.GenID()
-	defer recordLoginInfo(l)
+	defer loginService.recordLoginInfo(l)
 	setUserAgent(l, c)
 
 	captcha := VerityCaptcha(login.Uuid, login.Code)
@@ -89,8 +90,8 @@ func (loginService *loginService) Login(login *loginModels.LoginBody, c *gin.Con
 	return commonModels.SuccessData(tokenStr)
 }
 
-func recordLoginInfo(loginUser *monitorModels.Logininfor) {
-	go monitorService.InserLogininfor(loginUser)
+func (loginService *loginService) recordLoginInfo(loginUser *monitorModels.Logininfor) {
+	go loginService.iLoginforService.InserLogininfor(loginUser)
 }
 
 func setUserAgent(login *monitorModels.Logininfor, c *gin.Context) {

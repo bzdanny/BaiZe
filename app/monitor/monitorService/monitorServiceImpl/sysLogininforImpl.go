@@ -4,9 +4,10 @@ import (
 	"baize/app/monitor/monitorDao"
 	"baize/app/monitor/monitorDao/monitorDaoImpl"
 	"baize/app/monitor/monitorModels"
+	"baize/app/utils/snowflake"
 )
 
-var logininforImpl *logininforService = &logininforService{logininforDao: monitorDaoImpl.GetLogininforDao()}
+var logininforImpl = &logininforService{logininforDao: monitorDaoImpl.GetLogininforDao()}
 
 type logininforService struct {
 	logininforDao monitorDao.ILogininforDao
@@ -22,6 +23,7 @@ func (logininforService *logininforService) SelectLogininforList(logininfor *mon
 }
 
 func (logininforService *logininforService) InserLogininfor(loginUser *monitorModels.Logininfor) {
+	loginUser.InfoId = snowflake.GenID()
 	logininforService.logininforDao.InserLogininfor(loginUser)
 }
 

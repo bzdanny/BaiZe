@@ -72,13 +72,13 @@ type GenTableVo struct {
 	Options        *string             `json:"options" db:"options"`
 	Remark         *string             `json:"remark" db:"remark"`
 	Columns        []*GenTableColumnVo `json:"column"`
-	GenerateTime     time.Time
+	GenerateTime   time.Time
 	commonModels.BaseEntity
 }
 
 type DBTableVo struct {
-	TableName    string     `json:"tableName" db:"TABLE_NAME"`
-	TableComment string     `json:"tableComment" db:"TABLE_COMMENT"`
-	CreateTime   *unix.Time `json:"createTime" db:"CREATE_TIME"`
-	UpdateTime   *unix.Time `json:"updateTime" db:"UPDATE_TIME"`
+	TableName    string          `json:"tableName" db:"TABLE_NAME"`
+	TableComment string          `json:"tableComment" db:"TABLE_COMMENT"`
+	CreateTime   *unix.BaiZeTime `json:"createTime" db:"CREATE_TIME"`
+	UpdateTime   *unix.BaiZeTime `json:"updateTime" db:"UPDATE_TIME"`
 }

@@ -2,8 +2,15 @@ package logger
 
 import (
 	"baize/app/common/commonModels"
+
+	"baize/app/constant/business"
+	"baize/app/constant/constants"
+	"baize/app/monitor/monitorModels"
+	"baize/app/monitor/monitorService"
+	"baize/app/monitor/monitorService/monitorServiceImpl"
 	"baize/app/setting"
 	"bytes"
+	"fmt"
 	"io/ioutil"
 	"net"
 	"net/http"
@@ -20,6 +27,7 @@ import (
 )
 
 var lg *zap.Logger
+var iOperLog monitorService.ISysOperLogService = monitorServiceImpl.GetOperLogServiceService()
 
 // Init 初始化lg
 func Init(cfg *setting.LogConfig, mode string) (err error) {
@@ -96,7 +104,21 @@ func GinRecovery(stack bool) gin.HandlerFunc {
 		data, _ := c.GetRawData()
 		c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(data))
 		defer func() {
+			var openLog *monitorModels.SysOpenLog
+			logs, _ := c.Get(constants.LogKey)
+			if logs != nil {
+				openLog = logs.(*monitorModels.SysOpenLog)
+				openLog.OperParam = string(data) + c.Request.URL.RawQuery
+				//openLog.Method=
+				defer iOperLog.InsertOperLog(openLog)
+			}
+
 			if err := recover(); err != nil {
+				if logs != nil {
+					openLog.Status = business.Fail.Msg()
+					s := fmt.Sprintf("%s", err)
+					openLog.ErrorMsg = &s
+				}
 				// Check for a broken connection, as it is not really a
 				// condition that warrants a panic stack trace.
 				var brokenPipe bool

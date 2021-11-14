@@ -8,8 +8,9 @@ import (
 
 func GetCurrentLoginUser(c *gin.Context) (loginUser *loginModels.LoginUser) {
 	loginUserKey, _ := c.Get(constants.LoginUserKey)
-
-	loginUser = loginUserKey.(*loginModels.LoginUser)
+	if loginUserKey != nil {
+		loginUser = loginUserKey.(*loginModels.LoginUser)
+	}
 
 	return
 }

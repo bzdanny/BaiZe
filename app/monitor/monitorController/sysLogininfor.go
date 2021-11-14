@@ -33,6 +33,7 @@ func LogininforExport(c *gin.Context) {
 func LogininforRemove(c *gin.Context) {
 	var s slicesUtils.Slices = strings.Split(c.Param("infoIds"), ",")
 	iLoginfor.DeleteLogininforByIds(s.StrSlicesToInt())
+	c.JSON(http.StatusOK, commonModels.Success())
 
 }
 

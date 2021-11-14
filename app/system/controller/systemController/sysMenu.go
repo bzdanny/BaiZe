@@ -22,7 +22,7 @@ func MenuList(c *gin.Context) {
 func MenuGetInfo(c *gin.Context) {
 	menuId, err := strconv.ParseInt(c.Param("menuId"), 10, 64)
 	if err != nil {
-		zap.L().Error("登录参数错误", zap.Error(err))
+		zap.L().Error("参数错误", zap.Error(err))
 		c.JSON(http.StatusOK, commonModels.ParameterError())
 		return
 	}
@@ -62,7 +62,7 @@ func MenuEdit(c *gin.Context) {
 func MenuRemove(c *gin.Context) {
 	menuId, err := strconv.ParseInt(c.Param("menuId"), 10, 64)
 	if err != nil {
-		zap.L().Error("登录参数错误", zap.Error(err))
+		zap.L().Error("参数错误", zap.Error(err))
 		c.JSON(http.StatusOK, commonModels.ParameterError())
 	}
 	if iMenu.HasChildByMenuId(menuId) {

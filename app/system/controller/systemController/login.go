@@ -4,6 +4,7 @@ import (
 	"baize/app/common/commonController"
 	"baize/app/common/commonModels"
 	"baize/app/monitor/monitorService"
+	"baize/app/monitor/monitorService/monitorServiceImpl"
 	"baize/app/system/models/loginModels"
 	"net/http"
 
@@ -11,10 +12,12 @@ import (
 	"go.uber.org/zap"
 )
 
+var iUserOnline monitorService.ItUserOnlineService = monitorServiceImpl.GetUserOnlineService()
+
 func Login(c *gin.Context) {
 	var login loginModels.LoginBody
 	if err := c.ShouldBindJSON(&login); err != nil {
-		zap.L().Error("登录参数错误", zap.Error(err))
+		zap.L().Error("参数错误", zap.Error(err))
 		c.JSON(http.StatusOK, commonModels.ParameterError())
 		return
 	}
@@ -42,7 +45,7 @@ func GetRouters(c *gin.Context) {
 }
 func Logout(c *gin.Context) {
 	loginUser := commonController.GetCurrentLoginUser(c)
-	monitorService.ForceLogout(loginUser.Token)
+	iUserOnline.ForceLogout(loginUser.Token)
 	c.JSON(http.StatusOK, commonModels.Success())
 
 }

@@ -39,7 +39,7 @@ func RoleExport(c *gin.Context) {
 func RoleGetInfo(c *gin.Context) {
 	roleId, err := strconv.ParseInt(c.Param("roleId"), 10, 64)
 	if err != nil {
-		zap.L().Error("登录参数错误", zap.Error(err))
+		zap.L().Error("参数错误", zap.Error(err))
 		c.JSON(http.StatusOK, commonModels.ParameterError())
 		return
 	}
@@ -51,7 +51,7 @@ func RoleAdd(c *gin.Context) {
 	loginUser := commonController.GetCurrentLoginUser(c)
 	sysRole := new(systemModels.SysRoleDML)
 	if err := c.ShouldBindJSON(sysRole); err != nil {
-		zap.L().Error("登录参数错误", zap.Error(err))
+		zap.L().Error("参数错误", zap.Error(err))
 		c.JSON(http.StatusOK, commonModels.ParameterError())
 		return
 	}
@@ -74,7 +74,7 @@ func RoleEdit(c *gin.Context) {
 	loginUser := commonController.GetCurrentLoginUser(c)
 	sysRole := new(systemModels.SysRoleDML)
 	if err := c.ShouldBindJSON(sysRole); err != nil {
-		zap.L().Error("登录参数错误", zap.Error(err))
+		zap.L().Error("参数错误", zap.Error(err))
 		c.JSON(http.StatusOK, commonModels.ParameterError())
 		return
 	}

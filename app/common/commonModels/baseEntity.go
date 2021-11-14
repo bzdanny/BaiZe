@@ -10,10 +10,10 @@ import (
 )
 
 type BaseEntity struct {
-	CreateBy   string     `json:"createBy" db:"create_by"`
-	CreateTime *unix.Time `json:"createTime" db:"create_time"`
-	UpdateBy   string     `json:"updateBy" db:"update_by"`
-	UpdateTime *unix.Time `json:"updateTime" db:"update_time"`
+	CreateBy   string          `json:"createBy" db:"create_by"`
+	CreateTime *unix.BaiZeTime `json:"createTime" db:"create_time"`
+	UpdateBy   string          `json:"updateBy" db:"update_by"`
+	UpdateTime *unix.BaiZeTime `json:"updateTime" db:"update_time"`
 }
 
 type BaseEntityDML struct {
@@ -31,10 +31,10 @@ func (b *BaseEntityDML) SetUpdateBy(userName string) {
 }
 
 type BaseEntityDQL struct {
-	CreateTime *unix.Time `db:"create_time"`
-	UpdateTime *unix.Time `db:"update_time"`
-	CreateBy   string     `db:"create_by"`
-	UpdateBy   string     `db:"update_by"`
+	CreateTime *unix.BaiZeTime `db:"create_time"`
+	UpdateTime *unix.BaiZeTime `db:"update_time"`
+	CreateBy   string          `db:"create_by"`
+	UpdateBy   string          `db:"update_by"`
 	DataScope  string
 	Limit      string
 	Offset     int64

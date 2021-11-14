@@ -3,6 +3,7 @@ package systemController
 import (
 	"baize/app/common/commonController"
 	"baize/app/common/commonModels"
+	"baize/app/monitor/monitorModels"
 	"baize/app/system/models/systemModels"
 	"baize/app/utils/admin"
 	"baize/app/utils/slicesUtils"
@@ -23,14 +24,17 @@ func ChangeStatus(c *gin.Context) {
 	c.JSON(http.StatusOK, commonModels.Success())
 }
 func ResetPwd(c *gin.Context) {
+	monitorModels.SetLog(c, "修改密码", "UPDATE")
 	loginUser := commonController.GetCurrentLoginUser(c)
 	sysUser := new(systemModels.SysUserDML)
 	c.ShouldBindJSON(sysUser)
 	sysUser.SetUpdateBy(loginUser.User.UserName)
 	iUser.ResetPwd(sysUser)
 	c.JSON(http.StatusOK, commonModels.Success())
+
 }
 func UserEdit(c *gin.Context) {
+
 	loginUser := commonController.GetCurrentLoginUser(c)
 	sysUser := new(systemModels.SysUserDML)
 	c.ShouldBindJSON(sysUser)
@@ -53,7 +57,7 @@ func UserAdd(c *gin.Context) {
 	loginUser := commonController.GetCurrentLoginUser(c)
 	sysUser := new(systemModels.SysUserDML)
 	if err := c.ShouldBindJSON(sysUser); err != nil {
-		zap.L().Error("登录参数错误", zap.Error(err))
+		zap.L().Error("参数错误", zap.Error(err))
 		c.JSON(http.StatusOK, commonModels.ParameterError())
 		return
 	}

@@ -8,14 +8,14 @@ import (
 	"go.uber.org/zap"
 )
 
-var sysDeptDaoImpl *logininforDao = &logininforDao{db: mysql.GetMysqlDb()}
+var sysLogininforImpl = &logininforDao{db: mysql.GetMysqlDb()}
 
 type logininforDao struct {
 	db **sqlx.DB
 }
 
 func GetLogininforDao() *logininforDao {
-	return sysDeptDaoImpl
+	return sysLogininforImpl
 }
 func (logininforDao *logininforDao) getDb() *sqlx.DB {
 	return *logininforDao.db
@@ -35,13 +35,13 @@ func (logininforDao *logininforDao) InserLogininfor(logininfor *monitorModels.Lo
 func (logininforDao *logininforDao) SelectLogininforList(logininfor *monitorModels.LogininforDQL) (list []*monitorModels.Logininfor, total *int64) {
 	whereSql := ``
 	if logininfor.IpAddr != "" {
-		whereSql += " AND ipaddr like concat('%', #{ipaddr}, '%')"
+		whereSql += " AND ipaddr like concat('%', :ipaddr, '%')"
 	}
 	if logininfor.Status != "" {
 		whereSql += " AND  status = :status"
 	}
 	if logininfor.UserName != "" {
-		whereSql += " AND user_name like concat('%', #{userName}, '%')"
+		whereSql += " AND user_name like concat('%', :userName, '%')"
 	}
 
 	if whereSql != "" {

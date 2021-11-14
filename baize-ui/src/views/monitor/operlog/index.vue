@@ -106,7 +106,6 @@
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
-
     <el-table v-loading="loading" :data="list" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="日志编号" align="center" prop="operId" />
@@ -243,8 +242,8 @@ export default {
     getList() {
       this.loading = true;
       list(this.addDateRange(this.queryParams, this.dateRange)).then( response => {
-          this.list = response.rows;
-          this.total = response.total;
+          this.list = response.data.rows;
+          this.total = response.data.total;
           this.loading = false;
         }
       );
