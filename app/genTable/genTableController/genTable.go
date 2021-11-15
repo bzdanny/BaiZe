@@ -19,9 +19,7 @@ var iGenTableService genTableService.IGenTableService = genTableServiceImpl.GetG
 func GenTableList(c *gin.Context) {
 	getTable := new(genTableModels.GenTableDQL)
 	c.ShouldBind(getTable)
-	var page = commonModels.NewPageDomain()
-	c.ShouldBind(page)
-	getTable.SetLimit(page)
+	getTable.SetLimit(c)
 	list, count := iGenTableService.SelectGenTableList(getTable)
 
 	c.JSON(http.StatusOK, commonModels.SuccessListData(list, count))
@@ -43,9 +41,7 @@ func GenTableGetInfo(c *gin.Context) {
 func DataList(c *gin.Context) {
 	getTable := new(genTableModels.GenTableDQL)
 	c.ShouldBind(getTable)
-	var page = commonModels.NewPageDomain()
-	c.ShouldBind(page)
-	getTable.SetLimit(page)
+	getTable.SetLimit(c)
 	list, count := iGenTableService.SelectDbTableList(getTable)
 
 	c.JSON(http.StatusOK, commonModels.SuccessListData(list, count))

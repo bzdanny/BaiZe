@@ -2,6 +2,7 @@ package systemController
 
 import (
 	"baize/app/common/commonController"
+	"baize/app/common/commonLog"
 	"baize/app/common/commonModels"
 	"baize/app/constant/constants"
 	"baize/app/system/models/systemModels"
@@ -23,6 +24,7 @@ func Profile(c *gin.Context) {
 }
 
 func ProfileUpdateProfile(c *gin.Context) {
+	commonLog.SetLog(c, "个人信息", "UPDATE")
 	sysUser := new(systemModels.SysUserDML)
 	c.ShouldBindJSON(sysUser)
 	if iUser.CheckPhoneUnique(sysUser) {
@@ -48,6 +50,7 @@ func ProfileUpdateProfile(c *gin.Context) {
 }
 
 func ProfileUpdatePwd(c *gin.Context) {
+	commonLog.SetLog(c, "个人信息", "UPDATE")
 	oldPassword := c.Query("oldPassword")
 
 	password := c.Query("newPassword")
@@ -66,6 +69,7 @@ func ProfileUpdatePwd(c *gin.Context) {
 }
 
 func ProfileAvatar(c *gin.Context) {
+	commonLog.SetLog(c, "个人信息", "UPDATE")
 	file, err := c.FormFile("avatarfile")
 	if err != nil {
 		c.JSON(http.StatusOK, commonModels.ParameterError())

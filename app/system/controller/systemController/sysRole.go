@@ -2,6 +2,7 @@ package systemController
 
 import (
 	"baize/app/common/commonController"
+	"baize/app/common/commonLog"
 	"baize/app/common/commonModels"
 	"baize/app/system/models/systemModels"
 	"baize/app/utils/slicesUtils"
@@ -16,9 +17,7 @@ func RoleList(c *gin.Context) {
 	loginUser := commonController.GetCurrentLoginUser(c)
 	role := new(systemModels.SysRoleDQL)
 	c.ShouldBind(role)
-	var page = commonModels.NewPageDomain()
-	c.ShouldBind(page)
-	role.SetLimit(page)
+	role.SetLimit(c)
 	role.SetDataScope(loginUser, "d", "")
 	list, count := iRole.SelectRoleList(role)
 
@@ -27,6 +26,7 @@ func RoleList(c *gin.Context) {
 }
 
 func RoleExport(c *gin.Context) {
+	commonLog.SetLog(c, "角色管理", "EXPORT")
 	loginUser := commonController.GetCurrentLoginUser(c)
 	role := new(systemModels.SysRoleDQL)
 	c.ShouldBind(role)
@@ -48,6 +48,7 @@ func RoleGetInfo(c *gin.Context) {
 	c.JSON(http.StatusOK, commonModels.SuccessData(sysUser))
 }
 func RoleAdd(c *gin.Context) {
+	commonLog.SetLog(c, "角色管理", "INSERT")
 	loginUser := commonController.GetCurrentLoginUser(c)
 	sysRole := new(systemModels.SysRoleDML)
 	if err := c.ShouldBindJSON(sysRole); err != nil {
@@ -63,14 +64,13 @@ func RoleAdd(c *gin.Context) {
 		c.JSON(http.StatusOK, commonModels.Waring("新增角色'"+sysRole.RoleKey+"'失败，角色权限已存在"))
 		return
 	}
-
 	sysRole.SetCreateBy(loginUser.User.UserName)
 	iRole.InsertRole(sysRole)
-
 	c.JSON(http.StatusOK, commonModels.Success())
 
 }
 func RoleEdit(c *gin.Context) {
+	commonLog.SetLog(c, "角色管理", "UPDATE")
 	loginUser := commonController.GetCurrentLoginUser(c)
 	sysRole := new(systemModels.SysRoleDML)
 	if err := c.ShouldBindJSON(sysRole); err != nil {
@@ -86,14 +86,13 @@ func RoleEdit(c *gin.Context) {
 		c.JSON(http.StatusOK, commonModels.Waring("新增角色'"+sysRole.RoleKey+"'失败，角色权限已存在"))
 		return
 	}
-
 	sysRole.SetUpdateBy(loginUser.User.UserName)
 	iRole.UpdateRole(sysRole)
-
 	c.JSON(http.StatusOK, commonModels.Success())
 
 }
 func RoleDataScope(c *gin.Context) {
+	commonLog.SetLog(c, "角色管理", "UPDATE")
 	loginUser := commonController.GetCurrentLoginUser(c)
 	sysRole := new(systemModels.SysRoleDML)
 	c.ShouldBindJSON(sysRole)
@@ -103,6 +102,7 @@ func RoleDataScope(c *gin.Context) {
 
 }
 func RoleChangeStatus(c *gin.Context) {
+	commonLog.SetLog(c, "角色管理", "UPDATE")
 	loginUser := commonController.GetCurrentLoginUser(c)
 	sysRole := new(systemModels.SysRoleDML)
 	c.ShouldBindJSON(sysRole)
@@ -113,7 +113,7 @@ func RoleChangeStatus(c *gin.Context) {
 	c.JSON(http.StatusOK, commonModels.Success())
 }
 func RoleRemove(c *gin.Context) {
-
+	commonLog.SetLog(c, "角色管理", "DELETE")
 	var s slicesUtils.Slices = strings.Split(c.Param("rolesIds"), ",")
 	ids := s.StrSlicesToInt()
 	if iRole.CountUserRoleByRoleId(ids) {
@@ -121,6 +121,5 @@ func RoleRemove(c *gin.Context) {
 		return
 	}
 	iRole.DeleteRoleByIds(ids)
-
 	c.JSON(http.StatusOK, commonModels.Success())
 }

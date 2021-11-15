@@ -14,6 +14,5 @@ func InitSysPostRouter(router *gin.RouterGroup) {
 	systemPost.POST("", middlewares.HasPermission("system:post:add"), systemController.PostAdd)
 	systemPost.PUT("", middlewares.HasPermission("system:post:edit"), systemController.PostEdit)
 	systemPost.DELETE("/:postIds", middlewares.HasPermission("system:post:remove"), systemController.PostRemove)
-	systemPost.GET("/optionselect", middlewares.HasPermission("system:post:remove"), systemController.Postoptionselect)
 
 }

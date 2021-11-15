@@ -6,6 +6,7 @@ import (
 	"baize/app/utils/stringUtils"
 	"baize/app/utils/unix"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"strconv"
 )
 
@@ -41,7 +42,9 @@ type BaseEntityDQL struct {
 	Size       int64
 }
 
-func (b *BaseEntityDQL) SetLimit(p *pageDomain) {
+func (b *BaseEntityDQL) SetLimit(c *gin.Context) {
+	var p = NewPageDomain()
+	c.ShouldBind(p)
 	var limitString string = " "
 	if p.OrderBy != "" {
 		limitString += stringUtils.ToUnderScoreCase(p.OrderBy) + " " + p.IsAsc

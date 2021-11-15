@@ -2,8 +2,8 @@ package systemController
 
 import (
 	"baize/app/common/commonController"
+	"baize/app/common/commonLog"
 	"baize/app/common/commonModels"
-	"baize/app/monitor/monitorModels"
 	"baize/app/system/models/systemModels"
 	"baize/app/utils/admin"
 	"baize/app/utils/slicesUtils"
@@ -16,6 +16,7 @@ import (
 )
 
 func ChangeStatus(c *gin.Context) {
+	commonLog.SetLog(c, "用户管理", "UPDATE")
 	loginUser := commonController.GetCurrentLoginUser(c)
 	sysUser := new(systemModels.SysUserDML)
 	c.ShouldBindJSON(sysUser)
@@ -24,7 +25,7 @@ func ChangeStatus(c *gin.Context) {
 	c.JSON(http.StatusOK, commonModels.Success())
 }
 func ResetPwd(c *gin.Context) {
-	monitorModels.SetLog(c, "修改密码", "UPDATE")
+	commonLog.SetLog(c, "用户管理", "UPDATE")
 	loginUser := commonController.GetCurrentLoginUser(c)
 	sysUser := new(systemModels.SysUserDML)
 	c.ShouldBindJSON(sysUser)
@@ -34,7 +35,7 @@ func ResetPwd(c *gin.Context) {
 
 }
 func UserEdit(c *gin.Context) {
-
+	commonLog.SetLog(c, "用户管理", "UPDATE")
 	loginUser := commonController.GetCurrentLoginUser(c)
 	sysUser := new(systemModels.SysUserDML)
 	c.ShouldBindJSON(sysUser)
@@ -54,6 +55,7 @@ func UserEdit(c *gin.Context) {
 }
 
 func UserAdd(c *gin.Context) {
+	commonLog.SetLog(c, "用户管理", "INSERT")
 	loginUser := commonController.GetCurrentLoginUser(c)
 	sysUser := new(systemModels.SysUserDML)
 	if err := c.ShouldBindJSON(sysUser); err != nil {
@@ -84,12 +86,9 @@ func UserList(c *gin.Context) {
 	loginUser := commonController.GetCurrentLoginUser(c)
 	user := new(systemModels.SysUserDQL)
 	c.ShouldBind(user)
-	var page = commonModels.NewPageDomain()
-	c.ShouldBind(page)
-	user.SetLimit(page)
+	user.SetLimit(c)
 	user.SetDataScope(loginUser, "d", "u")
 	list, count := iUser.SelectUserList(user)
-
 	c.JSON(http.StatusOK, commonModels.SuccessListData(list, count))
 
 }
@@ -145,6 +144,7 @@ func UserGetInfoById(c *gin.Context) {
 }
 
 func UserRemove(c *gin.Context) {
+	commonLog.SetLog(c, "用户管理", "DELETE")
 	var s slicesUtils.Slices = strings.Split(c.Param("userIds"), ",")
 	toInt := s.StrSlicesToInt()
 
@@ -152,6 +152,7 @@ func UserRemove(c *gin.Context) {
 	c.JSON(http.StatusOK, commonModels.Success())
 }
 func UserImportData(c *gin.Context) {
+	commonLog.SetLog(c, "用户管理", "IMPORT")
 	fileHeader, err := c.FormFile("file")
 	if err != nil {
 		c.JSON(http.StatusOK, commonModels.Error())
@@ -170,7 +171,7 @@ func UserImportData(c *gin.Context) {
 }
 
 func UserExport(c *gin.Context) {
-
+	commonLog.SetLog(c, "用户管理", "EXPORT")
 	loginUser := commonController.GetCurrentLoginUser(c)
 	user := new(systemModels.SysUserDQL)
 	c.ShouldBind(user)

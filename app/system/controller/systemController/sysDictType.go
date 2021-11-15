@@ -2,6 +2,7 @@ package systemController
 
 import (
 	commonController "baize/app/common/commonController"
+	"baize/app/common/commonLog"
 	commonModels "baize/app/common/commonModels"
 	"baize/app/system/models/systemModels"
 	"baize/app/utils/slicesUtils"
@@ -15,17 +16,14 @@ import (
 func DictTypeList(c *gin.Context) {
 	dictType := new(systemModels.SysDictTypeDQL)
 	c.ShouldBind(dictType)
-	var page = commonModels.NewPageDomain()
-	c.ShouldBind(page)
-	dictType.SetLimit(page)
+	dictType.SetLimit(c)
 	list, count := iDictType.SelectDictTypeList(dictType)
-
 	c.JSON(http.StatusOK, commonModels.SuccessListData(list, count))
 
 }
 
 func DictTypeExport(c *gin.Context) {
-
+	commonLog.SetLog(c, "字典类型", "EXPORT")
 }
 
 func DictTypeGetInfo(c *gin.Context) {
@@ -41,6 +39,7 @@ func DictTypeGetInfo(c *gin.Context) {
 }
 
 func DictTypeAdd(c *gin.Context) {
+	commonLog.SetLog(c, "字典类型", "INSERT")
 	loginUser := commonController.GetCurrentLoginUser(c)
 	dictType := new(systemModels.SysDictTypeDML)
 	c.ShouldBind(dictType)
@@ -55,6 +54,7 @@ func DictTypeAdd(c *gin.Context) {
 }
 
 func DictTypeEdit(c *gin.Context) {
+	commonLog.SetLog(c, "字典类型", "UPDATE")
 	loginUser := commonController.GetCurrentLoginUser(c)
 	dictType := new(systemModels.SysDictTypeDML)
 	if iDictType.CheckDictTypeUnique(dictType) {
@@ -69,6 +69,7 @@ func DictTypeEdit(c *gin.Context) {
 }
 
 func DictTypeRemove(c *gin.Context) {
+	commonLog.SetLog(c, "字典类型", "DELETE")
 	var s slicesUtils.Slices = strings.Split(c.Param("dictIds"), ",")
 	dictIds := s.StrSlicesToInt()
 	dictTypes := iDictType.SelectDictTypeByIds(dictIds)
@@ -81,6 +82,7 @@ func DictTypeRemove(c *gin.Context) {
 }
 
 func DictTypeClearCache(c *gin.Context) {
+	commonLog.SetLog(c, "字典类型", "CLEAN")
 	iDictType.DictTypeClearCache()
 	c.JSON(http.StatusOK, commonModels.Success())
 }

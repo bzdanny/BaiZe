@@ -2,6 +2,7 @@ package systemController
 
 import (
 	"baize/app/common/commonController"
+	"baize/app/common/commonLog"
 	"baize/app/common/commonModels"
 	"baize/app/system/models/systemModels"
 	"github.com/gin-gonic/gin"
@@ -34,6 +35,7 @@ func MenuTreeSelect(c *gin.Context) {
 
 }
 func MenuAdd(c *gin.Context) {
+	commonLog.SetLog(c, "菜单管理", "INSERT")
 	loginUser := commonController.GetCurrentLoginUser(c)
 	sysMenu := new(systemModels.SysMenuDML)
 	c.ShouldBind(sysMenu)
@@ -47,6 +49,7 @@ func MenuAdd(c *gin.Context) {
 	c.JSON(http.StatusOK, commonModels.Success())
 }
 func MenuEdit(c *gin.Context) {
+	commonLog.SetLog(c, "菜单管理", "UPDATE")
 	loginUser := commonController.GetCurrentLoginUser(c)
 	sysMenu := new(systemModels.SysMenuDML)
 	if iMenu.CheckMenuNameUnique(sysMenu) {
@@ -60,6 +63,7 @@ func MenuEdit(c *gin.Context) {
 	c.JSON(http.StatusOK, commonModels.Success())
 }
 func MenuRemove(c *gin.Context) {
+	commonLog.SetLog(c, "菜单管理", "DELETE")
 	menuId, err := strconv.ParseInt(c.Param("menuId"), 10, 64)
 	if err != nil {
 		zap.L().Error("参数错误", zap.Error(err))

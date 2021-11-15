@@ -2,6 +2,7 @@ package systemController
 
 import (
 	"baize/app/common/commonController"
+	"baize/app/common/commonLog"
 	"baize/app/common/commonModels"
 	"baize/app/system/models/systemModels"
 	"github.com/gin-gonic/gin"
@@ -43,6 +44,7 @@ func RoleDeptTreeselect(c *gin.Context) {
 }
 
 func DeptAdd(c *gin.Context) {
+	commonLog.SetLog(c, "部门管理", "INSERT")
 	loginUser := commonController.GetCurrentLoginUser(c)
 	sysDept := new(systemModels.SysDeptDML)
 	c.ShouldBind(sysDept)
@@ -57,6 +59,7 @@ func DeptAdd(c *gin.Context) {
 	c.JSON(http.StatusOK, commonModels.Success())
 }
 func DeptEdit(c *gin.Context) {
+	commonLog.SetLog(c, "部门管理", "UPDATE")
 	loginUser := commonController.GetCurrentLoginUser(c)
 	sysDept := new(systemModels.SysDeptDML)
 	if iDept.CheckDeptNameUnique(sysDept) {
@@ -69,6 +72,7 @@ func DeptEdit(c *gin.Context) {
 	c.JSON(http.StatusOK, commonModels.Success())
 }
 func DeptRemove(c *gin.Context) {
+	commonLog.SetLog(c, "部门管理", "DELETE")
 	deptId, err := strconv.ParseInt(c.Param("deptId"), 10, 64)
 	if err != nil {
 		zap.L().Error("参数错误", zap.Error(err))

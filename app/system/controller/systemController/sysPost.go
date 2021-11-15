@@ -2,6 +2,7 @@ package systemController
 
 import (
 	"baize/app/common/commonController"
+	"baize/app/common/commonLog"
 	"baize/app/common/commonModels"
 	"baize/app/system/models/systemModels"
 	"baize/app/utils/slicesUtils"
@@ -15,18 +16,14 @@ import (
 func PostList(c *gin.Context) {
 	post := new(systemModels.SysPostDQL)
 	c.ShouldBind(post)
-	var page = commonModels.NewPageDomain()
-	c.ShouldBind(post)
-	post.SetLimit(page)
-
+	post.SetLimit(c)
 	list, count := iPost.SelectPostList(post)
-
 	c.JSON(http.StatusOK, commonModels.SuccessListData(list, count))
 
 }
 
 func PostExport(c *gin.Context) {
-
+	commonLog.SetLog(c, "岗位管理", "EXPORT")
 }
 
 func PostGetInfo(c *gin.Context) {
@@ -41,6 +38,7 @@ func PostGetInfo(c *gin.Context) {
 }
 
 func PostAdd(c *gin.Context) {
+	commonLog.SetLog(c, "岗位管理", "INSERT")
 	loginUser := commonController.GetCurrentLoginUser(c)
 	sysPost := new(systemModels.SysPostDML)
 	if err := c.ShouldBindJSON(sysPost); err != nil {
@@ -50,11 +48,11 @@ func PostAdd(c *gin.Context) {
 	}
 	sysPost.SetCreateBy(loginUser.User.UserName)
 	iPost.InsertPost(sysPost)
-
 	c.JSON(http.StatusOK, commonModels.Success())
 }
 
 func PostEdit(c *gin.Context) {
+	commonLog.SetLog(c, "岗位管理", "UPDATE")
 	loginUser := commonController.GetCurrentLoginUser(c)
 	post := new(systemModels.SysPostDML)
 	c.ShouldBindJSON(post)
@@ -65,11 +63,8 @@ func PostEdit(c *gin.Context) {
 }
 
 func PostRemove(c *gin.Context) {
+	commonLog.SetLog(c, "岗位管理", "DELETE")
 	var s slicesUtils.Slices = strings.Split(c.Param("postIds"), ",")
 	iPost.DeletePostByIds(s.StrSlicesToInt())
 	c.JSON(http.StatusOK, commonModels.Success())
-}
-
-func Postoptionselect(c *gin.Context) {
-
 }

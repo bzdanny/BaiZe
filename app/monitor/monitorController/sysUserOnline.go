@@ -1,6 +1,7 @@
 package monitorController
 
 import (
+	"baize/app/common/commonLog"
 	"baize/app/common/commonModels"
 	"baize/app/monitor/monitorService"
 	"baize/app/monitor/monitorService/monitorServiceImpl"
@@ -15,6 +16,7 @@ func UserOnlineList(c *gin.Context) {
 	c.JSON(http.StatusOK, commonModels.SuccessListData(list, total))
 }
 func ForceLogout(c *gin.Context) {
+	commonLog.SetLog(c, "在线用户", "FORCE")
 	iUserOnline.ForceLogout(c.Param("tokenId"))
 	c.JSON(http.StatusOK, commonModels.Success())
 }
