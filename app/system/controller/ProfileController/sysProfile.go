@@ -1,4 +1,4 @@
-package systemController
+package ProfileController
 
 import (
 	"baize/app/common/commonController"
@@ -6,12 +6,18 @@ import (
 	"baize/app/common/commonModels"
 	"baize/app/constant/constants"
 	"baize/app/system/models/systemModels"
+	"baize/app/system/service/systemService"
+	"baize/app/system/service/systemService/systemServiceImpl"
 	"baize/app/utils/fileUploadUtils"
 	"baize/app/utils/token"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
+
+var iPost systemService.IPostService = systemServiceImpl.GetPostService()
+var iRole systemService.IRoleService = systemServiceImpl.GetRoleService()
+var iUser systemService.IUserService = systemServiceImpl.GetUserService()
 
 func Profile(c *gin.Context) {
 	loginUser := commonController.GetCurrentLoginUser(c)

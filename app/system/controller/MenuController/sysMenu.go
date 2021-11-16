@@ -1,15 +1,19 @@
-package systemController
+package MenuController
 
 import (
 	"baize/app/common/commonController"
 	"baize/app/common/commonLog"
 	"baize/app/common/commonModels"
 	"baize/app/system/models/systemModels"
+	"baize/app/system/service/systemService"
+	"baize/app/system/service/systemService/systemServiceImpl"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 	"net/http"
 	"strconv"
 )
+
+var iMenu systemService.IMenuService = systemServiceImpl.GetMenuService()
 
 func MenuList(c *gin.Context) {
 	loginUser := commonController.GetCurrentLoginUser(c)

@@ -1,4 +1,4 @@
-package systemController
+package loginController
 
 import (
 	"baize/app/common/commonController"
@@ -6,6 +6,10 @@ import (
 	"baize/app/monitor/monitorService"
 	"baize/app/monitor/monitorService/monitorServiceImpl"
 	"baize/app/system/models/loginModels"
+	"baize/app/system/service/loginService"
+	"baize/app/system/service/loginService/loginServiceImpl"
+	"baize/app/system/service/systemService"
+	"baize/app/system/service/systemService/systemServiceImpl"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -13,6 +17,8 @@ import (
 )
 
 var iUserOnline monitorService.ItUserOnlineService = monitorServiceImpl.GetUserOnlineService()
+var iLogin loginService.ILoginService = loginServiceImpl.GetLoginService()
+var iMenu systemService.IMenuService = systemServiceImpl.GetMenuService()
 
 func Login(c *gin.Context) {
 	var login loginModels.LoginBody

@@ -1,4 +1,4 @@
-package systemController
+package configController
 
 import (
 	"github.com/gin-gonic/gin"

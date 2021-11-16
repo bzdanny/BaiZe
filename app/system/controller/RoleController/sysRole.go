@@ -1,10 +1,12 @@
-package systemController
+package RoleController
 
 import (
 	"baize/app/common/commonController"
 	"baize/app/common/commonLog"
 	"baize/app/common/commonModels"
 	"baize/app/system/models/systemModels"
+	"baize/app/system/service/systemService"
+	"baize/app/system/service/systemService/systemServiceImpl"
 	"baize/app/utils/slicesUtils"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -12,6 +14,8 @@ import (
 	"strconv"
 	"strings"
 )
+
+var iRole systemService.IRoleService = systemServiceImpl.GetRoleService()
 
 func RoleList(c *gin.Context) {
 	loginUser := commonController.GetCurrentLoginUser(c)

@@ -1,10 +1,12 @@
-package systemController
+package UserController
 
 import (
 	"baize/app/common/commonController"
 	"baize/app/common/commonLog"
 	"baize/app/common/commonModels"
 	"baize/app/system/models/systemModels"
+	"baize/app/system/service/systemService"
+	"baize/app/system/service/systemService/systemServiceImpl"
 	"baize/app/utils/admin"
 	"baize/app/utils/slicesUtils"
 	"github.com/360EntSecGroup-Skylar/excelize"
@@ -14,6 +16,10 @@ import (
 	"strconv"
 	"strings"
 )
+
+var iUser systemService.IUserService = systemServiceImpl.GetUserService()
+var iPost systemService.IPostService = systemServiceImpl.GetPostService()
+var iRole systemService.IRoleService = systemServiceImpl.GetRoleService()
 
 func ChangeStatus(c *gin.Context) {
 	commonLog.SetLog(c, "用户管理", "UPDATE")
@@ -147,7 +153,6 @@ func UserRemove(c *gin.Context) {
 	commonLog.SetLog(c, "用户管理", "DELETE")
 	var s slicesUtils.Slices = strings.Split(c.Param("userIds"), ",")
 	toInt := s.StrSlicesToInt()
-
 	iUser.DeleteUserByIds(toInt)
 	c.JSON(http.StatusOK, commonModels.Success())
 }
@@ -179,6 +184,9 @@ func UserExport(c *gin.Context) {
 	data := iUser.UserExport(user)
 	c.Header("Content-Type", "application/vnd.ms-excel")
 	c.Header("Content-Disposition", "attachment; filename=\"用户管理导出.xls\"")
+	c.Header("Pragma", "public")
+	c.Header("Cache-Control", "no-store")
+	c.Header("Cache-Control", "max-age=0")
 	c.Header("Content-Length", strconv.Itoa(len(data)))
 	c.Data(http.StatusOK, "application/vnd.ms-excel", data)
 	return

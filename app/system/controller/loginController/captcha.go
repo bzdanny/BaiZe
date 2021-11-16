@@ -1,4 +1,4 @@
-package systemController
+package loginController
 
 import (
 	"baize/app/common/commonModels"

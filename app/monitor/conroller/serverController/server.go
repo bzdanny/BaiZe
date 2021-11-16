@@ -1,4 +1,4 @@
-package monitorController
+package serverController
 
 import (
 	"baize/app/common/commonModels"

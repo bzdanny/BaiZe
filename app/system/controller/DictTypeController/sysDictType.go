@@ -1,10 +1,12 @@
-package systemController
+package DictTypeController
 
 import (
 	commonController "baize/app/common/commonController"
 	"baize/app/common/commonLog"
 	commonModels "baize/app/common/commonModels"
 	"baize/app/system/models/systemModels"
+	"baize/app/system/service/systemService"
+	"baize/app/system/service/systemService/systemServiceImpl"
 	"baize/app/utils/slicesUtils"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -12,6 +14,9 @@ import (
 	"strconv"
 	"strings"
 )
+
+var iDictType systemService.IDictTypeService = systemServiceImpl.GetDictTypeService()
+var iDictData systemService.IDictDataService = systemServiceImpl.GetDictDataService()
 
 func DictTypeList(c *gin.Context) {
 	dictType := new(systemModels.SysDictTypeDQL)

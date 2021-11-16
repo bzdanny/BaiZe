@@ -1,16 +1,16 @@
 package systemRouter
 
 import (
-	"baize/app/system/controller/systemController"
+	loginController2 "baize/app/system/controller/loginController"
 	"github.com/gin-gonic/gin"
 )
 
 func InitGetUser(router *gin.RouterGroup) {
-	router.GET("/getInfo", systemController.GetInfo)
-	router.GET("/getRouters", systemController.GetRouters)
-	router.POST("/logout", systemController.Logout)
+	router.GET("/getInfo", loginController2.GetInfo)
+	router.GET("/getRouters", loginController2.GetRouters)
+	router.POST("/logout", loginController2.Logout)
 }
 func InitLoginRouter(router *gin.RouterGroup) {
-	router.GET("/captchaImage", systemController.GetCode) //获取验证码
-	router.POST("/login", systemController.Login)         //登录
+	router.GET("/captchaImage", loginController2.GetCode) //获取验证码
+	router.POST("/login", loginController2.Login)         //登录
 }
