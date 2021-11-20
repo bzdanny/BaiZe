@@ -13,9 +13,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Init(mode string) *gin.Engine {
+func Init() *gin.Engine {
 
-	if mode == gin.ReleaseMode {
+	if setting.Conf.Mode == gin.ReleaseMode {
 		gin.SetMode(gin.ReleaseMode) // gin设置成发布模式
 	}
 	r := gin.New()

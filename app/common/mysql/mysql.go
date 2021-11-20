@@ -8,26 +8,27 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-var MysqlDb *sqlx.DB
+var mysqlDb *sqlx.DB
 
 // Init 初始化MySQL连接
-func Init(cfg *setting.MySQLConfig) (err error) {
+func Init() {
+	var err error = nil
 	// "user:password@tcp(host:port)/dbname"
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true&loc=Local", cfg.User, cfg.Password, cfg.Host, cfg.Port, cfg.DB)
-	MysqlDb, err = sqlx.Connect("mysql", dsn)
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true&loc=Local", setting.Conf.MySQLConfig.User, setting.Conf.MySQLConfig.Password, setting.Conf.MySQLConfig.Host, setting.Conf.MySQLConfig.Port, setting.Conf.MySQLConfig.DB)
+	mysqlDb, err = sqlx.Connect("mysql", dsn)
 	if err != nil {
 		return
 	}
-	MysqlDb.SetMaxOpenConns(cfg.MaxOpenConns)
-	MysqlDb.SetMaxIdleConns(cfg.MaxIdleConns)
+	mysqlDb.SetMaxOpenConns(setting.Conf.MySQLConfig.MaxOpenConns)
+	mysqlDb.SetMaxIdleConns(setting.Conf.MySQLConfig.MaxIdleConns)
 	return
 }
 
 func GetMysqlDb() **sqlx.DB {
-	return &MysqlDb
+	return &mysqlDb
 }
 
 // Close 关闭MySQL连接
 func Close() {
-	_ = MysqlDb.Close()
+	_ = mysqlDb.Close()
 }

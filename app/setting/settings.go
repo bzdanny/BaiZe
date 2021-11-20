@@ -56,7 +56,7 @@ type TokenConfig struct {
 	Issuer     string `mapstructure:"issuer"`
 }
 
-func Init(filePath string) (err error) {
+func Init(filePath string) {
 	// 方式1：直接指定配置文件路径（相对路径或者绝对路径）
 	// 相对路径：相对执行的可执行文件的相对路径
 	//viper.SetConfigFile("./conf/config.yaml")
@@ -75,16 +75,18 @@ func Init(filePath string) (err error) {
 
 	viper.SetConfigFile(filePath)
 
-	err = viper.ReadInConfig() // 读取配置信息
+	err := viper.ReadInConfig() // 读取配置信息
 	if err != nil {
 		// 读取配置信息失败
 		fmt.Printf("viper.ReadInConfig failed, err:%v\n", err)
+		panic(err)
 		return
 	}
 
 	// 把读取到的配置信息反序列化到 Conf 变量中
 	if err := viper.Unmarshal(Conf); err != nil {
 		fmt.Printf("viper.Unmarshal failed, err:%v\n", err)
+		panic(err)
 	}
 
 	viper.WatchConfig()
@@ -92,6 +94,7 @@ func Init(filePath string) (err error) {
 		fmt.Println("配置文件修改了...")
 		if err := viper.Unmarshal(Conf); err != nil {
 			fmt.Printf("viper.Unmarshal failed, err:%v\n", err)
+			panic(err)
 		}
 	})
 	return

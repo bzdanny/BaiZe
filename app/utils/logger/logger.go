@@ -29,17 +29,18 @@ import (
 var lg *zap.Logger
 var iOperLog monitorService.ISysOperLogService = monitorServiceImpl.GetOperLogServiceService()
 
+//,
 // Init 初始化lg
-func Init(cfg *setting.LogConfig, mode string) (err error) {
-	writeSyncer := getLogWriter(cfg.Filename, cfg.MaxSize, cfg.MaxBackups, cfg.MaxAge)
+func Init() {
+	writeSyncer := getLogWriter(setting.Conf.LogConfig.Filename, setting.Conf.LogConfig.MaxSize, setting.Conf.LogConfig.MaxBackups, setting.Conf.LogConfig.MaxAge)
 	encoder := getEncoder()
 	var l = new(zapcore.Level)
-	err = l.UnmarshalText([]byte(cfg.Level))
+	err := l.UnmarshalText([]byte(setting.Conf.LogConfig.Level))
 	if err != nil {
-		return
+		panic(err)
 	}
 	var core zapcore.Core
-	if mode == "dev" {
+	if setting.Conf.Mode == "dev" {
 		// 进入开发模式，日志输出到终端
 		consoleEncoder := zapcore.NewConsoleEncoder(zap.NewDevelopmentEncoderConfig())
 		core = zapcore.NewTee(

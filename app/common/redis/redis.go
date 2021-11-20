@@ -13,20 +13,19 @@ var (
 )
 
 // Init 初始化连接
-func Init(cfg *setting.RedisConfig) (err error) {
+func Init() {
 	client = redis.NewClient(&redis.Options{
-		Addr:         fmt.Sprintf("%s:%d", cfg.Host, cfg.Port),
-		Password:     cfg.Password, // no password set
-		DB:           cfg.DB,       // use default DB
-		PoolSize:     cfg.PoolSize,
-		MinIdleConns: cfg.MinIdleConns,
+		Addr:         fmt.Sprintf("%s:%d", setting.Conf.RedisConfig.Host, setting.Conf.RedisConfig.Port),
+		Password:     setting.Conf.RedisConfig.Password, // no password set
+		DB:           setting.Conf.RedisConfig.DB,       // use default DB
+		PoolSize:     setting.Conf.RedisConfig.PoolSize,
+		MinIdleConns: setting.Conf.RedisConfig.MinIdleConns,
 	})
 
-	_, err = client.Ping().Result()
+	_, err := client.Ping().Result()
 	if err != nil {
-		return err
+		panic(err)
 	}
-	return nil
 }
 
 func Close() {

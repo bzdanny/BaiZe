@@ -7,9 +7,9 @@ import (
 	token "baize/app/utils/token"
 )
 
-func Init() (err error) {
+func Init() {
 	jwt2.Init(setting.Conf.TokenConfig)
 	token.Init(setting.Conf.TokenConfig.ExpireTime)
-	err = snowflake.Init(setting.Conf.StartTime, setting.Conf.MachineID)
-	return
+	snowflake.Init(setting.Conf.StartTime, setting.Conf.MachineID)
+
 }
