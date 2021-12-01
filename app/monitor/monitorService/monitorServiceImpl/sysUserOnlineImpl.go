@@ -6,7 +6,7 @@ import (
 	"baize/app/monitor/monitorModels"
 )
 
-var userOnlineImpl *userOnlineService = &userOnlineService{}
+var userOnlineImpl = &userOnlineService{}
 
 type userOnlineService struct {
 }

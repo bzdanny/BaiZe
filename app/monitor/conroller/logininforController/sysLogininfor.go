@@ -1,4 +1,4 @@
-package logininforConroller
+package logininforController
 
 import (
 	"baize/app/common/commonLog"

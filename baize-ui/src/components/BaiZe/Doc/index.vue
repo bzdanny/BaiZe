@@ -9,7 +9,7 @@ export default {
   name: 'BaiZeDoc',
   data() {
     return {
-      url: 'http://www.baidu.com'
+      url: 'https://www.ibaize.vip'
     }
   },
   methods: {

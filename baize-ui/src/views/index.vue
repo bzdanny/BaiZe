@@ -44,7 +44,7 @@
     </el-row>
     <el-row :gutter="20">
       <el-col :sm="24" :lg="12" style="padding-left: 20px">
-        <h2>若依后台管理框架</h2>
+        <h2>白泽后台管理框架</h2>
         <p>
           从JAVA转GO后一直想做一款后台管理系统，看了很多优秀的开源项目但是发现没有合适自己的。于是利用空闲休息时间用若依管理系统开始改写自己写一套GO的后台系统。如此有了白泽管理系统。他可以用于所有的Web应用程序，如网站管理后台，网站会员中心，CMS，CRM，OA等等，当然，您也可以对她进行深度定制，以做出更强系统。所有前端后台代码封装过后十分精简易上手，出错概率低。同时支持移动客户端访问。系统会陆续更新一些实用功能。
         </p>
@@ -118,11 +118,11 @@
           <div class="body">
             <p>
               <i class="el-icon-s-promotion"></i> 官网：
-              <!--              <el-link-->
-              <!--              href="http://www.ibaize.vip"-->
-              <!--              target="_blank"-->
-              <!--            >http://www.ibaize.vip</el-link-->
-              <!--            >-->
+                            <el-link
+                            href="http://www.ibaize.vip"
+                            target="_blank"
+                          >http://www.ibaize.vip</el-link
+                          >
             </p>
             <p>
               <i class="el-icon-user-solid"></i> QQ群：

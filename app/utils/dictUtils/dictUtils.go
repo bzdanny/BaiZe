@@ -1,9 +1,9 @@
 package dictUtils
 
 import (
-	redis "baize/app/common/redis"
+	"baize/app/common/redis"
 	"baize/app/constant/constants"
-	systemModels "baize/app/system/models/systemModels"
+	"baize/app/system/models/systemModels"
 	"encoding/json"
 )
 

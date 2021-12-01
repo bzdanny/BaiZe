@@ -1,10 +1,10 @@
 package jwt
 
 import (
-	redis "baize/app/common/redis"
+	"baize/app/common/redis"
 	"baize/app/constant/constants"
-	setting "baize/app/setting"
-	loginModels "baize/app/system/models/loginModels"
+	"baize/app/setting"
+	"baize/app/system/models/loginModels"
 	"github.com/dgrijalva/jwt-go"
 )
 
