@@ -80,16 +80,16 @@
           v-hasPermi="['monitor:job:export']"
         >导出</el-button>
       </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="info"
-          plain
-          icon="el-icon-s-operation"
-          size="mini"
-          @click="handleJobLog"
-          v-hasPermi="['monitor:job:query']"
-        >日志</el-button>
-      </el-col>
+<!--      <el-col :span="1.5">-->
+<!--        <el-button-->
+<!--          type="info"-->
+<!--          plain-->
+<!--          icon="el-icon-s-operation"-->
+<!--          size="mini"-->
+<!--          @click="handleJobLog"-->
+<!--          v-hasPermi="['monitor:job:query']"-->
+<!--        >日志</el-button>-->
+<!--      </el-col>-->
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
@@ -99,6 +99,7 @@
       <el-table-column label="任务名称" align="center" prop="jobName" :show-overflow-tooltip="true" />
       <el-table-column label="任务组名" align="center" prop="jobGroup" :formatter="jobGroupFormat" />
       <el-table-column label="调用目标字符串" align="center" prop="invokeTarget" :show-overflow-tooltip="true" />
+      <el-table-column label="参数" align="center" prop="jobParams" :show-overflow-tooltip="true" />
       <el-table-column label="cron执行表达式" align="center" prop="cronExpression" :show-overflow-tooltip="true" />
       <el-table-column label="状态" align="center">
         <template slot-scope="scope">
@@ -163,14 +164,6 @@
             <el-form-item prop="invokeTarget">
               <span slot="label">
                 调用方法
-                <el-tooltip placement="top">
-                  <div slot="content">
-                    Bean调用示例：ryTask.ryParams('ry')
-                    <br />Class类调用示例：com.ruoyi.quartz.task.RyTask.ryParams('ry')
-                    <br />参数说明：支持字符串，布尔类型，长整型，浮点型，整型
-                  </div>
-                  <i class="el-icon-question"></i>
-                </el-tooltip>
               </span>
               <el-input v-model="form.invokeTarget" placeholder="请输入调用目标字符串" />
             </el-form-item>
@@ -180,21 +173,9 @@
               <el-input v-model="form.cronExpression" placeholder="请输入cron执行表达式" />
             </el-form-item>
           </el-col>
-          <el-col :span="12">
-            <el-form-item label="是否并发" prop="concurrent">
-              <el-radio-group v-model="form.concurrent" size="small">
-                <el-radio-button label="0">允许</el-radio-button>
-                <el-radio-button label="1">禁止</el-radio-button>
-              </el-radio-group>
-            </el-form-item>
-          </el-col>
           <el-col :span="24">
-            <el-form-item label="错误策略" prop="misfirePolicy">
-              <el-radio-group v-model="form.misfirePolicy" size="small">
-                <el-radio-button label="1">立即执行</el-radio-button>
-                <el-radio-button label="2">执行一次</el-radio-button>
-                <el-radio-button label="3">放弃执行</el-radio-button>
-              </el-radio-group>
+            <el-form-item label="参数">
+              <el-input v-model="form.jobParams" placeholder="请输入方法参数" />
             </el-form-item>
           </el-col>
           <el-col :span="24">
@@ -240,21 +221,7 @@
           <el-col :span="12">
             <el-form-item label="任务状态：">
               <div v-if="form.status == 0">正常</div>
-              <div v-else-if="form.status == 1">失败</div>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="是否并发：">
-              <div v-if="form.concurrent == 0">允许</div>
-              <div v-else-if="form.concurrent == 1">禁止</div>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="执行策略：">
-              <div v-if="form.misfirePolicy == 0">默认策略</div>
-              <div v-else-if="form.misfirePolicy == 1">立即执行</div>
-              <div v-else-if="form.misfirePolicy == 2">执行一次</div>
-              <div v-else-if="form.misfirePolicy == 3">放弃执行</div>
+              <div v-else-if="form.status == 1">暂停</div>
             </el-form-item>
           </el-col>
         </el-row>
@@ -337,8 +304,8 @@ export default {
     getList() {
       this.loading = true;
       listJob(this.queryParams).then(response => {
-        this.jobList = response.rows;
-        this.total = response.total;
+        this.jobList = response.data.rows;
+        this.total = response.data.total;
         this.loading = false;
       });
     },
@@ -363,8 +330,7 @@ export default {
         jobGroup: undefined,
         invokeTarget: undefined,
         cronExpression: undefined,
-        misfirePolicy: 1,
-        concurrent: 1,
+        jobParams:undefined,
         status: "0"
       };
       this.resetForm("form");

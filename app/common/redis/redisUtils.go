@@ -8,6 +8,13 @@ import (
 	"go.uber.org/zap"
 )
 
+func SetString(key string, str string, expiration time.Duration) {
+	err := client.Set(key, str, expiration).Err()
+	if err != nil {
+		zap.L().Error("redis存储错误", zap.Error(err))
+	}
+}
+
 func SetStruct(key string, value interface{}, expiration time.Duration) {
 	marshal, err := json.Marshal(value)
 	if err != nil {

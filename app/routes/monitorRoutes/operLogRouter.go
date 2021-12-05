@@ -1,4 +1,4 @@
-package monitor
+package monitorRoutes
 
 import (
 	"baize/app/common/middlewares"

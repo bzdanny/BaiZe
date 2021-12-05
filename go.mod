@@ -28,6 +28,7 @@ require (
 
 require (
 	github.com/gogf/gf v1.16.6
+	github.com/robfig/cron/v3 v3.0.1
 	github.com/shirou/gopsutil/v3 v3.21.10
 )
 
