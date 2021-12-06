@@ -38,8 +38,8 @@ const user = {
       const uuid = userInfo.uuid
       return new Promise((resolve, reject) => {
         login(username, password, code, uuid).then(res => {
-          setToken(res.token)
-          commit('SET_TOKEN', res.token)
+          setToken(res.data)
+          commit('SET_TOKEN', res.data)
           resolve()
         }).catch(error => {
           reject(error)
@@ -51,12 +51,11 @@ const user = {
     GetInfo({ commit, state }) {
       return new Promise((resolve, reject) => {
         getInfo().then(res => {
-          const user = res.user
+          const user = res.data.user
           const avatar = user.avatar == "" ? defAva : import.meta.env.VITE_APP_BASE_API + user.avatar;
-
-          if (res.roles && res.roles.length > 0) { // 验证返回的roles是否是一个非空数组
-            commit('SET_ROLES', res.roles)
-            commit('SET_PERMISSIONS', res.permissions)
+          if (res.data.roles && res.data.roles.length > 0) { // 验证返回的roles是否是一个非空数组
+            commit('SET_ROLES', res.data.roles)
+            commit('SET_PERMISSIONS', res.data.permissions)
           } else {
             commit('SET_ROLES', ['ROLE_DEFAULT'])
           }
@@ -78,7 +77,8 @@ const user = {
           commit('SET_PERMISSIONS', [])
           removeToken()
           resolve()
-        }).catch(error => {
+        })
+          .catch(error => {
           reject(error)
         })
       })

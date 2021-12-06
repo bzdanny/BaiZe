@@ -143,7 +143,7 @@
                <el-table-column label="用户编号" align="center" key="userId" prop="userId" v-if="columns[0].visible" />
                <el-table-column label="用户名称" align="center" key="userName" prop="userName" v-if="columns[1].visible" :show-overflow-tooltip="true" />
                <el-table-column label="用户昵称" align="center" key="nickName" prop="nickName" v-if="columns[2].visible" :show-overflow-tooltip="true" />
-               <el-table-column label="部门" align="center" key="deptName" prop="dept.deptName" v-if="columns[3].visible" :show-overflow-tooltip="true" />
+               <el-table-column label="部门" align="center" key="deptName" prop="deptName" v-if="columns[3].visible" :show-overflow-tooltip="true" />
                <el-table-column label="手机号码" align="center" key="phonenumber" prop="phonenumber" v-if="columns[4].visible" width="120" />
                <el-table-column label="状态" align="center" key="status" v-if="columns[5].visible">
                   <template #default="scope">
@@ -355,7 +355,7 @@
 
 <script setup name="User">
 import { getToken } from "@/utils/auth";
-import { treeselect } from "@/api/system/dept";
+import { listDept } from "@/api/system/dept";
 import { changeUserStatus, listUser, resetUserPwd, delUser, getUser, updateUser, addUser } from "@/api/system/user";
 
 const router = useRouter();
@@ -426,6 +426,7 @@ const { queryParams, form, rules } = toRefs(data);
 
 /** 通过条件过滤节点  */
 const filterNode = (value, data) => {
+
   if (!value) return true;
   return data.label.indexOf(value) !== -1;
 };
@@ -435,8 +436,8 @@ watch(deptName, val => {
 });
 /** 查询部门下拉树结构 */
 function getTreeselect() {
-  treeselect().then(response => {
-    deptOptions.value = response.data;
+  listDept().then(response => {
+    deptOptions.value =  proxy.handleProps(response.data, 'deptId', 'deptName');
   });
 };
 /** 查询用户列表 */
@@ -444,8 +445,8 @@ function getList() {
   loading.value = true;
   listUser(proxy.addDateRange(queryParams.value, dateRange.value)).then(res => {
     loading.value = false;
-    userList.value = res.rows;
-    total.value = res.total;
+    userList.value = res.data.rows;
+    total.value = res.data.total;
   });
 };
 /** 节点单击事件 */

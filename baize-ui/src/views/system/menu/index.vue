@@ -38,7 +38,7 @@
             >新增</el-button>
          </el-col>
          <el-col :span="1.5">
-            <el-button 
+            <el-button
                type="info"
                plain
                icon="Sort"

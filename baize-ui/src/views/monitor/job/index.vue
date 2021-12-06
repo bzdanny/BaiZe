@@ -103,6 +103,7 @@
          </el-table-column>
          <el-table-column label="调用目标字符串" align="center" prop="invokeTarget" :show-overflow-tooltip="true" />
          <el-table-column label="cron执行表达式" align="center" prop="cronExpression" :show-overflow-tooltip="true" />
+         <el-table-column label="参数" align="center" prop="jobParams" :show-overflow-tooltip="true" />
          <el-table-column label="状态" align="center">
             <template #default="scope">
                <el-switch
@@ -182,16 +183,6 @@
                      <template #label>
                         <span>
                            调用方法
-                           <el-tooltip placement="top">
-                              <template #content>
-                                 <div>
-                                    Bean调用示例：ryTask.ryParams('ry')
-                                    <br />Class类调用示例：com.ruoyi.quartz.task.RyTask.ryParams('ry')
-                                    <br />参数说明：支持字符串，布尔类型，长整型，浮点型，整型
-                                 </div>
-                              </template>
-                              <i class="el-icon-question"></i>
-                           </el-tooltip>
                         </span>
                      </template>
                      <el-input v-model="form.invokeTarget" placeholder="请输入调用目标字符串" />
@@ -209,23 +200,16 @@
                      </el-input>
                   </el-form-item>
                </el-col>
-               <el-col :span="24">
-                  <el-form-item label="错误策略" prop="misfirePolicy">
-                     <el-radio-group v-model="form.misfirePolicy" size="small">
-                        <el-radio-button label="1">立即执行</el-radio-button>
-                        <el-radio-button label="2">执行一次</el-radio-button>
-                        <el-radio-button label="3">放弃执行</el-radio-button>
-                     </el-radio-group>
-                  </el-form-item>
-               </el-col>
-               <el-col :span="12">
-                  <el-form-item label="是否并发" prop="concurrent">
-                     <el-radio-group v-model="form.concurrent" size="small">
-                        <el-radio-button label="0">允许</el-radio-button>
-                        <el-radio-button label="1">禁止</el-radio-button>
-                     </el-radio-group>
-                  </el-form-item>
-               </el-col>
+              <el-col :span="24">
+                <el-form-item >
+                  <template #label>
+                        <span>
+                           参数
+                        </span>
+                  </template>
+                  <el-input v-model="form.jobParams" placeholder="请输入方法参数" />
+                </el-form-item>
+              </el-col>
                <el-col :span="12">
                   <el-form-item label="状态">
                      <el-radio-group v-model="form.status">
@@ -246,7 +230,7 @@
             </div>
          </template>
       </el-dialog>
- 
+
       <!-- 任务日志详细 -->
       <el-dialog title="任务详细" v-model="openView" width="700px" append-to-body>
          <el-form :model="form" label-width="120px" size="mini">
@@ -341,8 +325,8 @@ const { queryParams, form, rules } = toRefs(data);
 function getList() {
   loading.value = true;
   listJob(queryParams.value).then(response => {
-    jobList.value = response.rows;
-    total.value = response.total;
+    jobList.value = response.data.rows;
+    total.value = response.data.total;
     loading.value = false;
   });
 }
@@ -363,8 +347,7 @@ function reset() {
     jobGroup: undefined,
     invokeTarget: undefined,
     cronExpression: undefined,
-    misfirePolicy: 1,
-    concurrent: 1,
+    jobParams:undefined,
     status: "0"
   };
   proxy.resetForm("jobRef");

@@ -1,9 +1,9 @@
 <template>
    <div class="app-container">
       <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">
-         <el-form-item label="登录地址" prop="ipaddr">
+         <el-form-item label="登录地址" prop="ipAddr">
             <el-input
-               v-model="queryParams.ipaddr"
+               v-model="queryParams.ipAddr"
                placeholder="请输入登录地址"
                clearable
                size="small"
@@ -94,7 +94,7 @@
          <el-table-column type="selection" width="55" align="center" />
          <el-table-column label="访问编号" align="center" prop="infoId" />
          <el-table-column label="用户名称" align="center" prop="userName" :show-overflow-tooltip="true" sortable="custom" :sort-orders="['descending', 'ascending']" />
-         <el-table-column label="地址" align="center" prop="ipaddr" :show-overflow-tooltip="true" />
+         <el-table-column label="地址" align="center" prop="ipAddr" :show-overflow-tooltip="true" />
          <el-table-column label="登录地点" align="center" prop="loginLocation" :show-overflow-tooltip="true" />
          <el-table-column label="操作系统" align="center" prop="os" :show-overflow-tooltip="true" />
          <el-table-column label="浏览器" align="center" prop="browser" :show-overflow-tooltip="true" />
@@ -140,7 +140,7 @@ const defaultSort = ref({ prop: "loginTime", order: "descending" });
 const queryParams = ref({
   pageNum: 1,
   pageSize: 10,
-  ipaddr: undefined,
+  ipAddr: undefined,
   userName: undefined,
   status: undefined,
   orderByColumn: undefined,
@@ -151,8 +151,8 @@ const queryParams = ref({
 function getList() {
   loading.value = true;
   list(proxy.addDateRange(queryParams.value, dateRange.value)).then(response => {
-    logininforList.value = response.rows;
-    total.value = response.total;
+    logininforList.value = response.data.rows;
+    total.value = response.data.total;
     loading.value = false;
   });
 }
