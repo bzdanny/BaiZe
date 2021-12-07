@@ -1,6 +1,6 @@
 name: "白泽"
 mode: "dev"
-port: 8080
+port: 9080
 version: "v1.0.0"
 start_time: "2021-05-07"
 machine_id: 1

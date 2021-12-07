@@ -68,7 +68,7 @@
                 </tr>
                 <tr>
                   <td><div class="cell">使用率</div></td>
-                  <td><div class="cell":class="{'text-danger': server.memUsage > 80}">{{ server.memUsage}}%</div></td>
+                  <td><div class="cell" :class="{'text-danger': server.memUsage > 80}">{{ server.memUsage}}%</div></td>
                 </tr>
               </tbody>
             </table>

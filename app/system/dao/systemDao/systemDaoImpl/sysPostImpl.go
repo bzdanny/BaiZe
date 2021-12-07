@@ -96,7 +96,7 @@ func (postDao *sysPostDao) SelectPostList(post *systemModels.SysPostDQL) (list [
 func (postDao *sysPostDao) SelectPostById(postId int64) (dictData *systemModels.SysPostVo) {
 
 	dictData = new(systemModels.SysPostVo)
-	err := postDao.getDb().Get(dictData, selectPostSql+fromPostSql+" where post_id = ？", postId)
+	err := postDao.getDb().Get(dictData, selectPostSql+fromPostSql+" where post_id = ?", postId)
 	if err != nil {
 		panic(err)
 	}

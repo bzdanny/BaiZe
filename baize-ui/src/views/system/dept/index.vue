@@ -101,7 +101,7 @@
       <el-dialog :title="title" v-model="open" width="600px" append-to-body>
          <el-form ref="deptRef" :model="form" :rules="rules" label-width="80px">
             <el-row>
-               <el-col :span="24" v-if="form.parentId !== 0">
+               <el-col :span="24" v-if="form.parentId != 0">
                   <el-form-item label="上级部门" prop="parentId">
                      <tree-select
                         v-model:value="form.parentId"
@@ -249,9 +249,14 @@ function toggleExpandAll() {
 }
 /** 修改按钮操作 */
 async function handleUpdate(row) {
+  console.log(row)
   reset();
-  await listDeptExcludeChild(row.deptId).then(response => {
-    deptOptions.value = proxy.handleTree(response.data, "deptId");
+  await listDept(row.deptId).then(response => {
+    const list = response.data.filter(dept => {
+      return !(dept.deptId == row.deptId || dept.ancestors.split(',').indexOf(row.deptId) != -1)
+    })
+
+    deptOptions.value = proxy.handleTree(list, "deptId");
   });
   getDept(row.deptId).then(response => {
     form.value = response.data;
