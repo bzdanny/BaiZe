@@ -1,39 +1,68 @@
-# BaiZe
+## 平台简介
 
-#### 介绍
-{**以下是 Gitee 平台说明，您可以替换此简介**
-Gitee 是 OSCHINA 推出的基于 Git 的代码托管平台（同时支持 SVN）。专为开发者提供稳定、高效、安全的云端软件开发协作平台
-无论是个人、团队、或是企业，都能够用 Gitee 实现代码托管、项目管理、协作开发。企业项目请看 [https://gitee.com/enterprises](https://gitee.com/enterprises)}
+白泽是一套全部开源的快速开发平台，毫无保留给个人及企业免费使用。
 
-#### 软件架构
-软件架构说明
+* 前端采用Vue、Element UI。
+* 后端采用Gin、Zap、Redis & Jwt。
+* 权限认证使用Jwt，支持多终端认证系统。
+* 支持加载动态权限菜单，多方式轻松权限控制。
+* 高效率开发，使用代码生成器可以一键生成前后端代码。(正在发开)
+* 特别鸣谢：[ruoyi-vue](https://gitee.com/y_project/RuoYi-Vue?_from=gitee_search )，
+ [element](https://github.com/ElemeFE/element )，[vue-element-admin](https://github.com/PanJiaChen/vue-element-admin )，[eladmin-web](https://github.com/elunez/eladmin-web )。
+
+## 内置功能
+
+1.  用户管理：用户是系统操作者，该功能主要完成系统用户配置。
+2.  部门管理：配置系统组织机构（公司、部门、小组），树结构展现支持数据权限。
+3.  岗位管理：配置系统用户所属担任职务。
+4.  菜单管理：配置系统菜单，操作权限，按钮权限标识等。
+5.  角色管理：角色菜单权限分配、设置角色按机构进行数据范围权限划分。
+6.  字典管理：对系统中经常使用的一些较为固定的数据进行维护。
+7.  参数管理：对系统动态配置常用参数。
+8.  通知公告：系统通知公告信息发布维护。
+9.  登录日志：系统登录日志记录查询包含登录异常。
+10. 在线用户：当前系统中活跃用户状态监控。
+11. 服务监控：监视当前系统CPU、内存、磁盘、堆栈等相关信息。
+12. 在线构建器：拖动表单元素生成相应的HTML代码。
+13. 操作日志：系统正常操作日志记录和查询；系统异常信息日志记录和查询。
+14. 定时任务：在线（添加、修改、删除)任务调度。
+## 开发中功能
 
 
-#### 安装教程
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+1系统接口：根据业务代码自动生成相关的api接口文档。
+2代码生成：前后端代码的生成（Go、vue、js、sql）支持CRUD下载 。
+3工作流等...
 
-#### 使用说明
+## 在线体验
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+- admin/admin123
+- 陆陆续续收到一些打赏，为了更好的体验已用于演示服务器升级。谢谢各位小伙伴。
 
-#### 参与贡献
+演示地址：https://demo.ibaize.vip
+<br>
+文档地址：https://doc.ibaize.vip
 
-1.  Fork 本仓库
-2.  新建 Feat_xxx 分支
-3.  提交代码
-4.  新建 Pull Request
+## 演示图
+
+<table>
+    <tr>
+        <td><img src="https://gitee.com/smell2/BaiZe/raw/imgs/202110241805797.jpg"/></td>
+        <td><img src="https://gitee.com/smell2/BaiZe/raw/imgs/202110241806256.jpg"/></td>
+    </tr>
+    <tr>
+        <td><img src="https://gitee.com/smell2/BaiZe/raw/imgs/202110242322137.png"/></td>
+        <td><img src="https://gitee.com/smell2/BaiZe/raw/imgs/202110242323820.png"/></td>
+    </tr>  
+    <tr>
+        <td><img src="https://gitee.com/smell2/BaiZe/raw/imgs/202112082243214.png"/></td>
+        <td><img src="https://gitee.com/smell2/BaiZe/raw/imgs/202112082242154.png"/></td>
+    </tr>
+  
+</table>
 
 
-#### 特技
+## 白泽管理系统交流群
 
-1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2.  Gitee 官方博客 [blog.gitee.com](https://blog.gitee.com)
-3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解 Gitee 上的优秀开源项目
-4.  [GVP](https://gitee.com/gvp) 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目
-5.  Gitee 官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6.  Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+
+QQ群： [![加入QQ群](https://img.shields.io/badge/83064682-blue.svg)](https://qm.qq.com/cgi-bin/qm/qr?k=rAIw_VQ_blbSQu0J6fApnm5RbAc2CHbp&jump_from=webapi) 点击按钮入群。
