@@ -1,13 +1,18 @@
 <template>
   <div class="login">
-    <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form">
+    <el-form ref="loginRef" :model="loginForm" :rules="loginRules" class="login-form">
       <h3 class="title">白泽后台管理系统</h3>
       <el-form-item prop="username">
         <div class="login-logo">
           <img src="../assets/images/loginLogo.png" alt="">
         </div>
-        <el-input v-model="loginForm.username" type="text" auto-complete="off" placeholder="账号">
-          <svg-icon slot="prefix" icon-class="user" class="el-input__icon input-icon" />
+        <el-input
+            v-model="loginForm.username"
+            type="text"
+            auto-complete="off"
+            placeholder="账号"
+        >
+          <template #prefix><svg-icon icon-class="user" class="el-input__icon input-icon" /></template>
         </el-input>
       </el-form-item>
       <el-form-item prop="password">
@@ -16,20 +21,20 @@
             type="password"
             auto-complete="off"
             placeholder="密码"
-            @keyup.enter.native="handleLogin"
+            @keyup.enter="handleLogin"
         >
-          <svg-icon slot="prefix" icon-class="password" class="el-input__icon input-icon" />
+          <template #prefix><svg-icon icon-class="password" class="el-input__icon input-icon" /></template>
         </el-input>
       </el-form-item>
-      <el-form-item prop="code">
+      <el-form-item prop="code" v-if="captchaOnOff">
         <el-input
             v-model="loginForm.code"
             auto-complete="off"
             placeholder="验证码"
             style="width: 63%"
-            @keyup.enter.native="handleLogin"
+            @keyup.enter="handleLogin"
         >
-          <svg-icon slot="prefix" icon-class="validCode" class="el-input__icon input-icon" />
+          <template #prefix><svg-icon icon-class="validCode" class="el-input__icon input-icon" /></template>
         </el-input>
         <div class="login-code">
           <img :src="codeUrl" @click="getCode" class="login-code-img"/>
@@ -42,11 +47,14 @@
             size="medium"
             type="primary"
             style="width:100%;"
-            @click.native.prevent="handleLogin"
+            @click.prevent="handleLogin"
         >
           <span v-if="!loading">登 录</span>
           <span v-else>登 录 中...</span>
         </el-button>
+        <div style="float: right;" v-if="register">
+          <router-link class="link-type" :to="'/register'">立即注册</router-link>
+        </div>
       </el-form-item>
     </el-form>
     <!--  底部  -->
@@ -55,6 +63,7 @@
     </div>
   </div>
 </template>
+
 <script setup>
 import { getCodeImg } from "@/api/login";
 import Cookies from "js-cookie";

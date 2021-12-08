@@ -1,8 +1,8 @@
 {
-  "name": "ruoyi",
-  "version": "3.8.0",
-  "description": "若依管理系统",
-  "author": "若依",
+  "name": "baize",
+  "version": "1.0.0",
+  "description": "白泽管理系统",
+  "author": "白泽",
   "license": "MIT",
   "scripts": {
     "dev": "vite",
