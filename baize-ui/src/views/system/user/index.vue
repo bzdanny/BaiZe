@@ -335,11 +335,11 @@
             <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
             <template #tip>
                <div class="el-upload__tip text-center">
-                  <div class="el-upload__tip">
-                     <el-checkbox v-model="upload.updateSupport" />是否更新已经存在的用户数据
-                  </div>
                   <span>仅允许导入xls、xlsx格式文件。</span>
-                  <el-link type="primary" :underline="false" style="font-size:12px;vertical-align: baseline;" @click="importTemplate">下载模板</el-link>
+<!--                  <el-link type="primary" :underline="false" style="font-size:12px;vertical-align: baseline;" @click="importTemplate">下载模板</el-link>-->
+                 <a href="/download/用户数据.xls">
+                   <el-link type="info" style="font-size:12px">下载模板</el-link>
+                 </a>
                </div>
             </template>
          </el-upload>

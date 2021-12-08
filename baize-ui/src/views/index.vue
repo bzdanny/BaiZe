@@ -94,12 +94,12 @@
           </div>
 
           <div class="body">
-<!--            <img-->
-<!--                src="https://gitee.com/smell2/BaiZe/raw/imgs/202110242200142.jpg"-->
-<!--                style=" width:100%"-->
-<!--                alt="donate"-->
+            <img
+                src="https://gitee.com/smell2/BaiZe/raw/imgs/202110242200142.jpg"
+                style=" width:100%"
+                alt="donate"
 
-<!--            />-->
+            />
             <span style="display: inline-block; height: 30px; line-height: 30px"
             >你可以请作者喝杯咖啡表示鼓励</span
             >
@@ -113,7 +113,7 @@
             <span>更新日志</span>
           </div>
           <el-collapse accordion>
-            <el-collapse-item  title="v1.0.0 - 2021-10-08">
+            <el-collapse-item  title="v1.0.0 - 2021-12-08">
               <ol>
                 <li>白泽系统正式发布</li>
               </ol>
