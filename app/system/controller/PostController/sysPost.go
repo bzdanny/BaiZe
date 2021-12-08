@@ -37,8 +37,7 @@ func PostGetInfo(c *gin.Context) {
 		c.JSON(http.StatusOK, commonModels.ParameterError())
 		return
 	}
-	sysUser := iPost.SelectPostById(postId)
-	c.JSON(http.StatusOK, commonModels.SuccessData(sysUser))
+	c.JSON(http.StatusOK, commonModels.SuccessData(iPost.SelectPostById(postId)))
 }
 
 func PostAdd(c *gin.Context) {

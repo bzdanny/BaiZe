@@ -402,7 +402,6 @@ export default {
     getRoleDeptTreeselect(roleId) {
       return roleDeptTreeselect(roleId).then(response => {
         this.deptOptions =this.handleProps(response.data.depts, "deptId","deptName");
-        console.log(this.deptOptions)
         return response;
       });
     },

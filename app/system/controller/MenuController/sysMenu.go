@@ -36,7 +36,8 @@ func MenuGetInfo(c *gin.Context) {
 	c.JSON(http.StatusOK, commonModels.SuccessData(menu))
 }
 func MenuTreeSelect(c *gin.Context) {
-
+	userId := commonController.GetCurrentLoginUser(c).User.UserId
+	c.JSON(http.StatusOK, commonModels.SuccessData(iMenu.SelectMenuList(new(systemModels.SysMenuDQL), userId)))
 }
 func MenuAdd(c *gin.Context) {
 	commonLog.SetLog(c, "菜单管理", "INSERT")

@@ -51,7 +51,9 @@ func GetRouters(c *gin.Context) {
 }
 func Logout(c *gin.Context) {
 	loginUser := commonController.GetCurrentLoginUser(c)
-	iUserOnline.ForceLogout(loginUser.Token)
+	if loginUser != nil {
+		iUserOnline.ForceLogout(loginUser.Token)
+	}
 	c.JSON(http.StatusOK, commonModels.Success())
 
 }
