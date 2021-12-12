@@ -11,6 +11,7 @@ import (
 	"baize/app/utils/slicesUtils"
 	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/gin-gonic/gin"
+	"github.com/gogf/gf/util/gconv"
 	"go.uber.org/zap"
 	"net/http"
 	"strconv"
@@ -69,6 +70,9 @@ func UserAdd(c *gin.Context) {
 		c.JSON(http.StatusOK, commonModels.ParameterError())
 		return
 	}
+	if sysUser.DeptId==nil{
+		sysUser.UserId=loginUser.User.UserId
+	}
 	if iUser.CheckUserNameUnique(sysUser.UserName) {
 		c.JSON(http.StatusOK, commonModels.Waring("新增用户'"+sysUser.UserName+"'失败，登录账号已存在"))
 		return
@@ -118,6 +122,32 @@ func UserGetInfo(c *gin.Context) {
 	c.JSON(http.StatusOK, commonModels.SuccessData(m))
 
 }
+func UserAuthRole(c *gin.Context) {
+	userId, err := strconv.ParseInt(c.Param("userId"), 10, 64)
+	if err != nil {
+		zap.L().Error("参数错误", zap.Error(err))
+		c.JSON(http.StatusOK, commonModels.ParameterError())
+	}
+	m := make(map[string]interface{})
+	m["user"] = iUser.SelectUserById(userId)
+	role := new(systemModels.SysRoleDQL)
+	loginUser := commonController.GetCurrentLoginUser(c)
+	role.SetDataScope(loginUser, "d", "")
+	roles := iRole.SelectRoleAll(role)
+	if !admin.IsAdmin(commonController.GetCurrentLoginUser(c).User.UserId) {
+		for i, role := range roles {
+			if role.RoleId == 1 {
+				roles = append(roles[:i], roles[i+1:]...)
+				break
+			}
+		}
+	}
+	m["roles"] = roles
+	m["roleIds"] = slicesUtils.IntSlicesToString(iRole.SelectRoleListByUserId(userId))
+	c.JSON(http.StatusOK, commonModels.SuccessData(m))
+
+}
+
 func UserGetInfoById(c *gin.Context) {
 	userId, err := strconv.ParseInt(c.Param("userId"), 10, 64)
 	if err != nil {
@@ -129,7 +159,6 @@ func UserGetInfoById(c *gin.Context) {
 	m["posts"] = postList
 	loginUser := commonController.GetCurrentLoginUser(c)
 	role := new(systemModels.SysRoleDQL)
-	c.ShouldBind(role)
 	role.SetDataScope(loginUser, "d", "")
 	roleList := iRole.SelectRoleAll(role)
 
@@ -152,8 +181,7 @@ func UserGetInfoById(c *gin.Context) {
 func UserRemove(c *gin.Context) {
 	commonLog.SetLog(c, "用户管理", "DELETE")
 	var s slicesUtils.Slices = strings.Split(c.Param("userIds"), ",")
-	toInt := s.StrSlicesToInt()
-	iUser.DeleteUserByIds(toInt)
+	iUser.DeleteUserByIds(s.StrSlicesToInt())
 	c.JSON(http.StatusOK, commonModels.Success())
 }
 func UserImportData(c *gin.Context) {
@@ -189,5 +217,13 @@ func UserExport(c *gin.Context) {
 	c.Header("Cache-Control", "max-age=0")
 	c.Header("Content-Length", strconv.Itoa(len(data)))
 	c.Data(http.StatusOK, "application/vnd.ms-excel", data)
+	return
+}
+func InsertAuthRole(c *gin.Context) {
+	commonLog.SetLog(c, "用户管理", "GRANT")
+	var s slicesUtils.Slices = strings.Split(c.Query("roleIds"), ",")
+	userId := c.Query("userId")
+	iUser.InsertUserAuth(gconv.Int64(userId),s.StrSlicesToInt())
+	c.JSON(http.StatusOK, commonModels.Success())
 	return
 }

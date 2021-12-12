@@ -17,4 +17,6 @@ type IRoleDao interface {
 	DeleteRoleByIds(ids []int64)
 	CheckRoleNameUnique(roleName string) int64
 	CheckRoleKeyUnique(roleKey string) int64
+	SelectAllocatedList(user *systemModels.SysRoleAndUserDQL) (list []*systemModels.SysUserVo, total *int64)
+	SelectUnallocatedList(user *systemModels.SysRoleAndUserDQL) (list []*systemModels.SysUserVo, total *int64)
 }

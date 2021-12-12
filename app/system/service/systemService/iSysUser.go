@@ -22,4 +22,5 @@ type IUserService interface {
 	ResetUserPwd(userId int64, password string)
 	UpdateUserProfile(sysUser *systemModels.SysUserDML)
 	MatchesPassword(rawPassword string, userId int64) bool
+	InsertUserAuth(userId int64, roleIds []int64)
 }

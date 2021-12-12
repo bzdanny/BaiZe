@@ -9,6 +9,7 @@ import (
 	"baize/app/system/service/systemService/systemServiceImpl"
 	"baize/app/utils/slicesUtils"
 	"github.com/gin-gonic/gin"
+	"github.com/gogf/gf/util/gconv"
 	"go.uber.org/zap"
 	"net/http"
 	"strconv"
@@ -126,4 +127,48 @@ func RoleRemove(c *gin.Context) {
 	}
 	iRole.DeleteRoleByIds(ids)
 	c.JSON(http.StatusOK, commonModels.Success())
+}
+func AllocatedList(c *gin.Context) {
+	loginUser := commonController.GetCurrentLoginUser(c)
+	user := new(systemModels.SysRoleAndUserDQL)
+	c.ShouldBind(user)
+	user.SetLimit(c)
+	user.SetDataScope(loginUser, "d", "u")
+	list, count := iRole.SelectAllocatedList(user)
+	c.JSON(http.StatusOK, commonModels.SuccessListData(list, count))
+
+}
+func UnallocatedList(c *gin.Context) {
+	loginUser := commonController.GetCurrentLoginUser(c)
+	user := new(systemModels.SysRoleAndUserDQL)
+	c.ShouldBind(user)
+	user.SetLimit(c)
+	user.SetDataScope(loginUser, "d", "u")
+	list, count := iRole.SelectUnallocatedList(user)
+	c.JSON(http.StatusOK, commonModels.SuccessListData(list, count))
+
+}
+func InsertAuthUser(c *gin.Context) {
+	commonLog.SetLog(c, "角色管理", "GRANT")
+	var userIds slicesUtils.Slices = strings.Split(c.Query("userIds"), ",")
+	roleId := c.Query("roleId")
+	iRole.InsertAuthUsers(gconv.Int64(roleId), userIds.StrSlicesToInt())
+	c.JSON(http.StatusOK, commonModels.Success())
+	return
+}
+func CancelAuthUser(c *gin.Context) {
+	commonLog.SetLog(c, "角色管理", "GRANT")
+	userRole := new(systemModels.SysUserRole)
+	c.ShouldBindJSON(userRole)
+	iRole.DeleteAuthUserRole(userRole)
+	c.JSON(http.StatusOK, commonModels.Success())
+	return
+}
+func CancelAuthUserAll(c *gin.Context) {
+	commonLog.SetLog(c, "角色管理", "GRANT")
+	var userIds slicesUtils.Slices = strings.Split(c.Query("userIds"), ",")
+	roleId := c.Query("roleId")
+	iRole.DeleteAuthUsers(gconv.Int64(roleId), userIds.StrSlicesToInt())
+	c.JSON(http.StatusOK, commonModels.Success())
+	return
 }

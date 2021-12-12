@@ -56,3 +56,19 @@ func (sysUserRoleDao *sysUserRoleDao) CountUserRoleByRoleId(ids []int64) int {
 	}
 	return count
 }
+func (sysUserRoleDao *sysUserRoleDao)DeleteUserRoleInfo(userRole *systemModels.SysUserRole){
+	_, err := sysUserRoleDao.getDb().NamedExec("delete from sys_user_role where user_id=:user_id and role_id=:role_id", userRole)
+	if err != nil {
+		panic(err)
+	}
+}
+func (sysUserRoleDao *sysUserRoleDao)DeleteUserRoleInfos(roleId int64 ,userIds []int64){
+	query, i, err := sqlx.In("delete from sys_user_role where role_id=(?) and user_id in (?)", roleId,userIds)
+	if err != nil {
+		panic(err)
+	}
+	_, err = sysUserRoleDao.getDb().Exec(query, i...)
+	if err != nil {
+		panic(err)
+	}
+}

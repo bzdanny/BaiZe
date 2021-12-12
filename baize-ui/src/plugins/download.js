@@ -1,5 +1,4 @@
 import axios from 'axios'
-import { ElMessage } from 'element-plus'
 import { saveAs } from 'file-saver'
 import { getToken } from '@/utils/auth'
 import { blobValidate } from '@/utils/ruoyi'
@@ -15,12 +14,12 @@ export default {
       responseType: 'blob',
       headers: { 'Authorization': 'Bearer ' + getToken() }
     }).then(async (res) => {
-      const isLogin = await this.blobValidate(res.data);
+      const isLogin = await blobValidate(res.data);
       if (isLogin) {
         const blob = new Blob([res.data])
         this.saveAs(blob, decodeURI(res.headers['download-filename']))
       } else {
-        ElMessage.error('无效的会话，或者会话已过期，请重新登录。');
+        this.printErrMsg(res.data);
       }
     })
   },
@@ -37,7 +36,7 @@ export default {
         const blob = new Blob([res.data])
         this.saveAs(blob, decodeURI(res.headers['download-filename']))
       } else {
-        ElMessage.error('无效的会话，或者会话已过期，请重新登录。');
+        this.printErrMsg(res.data);
       }
     })
   },
@@ -54,7 +53,7 @@ export default {
         const blob = new Blob([res.data], { type: 'application/zip' })
         this.saveAs(blob, name)
       } else {
-        ElMessage.error('无效的会话，或者会话已过期，请重新登录。');
+        this.printErrMsg(res.data);
       }
     })
   },
