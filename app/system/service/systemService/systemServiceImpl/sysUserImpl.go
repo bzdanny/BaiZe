@@ -44,7 +44,7 @@ func (userService *userService) InsertUser(sysUser *systemModels.SysUserDML) {
 
 	userService.InsertUserPost(sysUser)
 
-	userService.InsertUserRole(sysUser)
+	userService.insertUserRole(sysUser)
 
 }
 
@@ -57,7 +57,7 @@ func (userService *userService) UpdateUser(sysUser *systemModels.SysUserDML) {
 
 	userService.userRoleDao.DeleteUserRoleByUserId(userId)
 
-	userService.InsertUserRole(sysUser)
+	userService.insertUserRole(sysUser)
 
 	userService.userDao.UpdateUser(sysUser)
 
@@ -87,7 +87,7 @@ func (userService *userService) InsertUserPost(user *systemModels.SysUserDML) {
 
 }
 
-func (userService *userService) InsertUserRole(user *systemModels.SysUserDML) {
+func (userService *userService) insertUserRole(user *systemModels.SysUserDML) {
 	roles := user.RoleIds
 	if len(roles) != 0 {
 		list := make([]*systemModels.SysUserRole, 0, len(roles))
@@ -176,4 +176,15 @@ func (userService *userService) UpdateUserProfile(sysUser *systemModels.SysUserD
 func (userService *userService) MatchesPassword(rawPassword string, userId int64) bool {
 
 	return bCryptPasswordEncoder.CheckPasswordHash(rawPassword, userService.userDao.SelectPasswordByUserId(userId))
+}
+func (userService *userService) InsertUserAuth(userId int64, roleIds []int64)  {
+	userService.userRoleDao.DeleteUserRoleByUserId(userId)
+	if len(roleIds) != 0 {
+		list := make([]*systemModels.SysUserRole, 0, len(roleIds))
+		for _, roleId := range roleIds {
+			role := systemModels.NewSysUserRole(userId, roleId)
+			list = append(list, role)
+		}
+		userService.userRoleDao.BatchUserRole(list)
+	}
 }

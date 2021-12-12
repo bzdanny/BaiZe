@@ -16,5 +16,10 @@ func InitSysRoleRouter(router *gin.RouterGroup) {
 	role.PUT("/dataScope", middlewares.HasPermission("system:role:edit"), RoleController.RoleDataScope)
 	role.PUT("/changeStatus", middlewares.HasPermission("system:role:edit"), RoleController.RoleChangeStatus)
 	role.DELETE("/:userIds", middlewares.HasPermission("system:role:remove"), RoleController.RoleRemove)
+	role.GET("/authUser/allocatedList", middlewares.HasPermission("system:role:list"), RoleController.AllocatedList)
+	role.GET("/authUser/unallocatedList", middlewares.HasPermission("system:role:list"), RoleController.UnallocatedList)
+	role.PUT("/authUser/selectAll", middlewares.HasPermission("system:role:edit"), RoleController.InsertAuthUser)
+	role.PUT("/authUser/cancelAll", middlewares.HasPermission("system:role:edit"), RoleController.CancelAuthUserAll)
+	role.PUT("/authUser/cancel", middlewares.HasPermission("system:role:edit"), RoleController.CancelAuthUser)
 
 }

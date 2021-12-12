@@ -23,4 +23,9 @@ type IRoleService interface {
 	CheckRoleNameUnique(sysRole *systemModels.SysRoleDML) bool
 	CheckRoleKeyUnique(sysRole *systemModels.SysRoleDML) bool
 	SelectUserRoleGroupByUserId(userId int64) string
+	SelectAllocatedList(user *systemModels.SysRoleAndUserDQL) (list []*systemModels.SysUserVo, total *int64)
+	SelectUnallocatedList(user *systemModels.SysRoleAndUserDQL) (list []*systemModels.SysUserVo, total *int64)
+	InsertAuthUsers(roleId int64,userIds []int64)
+	DeleteAuthUsers(roleId int64,userIds []int64)
+	DeleteAuthUserRole(user *systemModels.SysUserRole)
 }

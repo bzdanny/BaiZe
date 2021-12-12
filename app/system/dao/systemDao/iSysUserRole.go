@@ -9,4 +9,6 @@ type IUserRoleDao interface {
 	BatchUserRole(users []*systemModels.SysUserRole)
 	DeleteUserRoleByUserId(userId int64)
 	CountUserRoleByRoleId(ids []int64) int
+	DeleteUserRoleInfo(userRole *systemModels.SysUserRole)
+	DeleteUserRoleInfos(roleId int64 ,userIds []int64)
 }

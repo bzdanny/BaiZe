@@ -124,7 +124,6 @@ func (userDao *sysUserDao) UpdateUser(sysUser *systemModels.SysUserDML) {
 	if err != nil {
 		panic(err)
 	}
-	return
 }
 
 func (userDao *sysUserDao) SelectUserByUserName(userName string) (loginUser *loginModels.User) {

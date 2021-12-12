@@ -10,10 +10,19 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-var sysRoleDaoImpl *sysRoleDao = &sysRoleDao{db: mysql.GetMysqlDb()}
+var sysRoleDaoImpl *sysRoleDao = &sysRoleDao{
+	db: mysql.GetMysqlDb(),
+	selectSql: ` select distinct r.role_id, r.role_name, r.role_key, r.role_sort, r.data_scope, r.menu_check_strictly, r.dept_check_strictly, r.status, r.del_flag, r.create_time, r.remark`,
+	fromSql: ` from sys_role r
+	        left join sys_user_role ur on ur.role_id = r.role_id
+	        left join sys_user u on u.user_id = ur.user_id
+	        left join sys_dept d on u.dept_id = d.dept_id`,
+}
 
 type sysRoleDao struct {
 	db **sqlx.DB
+	selectSql string
+	fromSql string
 }
 
 func GetSysRoleDao() *sysRoleDao {
@@ -23,12 +32,6 @@ func (sysRoleDao *sysRoleDao) getDb() *sqlx.DB {
 	return *sysRoleDao.db
 }
 
-var selectRoleSql = ` select distinct r.role_id, r.role_name, r.role_key, r.role_sort, r.data_scope, r.menu_check_strictly, r.dept_check_strictly,
-            r.status, r.del_flag, r.create_time, r.remark`
-var fromRoleSql = ` from sys_role r
-	        left join sys_user_role ur on ur.role_id = r.role_id
-	        left join sys_user u on u.user_id = ur.user_id
-	        left join sys_dept d on u.dept_id = d.dept_id`
 
 func (sysRoleDao *sysRoleDao) SelectRoleList(role *systemModels.SysRoleDQL) (roleList []*systemModels.SysRoleVo, total *int64) {
 	whereSql := " where r.del_flag = '0'"
@@ -51,7 +54,7 @@ func (sysRoleDao *sysRoleDao) SelectRoleList(role *systemModels.SysRoleDQL) (rol
 	if role.DataScope != "" {
 		whereSql += " AND " + role.DataScope
 	}
-	countSql := constants.MysqlCount + fromRoleSql + whereSql
+	countSql := constants.MysqlCount + sysRoleDao.fromSql + whereSql
 	countRow, err := sysRoleDao.getDb().NamedQuery(countSql, role)
 	if err != nil {
 		panic(err)
@@ -64,7 +67,7 @@ func (sysRoleDao *sysRoleDao) SelectRoleList(role *systemModels.SysRoleDQL) (rol
 	if *total > role.Offset {
 		whereSql += " order by r.role_sort"
 		roleList = make([]*systemModels.SysRoleVo, 0, 2)
-		listRows, err := sysRoleDao.getDb().NamedQuery(selectRoleSql+fromRoleSql+whereSql, role)
+		listRows, err := sysRoleDao.getDb().NamedQuery(sysRoleDao.selectSql+sysRoleDao.fromSql+whereSql, role)
 		if err != nil {
 			panic(err)
 		}
@@ -79,7 +82,7 @@ func (sysRoleDao *sysRoleDao) SelectRoleList(role *systemModels.SysRoleDQL) (rol
 func (sysRoleDao *sysRoleDao) SelectRoleById(roleId int64) (role *systemModels.SysRoleVo) {
 	whereSql := ` where r.role_id = ?`
 	role = new(systemModels.SysRoleVo)
-	err := sysRoleDao.getDb().Get(role, selectRoleSql+fromRoleSql+whereSql, roleId)
+	err := sysRoleDao.getDb().Get(role, sysRoleDao.selectSql+sysRoleDao.fromSql+whereSql, roleId)
 	if err != nil {
 		panic(err)
 	}
@@ -141,8 +144,8 @@ func (sysRoleDao *sysRoleDao) SelectRoleListByUserId(userId int64) (list []int64
 }
 
 func (sysRoleDao *sysRoleDao) InsertRole(sysRole *systemModels.SysRoleDML) {
-	insertSQL := `insert into sys_role(role_id,role_name,role_sort,create_by,create_time,update_by,update_time %s)
-					values(:role_id,:role_name,:role_sort,:create_by,now(),:update_by,now() %s)`
+	insertSQL := `insert into sys_role(role_id,role_name,role_key,role_sort,create_by,create_time,update_by,update_time %s)
+					values(:role_id,:role_name,:role_key,:role_sort,:create_by,now(),:update_by,now() %s)`
 	key := ""
 	value := ""
 	if sysRole.DataScope != "" {
@@ -236,4 +239,91 @@ func (sysRoleDao *sysRoleDao) CheckRoleKeyUnique(roleKey string) int64 {
 		panic(err)
 	}
 	return roleId
+}
+func (sysRoleDao *sysRoleDao) SelectAllocatedList(user *systemModels.SysRoleAndUserDQL) (list []*systemModels.SysUserVo, total *int64){
+	selectStr :=` select distinct u.user_id, u.dept_id, u.user_name, u.nick_name, u.email, u.phonenumber, u.status, u.create_time`
+
+	whereSql := ` from sys_user u
+			 left join sys_dept d on u.dept_id = d.dept_id
+			 left join sys_user_role ur on u.user_id = ur.user_id
+			 left join sys_role r on r.role_id = ur.role_id where u.del_flag = '0' and r.role_id =:role_id`
+	if user.UserName != "" {
+		whereSql += " AND u.user_name like concat('%', :user_name, '%')"
+	}
+	if user.Phonenumber != "" {
+		whereSql += " AND u.phonenumber like concat('%', :phonenumber, '%')"
+	}
+	if user.DataScope != "" {
+		whereSql += " AND " + user.DataScope
+	}
+	countRow, err := sysRoleDao.getDb().NamedQuery( constants.MysqlCount +  whereSql, user)
+	if err != nil {
+		panic(err)
+	}
+	total = new(int64)
+	if countRow.Next() {
+		countRow.Scan(total)
+	}
+	defer countRow.Close()
+	if *total > user.Offset {
+		if user.Limit != "" {
+			whereSql += user.Limit
+		}
+		list = make([]*systemModels.SysUserVo, 0, 2)
+		listRows, err := sysRoleDao.getDb().NamedQuery(selectStr+whereSql, user)
+		if err != nil {
+			panic(err)
+		}
+		for listRows.Next() {
+			userVo := new(systemModels.SysUserVo)
+			listRows.StructScan(userVo)
+			list = append(list, userVo)
+		}
+	}
+	return
+}
+
+func (sysRoleDao *sysRoleDao) SelectUnallocatedList(user *systemModels.SysRoleAndUserDQL) (list []*systemModels.SysUserVo, total *int64){
+	selectStr :=` select distinct u.user_id, u.dept_id, u.user_name, u.nick_name, u.email, u.phonenumber, u.status, u.create_time`
+
+	whereSql := `  from sys_user u
+			 left join sys_dept d on u.dept_id = d.dept_id
+			 left join sys_user_role ur on u.user_id = ur.user_id
+			 left join sys_role r on r.role_id = ur.role_id
+	    where u.del_flag = '0' and (r.role_id != :role_id or r.role_id IS NULL)
+	    and u.user_id not in (select u.user_id from sys_user u inner join sys_user_role ur on u.user_id = ur.user_id and ur.role_id = :role_id)`
+	if user.UserName != "" {
+		whereSql += " AND u.user_name like concat('%', :user_name, '%')"
+	}
+	if user.Phonenumber != "" {
+		whereSql += " AND u.phonenumber like concat('%', :phonenumber, '%')"
+	}
+	if user.DataScope != "" {
+		whereSql += " AND " + user.DataScope
+	}
+	countRow, err := sysRoleDao.getDb().NamedQuery( constants.MysqlCount +  whereSql, user)
+	if err != nil {
+		panic(err)
+	}
+	total = new(int64)
+	if countRow.Next() {
+		countRow.Scan(total)
+	}
+	defer countRow.Close()
+	if *total > user.Offset {
+		if user.Limit != "" {
+			whereSql += user.Limit
+		}
+		list = make([]*systemModels.SysUserVo, 0, 2)
+		listRows, err := sysRoleDao.getDb().NamedQuery(selectStr+whereSql, user)
+		if err != nil {
+			panic(err)
+		}
+		for listRows.Next() {
+			userVo := new(systemModels.SysUserVo)
+			listRows.StructScan(userVo)
+			list = append(list, userVo)
+		}
+	}
+	return
 }

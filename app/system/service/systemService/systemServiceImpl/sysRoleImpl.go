@@ -136,7 +136,6 @@ func (roleService *roleService) CheckRoleKeyUnique(sysRole *systemModels.SysRole
 func (roleService *roleService) SelectUserRoleGroupByUserId(userId int64) string {
 	roles := roleService.roleDao.SelectBasicRolesByUserId(userId)
 	roleNames := make([]string, 0, len(roles))
-	//strings:=[len(roles)]string
 	for _, role := range roles {
 		roleNames = append(roleNames, role.RoleName)
 	}
@@ -155,4 +154,30 @@ func (roleService *roleService) insertRoleDept(sysRole *systemModels.SysRoleDML)
 	}
 
 	return
+}
+func (roleService *roleService) SelectAllocatedList(user *systemModels.SysRoleAndUserDQL) (list []*systemModels.SysUserVo, total *int64) {
+		list ,total=roleService.roleDao.SelectAllocatedList(user)
+	return
+}
+
+func (roleService *roleService) SelectUnallocatedList(user *systemModels.SysRoleAndUserDQL) (list []*systemModels.SysUserVo, total *int64) {
+		list ,total=roleService.roleDao.SelectUnallocatedList(user)
+	return
+}
+
+func (roleService *roleService) InsertAuthUsers(roleId int64,userIds []int64){
+	if len(userIds) != 0 {
+		list := make([]*systemModels.SysUserRole, 0, len(userIds))
+		for _, userId := range userIds {
+			role := systemModels.NewSysUserRole(userId, roleId)
+			list = append(list, role)
+		}
+		roleService.userRoleDao.BatchUserRole(list)
+	}
+}
+func (roleService *roleService) DeleteAuthUsers(roleId int64,userIds []int64){
+	roleService.userRoleDao.DeleteUserRoleInfos(roleId,userIds)
+}
+func (roleService *roleService) DeleteAuthUserRole(userRole *systemModels.SysUserRole){
+	roleService.userRoleDao.DeleteUserRoleInfo(userRole)
 }

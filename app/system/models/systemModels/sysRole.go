@@ -72,3 +72,11 @@ type SysRoleDept struct {
 	RoleId int64 `db:"role_id"`
 	DeptId int64 `db:"dept_id"`
 }
+
+type SysRoleAndUserDQL struct {
+	RoleId  string `form:"roleId" db:"role_id"`
+	UserName    string `form:"userName" db:"user_name"`
+	Phonenumber   string `form:"phonenumber" db:"phonenumber"`
+
+	commonModels.BaseEntityDQL
+}
