@@ -7,6 +7,7 @@ import (
 	"baize/app/utils/bCryptPasswordEncoder"
 	"baize/app/utils/exceLize"
 	"baize/app/utils/snowflake"
+	"github.com/360EntSecGroup-Skylar/excelize"
 	"strconv"
 )
 
@@ -28,9 +29,18 @@ func (userService *userService) SelectUserList(user *systemModels.SysUserDQL) (s
 }
 func (userService *userService) UserExport(user *systemModels.SysUserDQL) (data []byte) {
 	sysUserList, _ := userService.userDao.SelectUserList(user)
-	rows := systemModels.SysUserDMLListToRows(sysUserList)
+	rows := systemModels.SysUserListToRows(sysUserList)
 	return exceLize.SetRows(rows)
 }
+func (userService *userService) ImportTemplate() (data []byte) {
+	f := excelize.NewFile()
+	template := systemModels.SysUserImportTemplate()
+	f.SetSheetRow("Sheet1", "A1", &template)
+	buffer, _ := f.WriteToBuffer()
+	return buffer.Bytes()
+
+}
+
 
 func (userService *userService) SelectUserById(userId int64) (sysUser *systemModels.SysUserVo) {
 	return userService.userDao.SelectUserById(userId)

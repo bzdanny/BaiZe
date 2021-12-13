@@ -31,14 +31,12 @@ func RoleList(c *gin.Context) {
 }
 
 func RoleExport(c *gin.Context) {
-	commonLog.SetLog(c, "角色管理", "EXPORT")
 	loginUser := commonController.GetCurrentLoginUser(c)
 	role := new(systemModels.SysRoleDQL)
 	c.ShouldBind(role)
 	role.SetDataScope(loginUser, "d", "")
 	data := iRole.RoleExport(role)
-	c.Header("Content-Type", "application/vnd.ms-excel")
-	c.Data(http.StatusOK, "application/vnd.ms-excel", data)
+	commonController.DataPackageExcel(c,data)
 
 }
 func RoleGetInfo(c *gin.Context) {

@@ -3,6 +3,7 @@ package systemServiceImpl
 import (
 	"baize/app/common/redis"
 	"baize/app/constant/constants"
+	"baize/app/utils/exceLize"
 
 	"baize/app/system/dao/systemDao"
 	"baize/app/system/dao/systemDao/systemDaoImpl"
@@ -35,6 +36,12 @@ func (dictDataService *dictDataService) SelectDictDataByType(dictType string) (s
 }
 func (dictDataService *dictDataService) SelectDictDataList(dictData *systemModels.SysDictDataDQL) (list []*systemModels.SysDictDataVo, count *int64) {
 	return dictDataService.dictDataDao.SelectDictDataList(dictData)
+
+}
+func (dictDataService *dictDataService) ExportDictData(dictData *systemModels.SysDictDataDQL) (data []byte) {
+	list, _ := dictDataService.dictDataDao.SelectDictDataList(dictData)
+	rows := systemModels.SysDictDataListToRows(list)
+	return exceLize.SetRows(rows)
 
 }
 func (dictDataService *dictDataService) SelectDictDataById(dictCode int64) (dictData *systemModels.SysDictDataVo) {

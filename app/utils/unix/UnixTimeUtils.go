@@ -20,3 +20,6 @@ func (t *BaiZeTime) UnmarshalJSON(b []byte) error {
 	*t = BaiZeTime(time.Unix(parseInt, 0))
 	return nil
 }
+func (t BaiZeTime) ToString() string {
+	return time.Time(t).Format("2006-01-02 15:04:05")
+}

@@ -26,7 +26,9 @@ func DictDataList(c *gin.Context) {
 
 }
 func DictDataExport(c *gin.Context) {
-	commonLog.SetLog(c, "字典数据", "EXPORT")
+	dictData := new(systemModels.SysDictDataDQL)
+	c.ShouldBind(dictData)
+	commonController.DataPackageExcel(c,iDictData.ExportDictData(dictData))
 }
 func DictDataGetInfo(c *gin.Context) {
 	dictCode, err := strconv.ParseInt(c.Param("dictCode"), 10, 64)
@@ -41,7 +43,6 @@ func DictDataGetInfo(c *gin.Context) {
 func DictDataType(c *gin.Context) {
 	sysDictDataList := iDictData.SelectDictDataByType(c.Param("dictType"))
 	c.JSON(http.StatusOK, commonModels.SuccessData(sysDictDataList))
-
 }
 
 func DictDataAdd(c *gin.Context) {

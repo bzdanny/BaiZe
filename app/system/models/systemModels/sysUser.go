@@ -77,12 +77,24 @@ type SysUserVo struct {
 	commonModels.BaseEntity
 }
 
-func SysUserDMLListToRows(sysUsers []*SysUserVo) (rows [][]string) {
+//sysUser.UserName = row[0]
+//sysUser.NickName = row[1]
+//sysUser.Email = row[2]
+//sysUser.Phonenumber = row[3]
+//sysUser.Sex = row[4]
+//sysUser.Status = row[5]
+
+func SysUserImportTemplate() (row []string) {
+	row=[]string{"登录名称(*)", "用户姓名(*)", "用户邮箱", "手机号码", "用户性别(0男 1女)", "帐号状态(0正常 1停用)","*号为必填项"}
+	return
+}
+
+func SysUserListToRows(sysUsers []*SysUserVo) (rows [][]string) {
 	rows = make([][]string, 0, len(sysUsers)+1)
 	row1 := []string{"登录名称", "用户姓名", "用户邮箱", "手机号码", "用户性别", "帐号状态", "部门名称"}
 	rows = append(rows, row1)
 	for _, sysUser := range sysUsers {
-		row := make([]string, 7, 7)
+		row := make([]string, 7)
 		row[0] = sysUser.UserName
 		row[1] = sysUser.NickName
 		if sysUser.Email != nil {

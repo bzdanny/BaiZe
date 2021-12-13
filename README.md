@@ -30,9 +30,9 @@
 
 
 
-1系统接口：根据业务代码自动生成相关的api接口文档。
-2代码生成：前后端代码的生成（Go、vue、js、sql）支持CRUD下载 。
-3工作流等...
+1. 系统接口：根据业务代码自动生成相关的api接口文档。
+2. 代码生成：前后端代码的生成（Go、vue、js、sql）支持CRUD下载 。
+3. 工作流等...
 
 ## 在线体验
 
@@ -42,6 +42,10 @@
 演示地址：https://demo.ibaize.vip
 <br>
 文档地址：https://doc.ibaize.vip
+<br>
+gitee地址：https://gitee.com/smell2/BaiZe
+<br>
+github地址:https://github.com/bzdanny/BaiZe.git
 
 ## 演示图
 

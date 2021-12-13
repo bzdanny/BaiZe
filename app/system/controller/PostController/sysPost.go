@@ -27,7 +27,10 @@ func PostList(c *gin.Context) {
 }
 
 func PostExport(c *gin.Context) {
-	commonLog.SetLog(c, "岗位管理", "EXPORT")
+	post := new(systemModels.SysPostDQL)
+	c.ShouldBind(post)
+	data := iPost.PostExport(post)
+	commonController.DataPackageExcel(c,data)
 }
 
 func PostGetInfo(c *gin.Context) {

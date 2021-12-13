@@ -204,21 +204,23 @@ func UserImportData(c *gin.Context) {
 }
 
 func UserExport(c *gin.Context) {
-	commonLog.SetLog(c, "用户管理", "EXPORT")
 	loginUser := commonController.GetCurrentLoginUser(c)
 	user := new(systemModels.SysUserDQL)
 	c.ShouldBind(user)
 	user.SetDataScope(loginUser, "d", "u")
 	data := iUser.UserExport(user)
-	c.Header("Content-Type", "application/vnd.ms-excel")
-	c.Header("Content-Disposition", "attachment; filename=\"用户管理导出.xls\"")
-	c.Header("Pragma", "public")
-	c.Header("Cache-Control", "no-store")
-	c.Header("Cache-Control", "max-age=0")
-	c.Header("Content-Length", strconv.Itoa(len(data)))
-	c.Data(http.StatusOK, "application/vnd.ms-excel", data)
+	commonController.DataPackageExcel(c,data)
 	return
 }
+
+
+func ImportTemplate(c *gin.Context) {
+	data := iUser.ImportTemplate()
+	commonController.DataPackageExcel(c,data)
+	return
+}
+
+
 func InsertAuthRole(c *gin.Context) {
 	commonLog.SetLog(c, "用户管理", "GRANT")
 	var s slicesUtils.Slices = strings.Split(c.Query("roleIds"), ",")

@@ -1,7 +1,7 @@
 name: "白泽"
 mode: "dev"
 port: 8080
-version: "v1.0.0"
+version: "v1.0.2"
 start_time: "2021-05-07"
 machine_id: 1
 profile: "D:/baize/uploadPath"

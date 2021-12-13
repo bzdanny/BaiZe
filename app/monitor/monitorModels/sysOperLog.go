@@ -2,7 +2,9 @@ package monitorModels
 
 import (
 	"baize/app/common/commonModels"
+	"baize/app/utils/excelDictionaries"
 	"baize/app/utils/unix"
+	"github.com/gogf/gf/util/gconv"
 )
 
 type SysOpenLog struct {
@@ -32,4 +34,22 @@ type SysOpenLogDQL struct {
 	BeginTime    string `form:"beginTime" db:"end_time"`
 	EndTime      string `form:"endTime" db:"end_time"`
 	commonModels.BaseEntityDQL
+}
+
+func SysOperLogListToRows(openLogs []*SysOpenLog) (rows [][]string) {
+	rows = make([][]string, 0, len(openLogs)+1)
+	row1 := []string{"系统模块", "操作类型", "请求方式", "操作人员", "主机", "操作状态", "操作时间"}
+	rows = append(rows, row1)
+	for _, openLog := range openLogs {
+		row := make([]string, 7)
+		row[0] = openLog.Title
+		row[1] = excelDictionaries.ValueToLabel("sys_oper_type", gconv.String(openLog.BusinessType))
+		row[2] = openLog.RequestMethod
+		row[3] = openLog.OperName
+		row[4] = openLog.OperIp
+		row[5] = excelDictionaries.ValueToLabel("sys_common_status", gconv.String(openLog.Status))
+		row[6] = openLog.OperTime.ToString()
+		rows = append(rows, row)
+	}
+	return
 }

@@ -3,6 +3,7 @@ package systemServiceImpl
 import (
 	"baize/app/common/redis"
 	"baize/app/constant/constants"
+	"baize/app/utils/exceLize"
 
 	"baize/app/system/dao/systemDao"
 	"baize/app/system/dao/systemDao/systemDaoImpl"
@@ -22,6 +23,12 @@ func GetDictTypeService() *dictTypeService {
 
 func (dictTypeService *dictTypeService) SelectDictTypeList(dictType *systemModels.SysDictTypeDQL) (list []*systemModels.SysDictTypeVo, count *int64) {
 	return dictTypeService.dictTypeDao.SelectDictTypeList(dictType)
+
+}
+func (dictTypeService *dictTypeService) ExportDictType(dictType *systemModels.SysDictTypeDQL) (data []byte) {
+	list, _ := dictTypeService.dictTypeDao.SelectDictTypeList(dictType)
+	rows := systemModels.SysDictTypeListToRows(list)
+	return exceLize.SetRows(rows)
 
 }
 

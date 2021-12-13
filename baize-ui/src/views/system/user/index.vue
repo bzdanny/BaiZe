@@ -336,10 +336,10 @@
             <template #tip>
                <div class="el-upload__tip text-center">
                   <span>仅允许导入xls、xlsx格式文件。</span>
-<!--                  <el-link type="primary" :underline="false" style="font-size:12px;vertical-align: baseline;" @click="importTemplate">下载模板</el-link>-->
-                 <a href="/download/用户数据.xls">
-                   <el-link type="info" style="font-size:12px">下载模板</el-link>
-                 </a>
+                  <el-link type="primary" :underline="false" style="font-size:12px;vertical-align: baseline;" @click="importTemplate">下载模板</el-link>
+<!--                 <a href="/download/用户数据.xls">-->
+<!--                   <el-link type="info" style="font-size:12px">下载模板</el-link>-->
+<!--                 </a>-->
                </div>
             </template>
          </el-upload>
@@ -478,7 +478,7 @@ function handleDelete(row) {
 /** 导出按钮操作 */
 function handleExport() {
   proxy.download("system/user/export", {
-    ...queryParams.value,
+    ...proxy.addDateRange(queryParams.value, dateRange.value),
   },`user_${new Date().getTime()}.xlsx`);
 };
 /** 用户状态修改  */

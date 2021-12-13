@@ -24,7 +24,7 @@ func LogininforList(c *gin.Context) {
 }
 
 func LogininforExport(c *gin.Context) {
-	commonLog.SetLog(c, "登录日志", "EXPORT")
+
 }
 
 func LogininforRemove(c *gin.Context) {

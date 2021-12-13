@@ -18,6 +18,7 @@ func InitSysUserRouter(router *gin.RouterGroup) {
 	systemUser.PUT("/changeStatus", middlewares.HasPermission("system:user:edit"), UserController.ChangeStatus)
 	systemUser.DELETE("/:userIds", middlewares.HasPermission("system:user:remove"), UserController.UserRemove)
 	systemUser.POST("/importData", middlewares.HasPermission("system:user:import"), UserController.UserImportData)
-	systemUser.GET("/export", middlewares.HasPermission("system:user:export"), UserController.UserExport)
+	systemUser.POST("/importTemplate", middlewares.HasPermission("system:user:add"), UserController.ImportTemplate)
+	systemUser.POST("/export", middlewares.HasPermission("system:user:export"), UserController.UserExport)
 	systemUser.PUT("/authRole", middlewares.HasPermission("system:user:edit"), UserController.InsertAuthRole)
 }

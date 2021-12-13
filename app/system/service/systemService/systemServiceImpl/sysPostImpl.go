@@ -4,6 +4,7 @@ import (
 	"baize/app/system/dao/systemDao"
 	"baize/app/system/dao/systemDao/systemDaoImpl"
 	"baize/app/system/models/systemModels"
+	"baize/app/utils/exceLize"
 	"baize/app/utils/snowflake"
 	"strings"
 )
@@ -41,6 +42,12 @@ func (postService *postService) SelectPostListByUserId(userId int64) (list []int
 
 func (postService *postService) SelectPostList(post *systemModels.SysPostDQL) (list []*systemModels.SysPostVo, count *int64) {
 	return postService.postDao.SelectPostList(post)
+
+}
+func (postService *postService) PostExport(post *systemModels.SysPostDQL) (data []byte) {
+	list, _ := postService.postDao.SelectPostList(post)
+	rows := systemModels.SysPostListToRows(list)
+	return exceLize.SetRows(rows)
 
 }
 

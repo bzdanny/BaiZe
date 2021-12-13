@@ -6,6 +6,7 @@ import (
 
 type IDictTypeService interface {
 	SelectDictTypeList(dictType *systemModels.SysDictTypeDQL) (list []*systemModels.SysDictTypeVo, count *int64)
+	ExportDictType(dictType *systemModels.SysDictTypeDQL) (data []byte)
 	SelectDictTypeById(dictId int64) (dictType *systemModels.SysDictTypeVo)
 	SelectDictTypeByIds(dictId []int64) (dictTypes []string)
 	InsertDictType(dictType *systemModels.SysDictTypeDML)

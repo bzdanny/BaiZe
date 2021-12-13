@@ -28,7 +28,9 @@ func DictTypeList(c *gin.Context) {
 }
 
 func DictTypeExport(c *gin.Context) {
-	commonLog.SetLog(c, "字典类型", "EXPORT")
+	dictType := new(systemModels.SysDictTypeDQL)
+	c.ShouldBind(dictType)
+	commonController.DataPackageExcel(c,iDictType.ExportDictType(dictType))
 }
 
 func DictTypeGetInfo(c *gin.Context) {
