@@ -4,6 +4,7 @@ import (
 	"baize/app/monitor/monitorDao"
 	"baize/app/monitor/monitorDao/monitorDaoImpl"
 	"baize/app/monitor/monitorModels"
+	"baize/app/utils/exceLize"
 	"baize/app/utils/snowflake"
 )
 
@@ -26,8 +27,9 @@ func (operLogService *operLogService) SelectOperLogList(openLog *monitorModels.S
 	return
 
 }
-func (operLogService *operLogService) UserExport(openLog *monitorModels.SysOpenLogDQL) (data []byte) {
-	return
+func (operLogService *operLogService) ExportOperLog(openLog *monitorModels.SysOpenLogDQL) (data []byte) {
+	list, _ := operLogService.operLogDao.SelectOperLogList(openLog)
+	return exceLize.SetRows(monitorModels.SysOperLogListToRows(list))
 }
 
 func (operLogService *operLogService) DeleteOperLogByIds(operIds []int64) {

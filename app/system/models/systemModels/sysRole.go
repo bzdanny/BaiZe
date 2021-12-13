@@ -2,7 +2,6 @@ package systemModels
 
 import (
 	commonModels "baize/app/common/commonModels"
-	"fmt"
 )
 
 type SysRole struct {
@@ -35,13 +34,19 @@ type SysRoleVo struct {
 	commonModels.BaseEntity
 }
 
-func SysRoleDMLListToRows(roles []*SysRoleVo) (rows [][]string) {
+func SysRoleListToRows(roles []*SysRoleVo) (rows [][]string) {
 	rows = make([][]string, 0, len(roles)+1)
-	row1 := []string{"登录名称", "用户姓名", "用户邮箱", "手机号码", "用户性别", "帐号状态", "部门名称"}
+	row1 := []string{"角色名称", "权限字符", "显示状态"}
 	rows = append(rows, row1)
 	for _, sysRole := range roles {
-		row := make([]string, 7, 7)
-		fmt.Println(sysRole)
+		row := make([]string, 3)
+		row[0]=sysRole.RoleName
+		row[1]=sysRole.RoleKey
+		if sysRole.Status == "0" {
+			row[3] = "正常"
+		} else {
+			row[3] = "停用"
+		}
 		rows = append(rows, row)
 
 	}

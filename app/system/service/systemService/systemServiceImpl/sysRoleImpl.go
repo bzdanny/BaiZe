@@ -33,8 +33,8 @@ func (roleService *roleService) SelectRoleList(role *systemModels.SysRoleDQL) (l
 
 }
 func (roleService *roleService) RoleExport(role *systemModels.SysRoleDQL) (data []byte) {
-	sysUserList, _ := roleService.roleDao.SelectRoleList(role)
-	rows := systemModels.SysRoleDMLListToRows(sysUserList)
+	list, _ := roleService.roleDao.SelectRoleList(role)
+	rows := systemModels.SysRoleListToRows(list)
 	return exceLize.SetRows(rows)
 }
 

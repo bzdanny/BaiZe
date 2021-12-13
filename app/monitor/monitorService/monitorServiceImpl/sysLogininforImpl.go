@@ -4,6 +4,7 @@ import (
 	"baize/app/monitor/monitorDao"
 	"baize/app/monitor/monitorDao/monitorDaoImpl"
 	"baize/app/monitor/monitorModels"
+	"baize/app/utils/exceLize"
 	"baize/app/utils/snowflake"
 )
 
@@ -19,6 +20,11 @@ func GetLogininforService() *logininforService {
 
 func (logininforService *logininforService) SelectLogininforList(logininfor *monitorModels.LogininforDQL) (list []*monitorModels.Logininfor, total *int64) {
 	return logininforService.logininforDao.SelectLogininforList(logininfor)
+
+}
+func (logininforService *logininforService) ExportLogininfor(logininfor *monitorModels.LogininforDQL)(data []byte) {
+	list, _ := logininforService.logininforDao.SelectLogininforList(logininfor)
+	return exceLize.SetRows(monitorModels.SysLogininforToRows(list))
 
 }
 

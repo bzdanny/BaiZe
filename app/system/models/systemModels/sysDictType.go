@@ -30,3 +30,25 @@ type SysDictTypeDML struct {
 	Remark   string `json:"remark" db:"remark"`
 	commonModels.BaseEntityDML
 }
+
+func SysDictTypeListToRows(dictTypes []*SysDictTypeVo) (rows [][]string) {
+	rows = make([][]string, 0, len(dictTypes)+1)
+	row1 := []string{"字典名称", "字典类型", "状态", "备注"}
+	rows = append(rows, row1)
+	for _, dictType := range dictTypes {
+		row := make([]string, 4)
+		row[0] = dictType.DictName
+		row[1] = dictType.DictType
+		if dictType.Status == "0" {
+			row[2] = "正常"
+		} else {
+			row[2] = "停用"
+		}
+		if dictType.Remark != nil {
+			row[3] = *dictType.Remark
+		}
+		rows = append(rows, row)
+
+	}
+	return
+}
