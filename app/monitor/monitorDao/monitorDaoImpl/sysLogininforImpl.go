@@ -59,6 +59,7 @@ func (logininforDao *logininforDao) SelectLogininforList(logininfor *monitorMode
 	defer countRow.Close()
 	list = make([]*monitorModels.Logininfor, 0, logininfor.Size)
 	if *total > logininfor.Offset {
+		whereSql +=" order by info_id desc"
 		if logininfor.Limit != "" {
 			whereSql += logininfor.Limit
 		}

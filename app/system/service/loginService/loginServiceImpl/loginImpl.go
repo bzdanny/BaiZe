@@ -38,6 +38,7 @@ func GetLoginService() *loginService {
 
 func (loginService *loginService) Login(login *loginModels.LoginBody, c *gin.Context) *commonModels.ResponseData {
 	l := new(monitorModels.Logininfor)
+	l.UserName = login.Username
 	defer loginService.recordLoginInfo(l)
 	setUserAgent(l, c)
 
@@ -66,7 +67,6 @@ func (loginService *loginService) Login(login *loginModels.LoginBody, c *gin.Con
 
 	l.Status = 0
 	l.Msg = "登录成功"
-	l.UserName = user.UserName
 	loginUser := new(loginModels.LoginUser)
 	loginUser.User = user
 	roles := loginService.roleService.SelectBasicRolesByUserId(user.UserId)
