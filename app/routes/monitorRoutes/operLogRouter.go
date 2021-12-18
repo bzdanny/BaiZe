@@ -10,6 +10,6 @@ func InitSysOperLogRouter(router *gin.RouterGroup) {
 	operlog := router.Group("/monitor/operlog")
 	operlog.GET("/list", middlewares.HasPermission("system:operlog:list"), operLogController.OperLogList)
 	operlog.GET("/export", middlewares.HasPermission("system:operlog:list"), operLogController.OperLogExport)
-	operlog.DELETE("/:infoIds", middlewares.HasPermission("system:operlog:remove"), operLogController.OperLogRemove)
+	operlog.DELETE("/:operIds", middlewares.HasPermission("system:operlog:remove"), operLogController.OperLogRemove)
 	operlog.DELETE("/clean", middlewares.HasPermission("system:operlog:remove"), operLogController.OperLogClean)
 }

@@ -10,6 +10,8 @@
 * 特别鸣谢：[ruoyi-vue](https://gitee.com/y_project/RuoYi-Vue?_from=gitee_search )，
  [element](https://github.com/ElemeFE/element )，[vue-element-admin](https://github.com/PanJiaChen/vue-element-admin )，[eladmin-web](https://github.com/elunez/eladmin-web )。
 
+<p>随手 star ⭐是一种美德。 你们的star就是我的动力</p>
+
 ## 内置功能
 
 1.  用户管理：用户是系统操作者，该功能主要完成系统用户配置。
@@ -30,9 +32,21 @@
 
 
 
-1. 系统接口：根据业务代码自动生成相关的api接口文档。
+1. 系统接口：根据业务代码注释自动生成相关的api接口文档。
 2. 代码生成：前后端代码的生成（Go、vue、js、sql）支持CRUD下载 。
 3. 工作流等...
+
+## 版本规则
+v5.6.7<br>
+1位为主版本号（5）：当功能模块有较大的变动，比如增加多个模块或者整体架构发生变化,数据库结构发生变化。此版本号由项目决定是否修改。
+<br> 
+2为次版本号（6）：当功能有一定的增加或变化，比如增加了或修改了API接口、增加自定义视图等功能。此版本号由项目决定是否修改。
+<br>
+3为阶段版本号(7)：一般是 Bug 修复或是一些小的变动，要经常发布修订版，时间间隔不限。
+<br>
+主版本号升级请参考更新说明更新修改或添加相应的数据表。
+次版本号升级请参考更新说明查看API接口修改情况。
+阶段版本号不会影响数据库与api接口，除修复重大bug不更新说明文档
 
 ## 在线体验
 
@@ -45,7 +59,7 @@
 <br>
 gitee地址：https://gitee.com/smell2/BaiZe
 <br>
-github地址:https://github.com/bzdanny/BaiZe.git
+github地址:https://github.com/bzdanny/BaiZe.git(因网络环境原因更新并不一定及时)
 
 ## 演示图
 

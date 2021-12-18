@@ -71,6 +71,7 @@ func (operLogDao *operLogDao) SelectOperLogList(openLog *monitorModels.SysOpenLo
 	defer countRow.Close()
 	list = make([]*monitorModels.SysOpenLog, 0, openLog.Size)
 	if *total > openLog.Offset {
+		whereSql += " order by oper_id desc"
 		if openLog.Limit != "" {
 			whereSql += openLog.Limit
 		}
@@ -91,7 +92,7 @@ func (operLogDao *operLogDao) SelectOperLogList(openLog *monitorModels.SysOpenLo
 	return
 }
 func (operLogDao *operLogDao) DeleteOperLogByIds(operIds []int64) {
-	query, i, err := sqlx.In("delete from sys_logininfor where info_id in (?)", operIds)
+	query, i, err := sqlx.In("delete from sys_oper_log where oper_id in (?)", operIds)
 	if err != nil {
 		panic(err)
 	}
