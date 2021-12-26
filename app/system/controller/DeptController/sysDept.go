@@ -15,6 +15,7 @@ import (
 
 var iDept systemService.IDeptService = systemServiceImpl.GetDeptService()
 
+//  DeptList部门列表查询
 func DeptList(c *gin.Context) {
 	loginUser := commonController.GetCurrentLoginUser(c)
 	dept := new(systemModels.SysDeptDQL)

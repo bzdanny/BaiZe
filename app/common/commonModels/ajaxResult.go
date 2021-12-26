@@ -10,9 +10,9 @@ type ListData struct {
 }
 
 type ResponseData struct {
-	Code httpStatus.ResCode `json:"code"`
-	Msg  string             `json:"msg"`
-	Data interface{}        `json:"data,omitempty"`
+	Code httpStatus.ResCode `json:"code"`           //相应状态码
+	Msg  string             `json:"msg"`            //提示信息
+	Data interface{}        `json:"data,omitempty"` //数据
 }
 
 func SuccessListData(rows interface{}, total *int64) *ResponseData {

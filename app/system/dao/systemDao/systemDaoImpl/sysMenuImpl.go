@@ -198,7 +198,7 @@ func (sysMenuDao *sysMenuDao) UpdateMenu(menu *systemModels.SysMenuDML) {
 	if menu.Status != "" {
 		updateSQL += ",status = :status"
 	}
-	updateSQL += " where user_id = :user_id"
+	updateSQL += " where menu_id = :menu_id"
 
 	_, err := sysMenuDao.getDb().NamedExec(updateSQL, menu)
 	if err != nil {
