@@ -1,0 +1,127 @@
+definitions:
+  commonModels.ResponseData:
+    properties:
+      code:
+        description: 相应状态码
+        type: integer
+      data:
+        description: 数据
+      msg:
+        description: 提示信息
+        type: string
+    type: object
+  testController.UserEntity:
+    properties:
+      mobile:
+        type: string
+      password:
+        type: string
+      userId:
+        type: integer
+      userName:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: zhao_402295440@126.com
+    name: danny
+    url: https://www.ibaize.vip
+  description: 白泽接口文档
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: https://www.ibaize.vip
+  title: 白泽
+  version: 1.0.x
+paths:
+  /test/user:
+    post:
+      description: 新增用户
+      parameters:
+      - description: 用户信息
+        in: body
+        name: object
+        required: true
+        schema:
+          $ref: '#/definitions/testController.UserEntity'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/commonModels.ResponseData'
+      summary: 新增用户
+      tags:
+      - 演示用户相关
+    put:
+      description: 更新用户
+      parameters:
+      - description: 用户信息
+        in: body
+        name: object
+        required: true
+        schema:
+          $ref: '#/definitions/testController.UserEntity'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/commonModels.ResponseData'
+      summary: 更新用户
+      tags:
+      - 演示用户相关
+  /test/user/{userId}:
+    delete:
+      description: 更新用户
+      parameters:
+      - description: 用户ID
+        in: path
+        name: userId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/commonModels.ResponseData'
+      summary: 更新用户
+      tags:
+      - 演示用户相关
+    get:
+      description: 获取用户详细
+      parameters:
+      - description: 用户ID
+        in: path
+        name: userId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/commonModels.ResponseData'
+      summary: 获取用户详细
+      tags:
+      - 演示用户相关
+  /test/user/list:
+    get:
+      description: 获取用户列表
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/commonModels.ResponseData'
+      summary: 获取用户列表
+      tags:
+      - 演示用户相关
+swagger: "2.0"

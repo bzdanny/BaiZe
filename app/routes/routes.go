@@ -6,12 +6,17 @@ import (
 	"baize/app/routes/genTableRoutes"
 	"baize/app/routes/monitorRoutes"
 	"baize/app/routes/quartzRoutes"
+	"baize/app/routes/swaggerTest"
 	"baize/app/routes/systemRouter"
 	"baize/app/setting"
 	"baize/app/utils/logger"
 	"fmt"
 	"net/http"
 	"strings"
+
+	_ "baize/docs"
+	gs "github.com/swaggo/gin-swagger"
+	"github.com/swaggo/gin-swagger/swaggerFiles"
 
 	"github.com/gin-gonic/gin"
 )
@@ -25,10 +30,12 @@ func Init() *gin.Engine {
 	r.Use(logger.GinLogger(), logger.GinRecovery(true))
 	r.Use(Cors())
 	group := r.Group("")
+	group.GET("/swagger/*any", gs.WrapHandler(swaggerFiles.Handler))
 	group.Static(constants.ResourcePrefix, setting.Conf.Profile)
 	//不做鉴权的
 	{
 		systemRouter.InitLoginRouter(group) //获取登录信息
+		swaggerTest.InitGenTableRouter(group) //swaggerTest演示
 	}
 	//做鉴权的
 	group.Use(middlewares.JWTAuthMiddleware())

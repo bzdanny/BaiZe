@@ -113,12 +113,20 @@
             <span>更新日志</span>
           </div>
           <el-collapse accordion>
+            <el-collapse-item  title="v1.1.0 - 2021-12-26">
+              <ol>
+                <li>添加swagger</li>
+              </ol>
+            </el-collapse-item>
+          </el-collapse>
+          <el-collapse accordion>
             <el-collapse-item  title="v1.0.0 - 2021-12-08">
               <ol>
                 <li>白泽系统正式发布</li>
               </ol>
             </el-collapse-item>
           </el-collapse>
+
 
         </el-card>
       </el-col>
