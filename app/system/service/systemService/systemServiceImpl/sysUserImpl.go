@@ -1,7 +1,7 @@
 package systemServiceImpl
 
 import (
-	"baize/app/common/mysql"
+	"baize/app/common/datasource"
 	"baize/app/system/dao/systemDao"
 	"baize/app/system/dao/systemDao/systemDaoImpl"
 	"baize/app/system/models/systemModels"
@@ -58,7 +58,7 @@ func (userService *userService) SelectUserById(userId int64) (sysUser *systemMod
 func (userService *userService) InsertUser(sysUser *systemModels.SysUserDML) {
 	sysUser.UserId = snowflake.GenID()
 	sysUser.Password = bCryptPasswordEncoder.HashPassword(sysUser.Password)
-	tx, err := mysql.GetMasterMysqlDb().Beginx()
+	tx, err := datasource.GetMasterDb().Beginx()
 	if err != nil {
 		panic(err)
 	}
@@ -78,7 +78,7 @@ func (userService *userService) InsertUser(sysUser *systemModels.SysUserDML) {
 
 func (userService *userService) UpdateUser(sysUser *systemModels.SysUserDML) {
 	userId := sysUser.UserId
-	tx, err := mysql.GetMasterMysqlDb().Beginx()
+	tx, err := datasource.GetMasterDb().Beginx()
 	if err != nil {
 		panic(err)
 	}
@@ -108,7 +108,7 @@ func (userService *userService) ResetPwd(sysUser *systemModels.SysUserDML) {
 
 }
 
-func (userService *userService) insertUserPost(user *systemModels.SysUserDML, tx ...mysql.Transaction) {
+func (userService *userService) insertUserPost(user *systemModels.SysUserDML, tx ...datasource.Transaction) {
 	posts := user.PostIds
 	if len(posts) != 0 {
 		list := make([]*systemModels.SysUserPost, 0, len(posts))
@@ -122,7 +122,7 @@ func (userService *userService) insertUserPost(user *systemModels.SysUserDML, tx
 
 }
 
-func (userService *userService) insertUserRole(user *systemModels.SysUserDML, tx ...mysql.Transaction) {
+func (userService *userService) insertUserRole(user *systemModels.SysUserDML, tx ...datasource.Transaction) {
 	roles := user.RoleIds
 	if len(roles) != 0 {
 		list := make([]*systemModels.SysUserRole, 0, len(roles))
@@ -164,7 +164,7 @@ func (userService *userService) CheckEmailUnique(user *systemModels.SysUserDML) 
 }
 
 func (userService *userService) DeleteUserByIds(ids []int64) {
-	tx, err := mysql.GetMasterMysqlDb().Beginx()
+	tx, err := datasource.GetMasterDb().Beginx()
 	if err != nil {
 		panic(err)
 	}
@@ -186,7 +186,7 @@ func (userService *userService) UserImportData(rows [][]string, operName string,
 	successNum := 0
 	list, failureMsg, failureNum := systemModels.RowsToSysUserDMLList(rows)
 	password := bCryptPasswordEncoder.HashPassword("123456")
-	tx, err := mysql.GetMasterMysqlDb().Beginx()
+	tx, err := datasource.GetMasterDb().Beginx()
 	if err != nil {
 		panic(err)
 	}

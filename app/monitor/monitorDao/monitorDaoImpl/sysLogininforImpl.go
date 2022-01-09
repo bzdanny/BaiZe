@@ -1,7 +1,7 @@
 package monitorDaoImpl
 
 import (
-	"baize/app/common/mysql"
+	"baize/app/common/datasource"
 	"baize/app/constant/constants"
 	"baize/app/monitor/monitorModels"
 	"github.com/jmoiron/sqlx"
@@ -28,7 +28,7 @@ func GetLogininforDao() *logininforDao {
 
 func (logininforDao *logininforDao) InserLogininfor(logininfor *monitorModels.Logininfor) {
 
-	_, err := mysql.GetMasterMysqlDb().NamedExec("insert into sys_logininfor (info_id,user_name, status, ipaddr, login_location, browser, os, msg, login_time) values (:info_id,:user_name, :status, :ipaddr, :login_location, :browser, :os, :msg, sysdate())", logininfor)
+	_, err := datasource.GetMasterDb().NamedExec("insert into sys_logininfor (info_id,user_name, status, ipaddr, login_location, browser, os, msg, login_time) values (:info_id,:user_name, :status, :ipaddr, :login_location, :browser, :os, :msg, sysdate())", logininfor)
 	if err != nil {
 		zap.L().Error("登录信息保存错误", zap.Error(err))
 	}
@@ -50,7 +50,7 @@ func (logininforDao *logininforDao) SelectLogininforList(logininfor *monitorMode
 		whereSql = " where " + whereSql[4:]
 	}
 
-	countRow, err := mysql.GetMasterMysqlDb().NamedQuery(constants.MysqlCount+logininforDao.fromLogininforSql+whereSql, logininfor)
+	countRow, err := datasource.GetMasterDb().NamedQuery(constants.MysqlCount+logininforDao.fromLogininforSql+whereSql, logininfor)
 	if err != nil {
 		panic(err)
 	}
@@ -65,7 +65,7 @@ func (logininforDao *logininforDao) SelectLogininforList(logininfor *monitorMode
 		if logininfor.Limit != "" {
 			whereSql += logininfor.Limit
 		}
-		listRows, err := mysql.GetMasterMysqlDb().NamedQuery(logininforDao.selectLogininforSql+logininforDao.fromLogininforSql+whereSql, logininfor)
+		listRows, err := datasource.GetMasterDb().NamedQuery(logininforDao.selectLogininforSql+logininforDao.fromLogininforSql+whereSql, logininfor)
 		if err != nil {
 			panic(err)
 		}
@@ -84,14 +84,14 @@ func (logininforDao *logininforDao) DeleteLogininforByIds(infoIds []int64) {
 	if err != nil {
 		panic(err)
 	}
-	_, err = mysql.GetMasterMysqlDb().Exec(query, i...)
+	_, err = datasource.GetMasterDb().Exec(query, i...)
 	if err != nil {
 		panic(err)
 	}
 }
 
 func (logininforDao *logininforDao) CleanLogininfor() {
-	_, err := mysql.GetMasterMysqlDb().Exec("truncate table sys_logininfor")
+	_, err := datasource.GetMasterDb().Exec("truncate table sys_logininfor")
 	if err != nil {
 		panic(err)
 	}

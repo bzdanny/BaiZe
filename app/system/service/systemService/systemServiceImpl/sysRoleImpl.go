@@ -1,7 +1,7 @@
 package systemServiceImpl
 
 import (
-	"baize/app/common/mysql"
+	"baize/app/common/datasource"
 	"baize/app/system/dao/systemDao"
 	"baize/app/system/dao/systemDao/systemDaoImpl"
 	"baize/app/system/models/loginModels"
@@ -52,7 +52,7 @@ func (roleService *roleService) SelectRoleById(roseId int64) (role *systemModels
 
 func (roleService *roleService) InsertRole(sysRole *systemModels.SysRoleDML) {
 	sysRole.RoleId = snowflake.GenID()
-	tx, err := mysql.GetMasterMysqlDb().Beginx()
+	tx, err := datasource.GetMasterDb().Beginx()
 	if err != nil {
 		panic(err)
 	}
@@ -70,7 +70,7 @@ func (roleService *roleService) InsertRole(sysRole *systemModels.SysRoleDML) {
 }
 
 func (roleService *roleService) UpdateRole(sysRole *systemModels.SysRoleDML) {
-	tx, err := mysql.GetMasterMysqlDb().Beginx()
+	tx, err := datasource.GetMasterDb().Beginx()
 	if err != nil {
 		panic(err)
 	}
@@ -93,7 +93,7 @@ func (roleService *roleService) UpdateRoleStatus(sysRole *systemModels.SysRoleDM
 	return
 }
 func (roleService *roleService) AuthDataScope(sysRole *systemModels.SysRoleDML) {
-	tx, err := mysql.GetMasterMysqlDb().Beginx()
+	tx, err := datasource.GetMasterDb().Beginx()
 	if err != nil {
 		panic(err)
 	}
@@ -112,7 +112,7 @@ func (roleService *roleService) AuthDataScope(sysRole *systemModels.SysRoleDML) 
 }
 
 func (roleService *roleService) DeleteRoleByIds(ids []int64) {
-	tx, err := mysql.GetMasterMysqlDb().Beginx()
+	tx, err := datasource.GetMasterDb().Beginx()
 	if err != nil {
 		panic(err)
 	}
@@ -155,7 +155,7 @@ func (roleService *roleService) SelectRoleListByUserId(userId int64) (list []int
 
 }
 
-func (roleService *roleService) insertRoleMenu(sysRole *systemModels.SysRoleDML, tx ...mysql.Transaction) {
+func (roleService *roleService) insertRoleMenu(sysRole *systemModels.SysRoleDML, tx ...datasource.Transaction) {
 	menuIds := sysRole.MenuIds
 	if len(menuIds) != 0 {
 		list := make([]*systemModels.SysRoleMenu, 0, len(menuIds))
@@ -193,7 +193,7 @@ func (roleService *roleService) SelectUserRoleGroupByUserId(userId int64) string
 	return strings.Join(roleNames, ",")
 
 }
-func (roleService *roleService) insertRoleDept(sysRole *systemModels.SysRoleDML, tx ...mysql.Transaction) {
+func (roleService *roleService) insertRoleDept(sysRole *systemModels.SysRoleDML, tx ...datasource.Transaction) {
 	deptIds := sysRole.DeptIds
 	if len(deptIds) != 0 {
 		list := make([]*systemModels.SysRoleDept, 0, len(deptIds))

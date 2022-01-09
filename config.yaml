@@ -11,14 +11,27 @@ log:
   max_size: 200
   max_age: 30
   max_backups: 7
-mysql:
-  host: 127.0.0.1
-  port: 3306
-  user: "root"
-  password: "123456"
-  dbname: "baize"
-  max_open_conns: 200
-  max_idle_conns: 50
+datasource:
+  master:
+    driver_name: "mysql"
+    host: "127.0.0.1"
+    user: "root"
+    password: "123456"
+    dbname: "baize"
+    port: 3306
+    max_open_conns: 200
+    max_idle_conns: 50
+  slave:
+    count: 2
+    driver_name: "mysql"
+    hosts: "127.0.0.1,127.0.0.1"
+    users: "root,root"
+    passwords: "123456,123456"
+    dbnames: "baize,baize"
+    ports: 3306,3306
+    max_open_connss: 200,200
+    max_idle_connss: 50,50
+
 redis:
   host: 127.0.0.1
   port: 6379

@@ -1,7 +1,7 @@
 package genTableDaoImpl
 
 import (
-	"baize/app/common/mysql"
+	"baize/app/common/datasource"
 	"baize/app/genTable/genTableModels"
 	"github.com/jmoiron/sqlx"
 )
@@ -21,7 +21,7 @@ func GetGenTableColumnDao() *genTableColumnDao {
 
 func (genTableColumnDao *genTableColumnDao) SelectDbTableColumnsByName(tableName string) (list []*genTableModels.InformationSchemaColumn) {
 	list = make([]*genTableModels.InformationSchemaColumn, 0, 0)
-	mysql.GetMasterMysqlDb().Select(&list, `
+	datasource.GetMasterDb().Select(&list, `
 		select column_name, (case when (is_nullable = 'no'  &&  column_key != 'PRI') then '1' else '0' end) as is_required, (case when column_key = 'PRI' then '1' else '0' end) as is_pk, ordinal_position as sort, column_comment,  column_type
 		from information_schema.columns where table_schema = (select database()) and table_name = (?)
 		order by ordinal_position
@@ -32,7 +32,7 @@ func (genTableColumnDao *genTableColumnDao) SelectDbTableColumnsByName(tableName
 
 func (genTableColumnDao *genTableColumnDao) SelectGenTableColumnListByTableId(tableId int64) (list []*genTableModels.GenTableColumnVo) {
 	list = make([]*genTableModels.GenTableColumnVo, 0, 0)
-	mysql.GetMasterMysqlDb().Select(&list, `select column_id, table_id, column_name, column_comment, column_type, go_type, go_field,html_field, is_pk,  is_required, is_insert, is_edit, is_list, is_query, query_type, html_type, dict_type, sort, create_by, create_time, update_by, update_time 
+	datasource.GetMasterDb().Select(&list, `select column_id, table_id, column_name, column_comment, column_type, go_type, go_field,html_field, is_pk,  is_required, is_insert, is_edit, is_list, is_query, query_type, html_type, dict_type, sort, create_by, create_time, update_by, update_time 
 	from gen_table_column
        where table_id = ?
         order by sort`, tableId)
@@ -42,7 +42,7 @@ func (genTableColumnDao *genTableColumnDao) SelectGenTableColumnListByTableId(ta
 
 func (genTableColumnDao *genTableColumnDao) BatchInsertGenTableColumn(genTables []*genTableModels.GenTableColumnDML) {
 
-	_, err := mysql.GetMasterMysqlDb().NamedExec(`insert into gen_table_column(column_id,table_id,column_name,column_comment,column_type,go_type,go_field,html_field,is_pk,is_required,is_insert,is_edit,is_list, is_query, query_type, html_type, dict_type, sort,create_by,create_time,update_by,update_time)
+	_, err := datasource.GetMasterDb().NamedExec(`insert into gen_table_column(column_id,table_id,column_name,column_comment,column_type,go_type,go_field,html_field,is_pk,is_required,is_insert,is_edit,is_list, is_query, query_type, html_type, dict_type, sort,create_by,create_time,update_by,update_time)
 							values(:column_id,:table_id,:column_name,:column_comment,:column_type,:go_type,:go_field,:html_field,:is_pk,:is_required,:is_insert,:is_edit,:is_list, :is_query, :query_type, :html_type, :dict_type, :sort,:create_by,now(),:update_by,now())`,
 		genTables)
 	if err != nil {
@@ -52,7 +52,7 @@ func (genTableColumnDao *genTableColumnDao) BatchInsertGenTableColumn(genTables 
 }
 
 func (genTableColumnDao *genTableColumnDao) UpdateGenTableColumn(column *genTableModels.GenTableColumnDML) {
-	_, err := mysql.GetMasterMysqlDb().NamedExec("update gen_table_column set column_comment=:column_comment,go_type=:go_type,go_field=:go_field,html_field=:html_field,is_insert=:is_insert, is_edit=:is_edit,is_list=:is_list,is_query=:is_query,is_required=:is_required,query_type=:query_type,html_type=:html_type,dict_type=:dict_type,sort=:sort, update_by = :update_by,update_time = now()  where column_id = :column_id", column)
+	_, err := datasource.GetMasterDb().NamedExec("update gen_table_column set column_comment=:column_comment,go_type=:go_type,go_field=:go_field,html_field=:html_field,is_insert=:is_insert, is_edit=:is_edit,is_list=:is_list,is_query=:is_query,is_required=:is_required,query_type=:query_type,html_type=:html_type,dict_type=:dict_type,sort=:sort, update_by = :update_by,update_time = now()  where column_id = :column_id", column)
 	if err != nil {
 		panic(err)
 	}
@@ -64,7 +64,7 @@ func (genTableColumnDao *genTableColumnDao) DeleteGenTableColumnByIds(ids []int6
 	if err != nil {
 		panic(err)
 	}
-	_, err = mysql.GetMasterMysqlDb().Exec(query, i...)
+	_, err = datasource.GetMasterDb().Exec(query, i...)
 	if err != nil {
 		panic(err)
 	}
@@ -94,7 +94,7 @@ func (genTableColumnDao *genTableColumnDao) DeleteGenTableColumnByIds(ids []int6
 //	}
 //	countSql := constants.MysqlCount + fromSql + whereSql
 //
-//	countRow, err := mysql.GetMasterMysqlDb().NamedQuery(countSql, GenTable)
+//	countRow, err := mysql.GetMasterDb().NamedQuery(countSql, GenTable)
 //	if err != nil {
 //		return
 //	}
@@ -108,7 +108,7 @@ func (genTableColumnDao *genTableColumnDao) DeleteGenTableColumnByIds(ids []int6
 //		if GenTable.Limit != "" {
 //			whereSql += GenTable.Limit
 //		}
-//		listRows, err := mysql.GetMasterMysqlDb().NamedQuery(selectSql+fromSql+whereSql, GenTable)
+//		listRows, err := mysql.GetMasterDb().NamedQuery(selectSql+fromSql+whereSql, GenTable)
 //		if err != nil {
 //			return nil, nil, err
 //		}
@@ -125,13 +125,13 @@ func (genTableColumnDao *genTableColumnDao) DeleteGenTableColumnByIds(ids []int6
 //func SelectDbTableListByNames(tableNames []string) (list []*genTableModels.GenTableVo,  err error)  {
 //	query, i, err := sqlx.In("select table_name, table_comment, create_time, update_time from information_schema.tables where table_name NOT LIKE 'gen_%' and table_schema = (select database()) and table_name in  (?)", tableNames)
 //	list = make([]*genTableModels.GenTableVo, 0,0)
-//	mysql.GetMasterMysqlDb().Select(&list,query,i...)
+//	mysql.GetMasterDb().Select(&list,query,i...)
 //	return
 //}
 //
 //func SelectGenTableById(id int64) (genTable *genTableModels.GenTableVo)  {
 //	genTable=new(genTableModels.GenTableVo)
-//	mysql.GetMasterMysqlDb().Get(&genTable,`SELECT t.table_id, t.table_name, t.table_comment, t.sub_table_name, t.sub_table_fk_name, t.class_name, t.tpl_category, t.package_name, t.module_name, t.business_name, t.function_name, t.function_author, t.gen_type, t.gen_path, t.options, t.remark,
+//	mysql.GetMasterDb().Get(&genTable,`SELECT t.table_id, t.table_name, t.table_comment, t.sub_table_name, t.sub_table_fk_name, t.class_name, t.tpl_category, t.package_name, t.module_name, t.business_name, t.function_name, t.function_author, t.gen_type, t.gen_path, t.options, t.remark,
 //			   c.column_id, c.column_name, c.column_comment, c.column_type, c.java_type, c.java_field, c.is_pk, c.is_increment, c.is_required, c.is_insert, c.is_edit, c.is_list, c.is_query, c.query_type, c.html_type, c.dict_type, c.sort
 //		FROM gen_table t
 //			 LEFT JOIN gen_table_column c ON t.table_id = c.table_id
@@ -140,7 +140,7 @@ func (genTableColumnDao *genTableColumnDao) DeleteGenTableColumnByIds(ids []int6
 //}
 //func SelectGenTableByName(name string) (genTable *genTableModels.GenTableVo)  {
 //	genTable=new(genTableModels.GenTableVo)
-//	mysql.GetMasterMysqlDb().Get(&genTable,`SELECT t.table_id, t.table_name, t.table_comment, t.sub_table_name, t.sub_table_fk_name, t.class_name, t.tpl_category, t.package_name, t.module_name, t.business_name, t.function_name, t.function_author, t.gen_type, t.gen_path, t.options, t.remark,
+//	mysql.GetMasterDb().Get(&genTable,`SELECT t.table_id, t.table_name, t.table_comment, t.sub_table_name, t.sub_table_fk_name, t.class_name, t.tpl_category, t.package_name, t.module_name, t.business_name, t.function_name, t.function_author, t.gen_type, t.gen_path, t.options, t.remark,
 //			   c.column_id, c.column_name, c.column_comment, c.column_type, c.java_type, c.java_field, c.is_pk, c.is_increment, c.is_required, c.is_insert, c.is_edit, c.is_list, c.is_query, c.query_type, c.html_type, c.dict_type, c.sort
 //		FROM gen_table t
 //			 LEFT JOIN gen_table_column c ON t.table_id = c.table_id
@@ -149,7 +149,7 @@ func (genTableColumnDao *genTableColumnDao) DeleteGenTableColumnByIds(ids []int6
 //}
 //func SelectGenTableAll() (list []*genTableModels.GenTableVo)  {
 //	list=make([]*genTableModels.GenTableVo,0,0)
-//	mysql.GetMasterMysqlDb().Select(&list,`SELECT t.table_id, t.table_name, t.table_comment, t.sub_table_name, t.sub_table_fk_name, t.class_name, t.tpl_category, t.package_name, t.module_name, t.business_name, t.function_name, t.function_author, t.gen_type, t.gen_path, t.options, t.remark,
+//	mysql.GetMasterDb().Select(&list,`SELECT t.table_id, t.table_name, t.table_comment, t.sub_table_name, t.sub_table_fk_name, t.class_name, t.tpl_category, t.package_name, t.module_name, t.business_name, t.function_name, t.function_author, t.gen_type, t.gen_path, t.options, t.remark,
 //			   c.column_id, c.column_name, c.column_comment, c.column_type, c.java_type, c.java_field, c.is_pk, c.is_increment, c.is_required, c.is_insert, c.is_edit, c.is_list, c.is_query, c.query_type, c.html_type, c.dict_type, c.sort
 //		FROM gen_table t
 //			 LEFT JOIN gen_table_column c ON t.table_id = c.table_id
@@ -169,7 +169,7 @@ func (genTableColumnDao *genTableColumnDao) DeleteGenTableColumnByIds(ids []int6
 //	}
 //
 //	insertStr := fmt.Sprintf(insertSQL, key, value)
-//	_, err = mysql.GetMasterMysqlDb().NamedExec(insertStr, genTable)
+//	_, err = mysql.GetMasterDb().NamedExec(insertStr, genTable)
 //	if err != nil {
 //		zap.L().Error("数据库数据信息错误", zap.Error(err))
 //	}
@@ -226,7 +226,7 @@ func (genTableColumnDao *genTableColumnDao) DeleteGenTableColumnByIds(ids []int6
 //
 //	updateSQL += " where table_id = :table_id"
 //
-//	_, err = mysql.GetMasterMysqlDb().NamedExec(updateSQL, genTable)
+//	_, err = mysql.GetMasterDb().NamedExec(updateSQL, genTable)
 //	if err != nil {
 //		zap.L().Error("数据库数据信息错误", zap.Error(err))
 //	}
@@ -235,6 +235,6 @@ func (genTableColumnDao *genTableColumnDao) DeleteGenTableColumnByIds(ids []int6
 //
 //func DeleteGenTableByIds(ids []int64) (err error)   {
 //	query, i, err := sqlx.In(" delete from gen_table where table_id in(?)", ids)
-//	_, err = mysql.GetMasterMysqlDb().Exec(query, i...)
+//	_, err = mysql.GetMasterDb().Exec(query, i...)
 //	return
 //}

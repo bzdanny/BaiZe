@@ -1,7 +1,7 @@
 package systemDao
 
 import (
-	"baize/app/common/mysql"
+	"baize/app/common/datasource"
 	"baize/app/system/models/loginModels"
 	"baize/app/system/models/systemModels"
 )
@@ -13,9 +13,9 @@ type IRoleDao interface {
 	SelectRolePermissionByUserId(userId int64) (roles []string)
 	SelectRoleIdAndDataScopeByUserId(userId int64) (roles []*loginModels.Role)
 	SelectRoleListByUserId(userId int64) (list []int64)
-	InsertRole(sysRole *systemModels.SysRoleDML, tx ...mysql.Transaction)
-	UpdateRole(sysRole *systemModels.SysRoleDML, tx ...mysql.Transaction)
-	DeleteRoleByIds(ids []int64, tx ...mysql.Transaction)
+	InsertRole(sysRole *systemModels.SysRoleDML, tx ...datasource.Transaction)
+	UpdateRole(sysRole *systemModels.SysRoleDML, tx ...datasource.Transaction)
+	DeleteRoleByIds(ids []int64, tx ...datasource.Transaction)
 	CheckRoleNameUnique(roleName string) int64
 	CheckRoleKeyUnique(roleKey string) int64
 	SelectAllocatedList(user *systemModels.SysRoleAndUserDQL) (list []*systemModels.SysUserVo, total *int64)

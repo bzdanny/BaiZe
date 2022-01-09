@@ -1,7 +1,7 @@
 package quartzDaoImpl
 
 import (
-	"baize/app/common/mysql"
+	"baize/app/common/datasource"
 	"baize/app/constant/constants"
 	"baize/app/quartz/quartzModels"
 	"database/sql"
@@ -46,7 +46,7 @@ func (jobDao *jobDao) SelectJobList(job *quartzModels.JobDQL) (list []*quartzMod
 		whereSql = " where " + whereSql[4:]
 	}
 
-	countRow, err := mysql.GetMasterMysqlDb().NamedQuery(constants.MysqlCount+jobDao.fromSql+whereSql, job)
+	countRow, err := datasource.GetMasterDb().NamedQuery(constants.MysqlCount+jobDao.fromSql+whereSql, job)
 	if err != nil {
 		panic(err)
 	}
@@ -60,7 +60,7 @@ func (jobDao *jobDao) SelectJobList(job *quartzModels.JobDQL) (list []*quartzMod
 		if job.Limit != "" {
 			whereSql += job.Limit
 		}
-		listRows, err := mysql.GetMasterMysqlDb().NamedQuery(jobDao.selectSql+jobDao.fromSql+whereSql, job)
+		listRows, err := datasource.GetMasterDb().NamedQuery(jobDao.selectSql+jobDao.fromSql+whereSql, job)
 		if err != nil {
 			panic(err)
 		}
@@ -78,7 +78,7 @@ func (jobDao *jobDao) SelectJobList(job *quartzModels.JobDQL) (list []*quartzMod
 }
 func (jobDao *jobDao) SelectJobAll() (list []*quartzModels.JobVo) {
 	list = make([]*quartzModels.JobVo, 0)
-	err := mysql.GetMasterMysqlDb().Select(&list, jobDao.selectSql+jobDao.fromSql)
+	err := datasource.GetMasterDb().Select(&list, jobDao.selectSql+jobDao.fromSql)
 	if err != nil {
 		panic(err)
 	}
@@ -86,7 +86,7 @@ func (jobDao *jobDao) SelectJobAll() (list []*quartzModels.JobVo) {
 }
 func (jobDao *jobDao) SelectJobById(id int64) (job *quartzModels.JobVo) {
 	job = new(quartzModels.JobVo)
-	err := mysql.GetMasterMysqlDb().Get(job, jobDao.selectSql+jobDao.fromSql+" where job_id = ?", id)
+	err := datasource.GetMasterDb().Get(job, jobDao.selectSql+jobDao.fromSql+" where job_id = ?", id)
 	if err == sql.ErrNoRows {
 		return nil
 	} else if err != nil {
@@ -96,7 +96,7 @@ func (jobDao *jobDao) SelectJobById(id int64) (job *quartzModels.JobVo) {
 }
 func (jobDao *jobDao) SelectJobByInvokeTarget(invokeTarget string) (job *quartzModels.JobVo) {
 	job = new(quartzModels.JobVo)
-	err := mysql.GetMasterMysqlDb().Get(job, jobDao.selectSql+jobDao.fromSql+" where invoke_target = ?", invokeTarget)
+	err := datasource.GetMasterDb().Get(job, jobDao.selectSql+jobDao.fromSql+" where invoke_target = ?", invokeTarget)
 	if err == sql.ErrNoRows {
 		return nil
 	} else if err != nil {
@@ -105,7 +105,7 @@ func (jobDao *jobDao) SelectJobByInvokeTarget(invokeTarget string) (job *quartzM
 	return
 }
 func (jobDao *jobDao) DeleteJobById(id int64) {
-	_, err := mysql.GetMasterMysqlDb().Exec("delete from sys_job where job_id =", id)
+	_, err := datasource.GetMasterDb().Exec("delete from sys_job where job_id =", id)
 	if err != nil {
 		panic(err)
 	}
@@ -143,7 +143,7 @@ func (jobDao *jobDao) UpdateJob(job *quartzModels.JobDML) {
 
 	updateSQL += " where job_id = :job_id"
 
-	_, err := mysql.GetMasterMysqlDb().NamedExec(updateSQL, job)
+	_, err := datasource.GetMasterDb().NamedExec(updateSQL, job)
 	if err != nil {
 		panic(err)
 	}
@@ -163,7 +163,7 @@ func (jobDao *jobDao) InsertJob(job *quartzModels.JobDML) {
 		value += ",:remark"
 	}
 	insertStr := fmt.Sprintf(insertSQL, key, value)
-	_, err := mysql.GetMasterMysqlDb().NamedExec(insertStr, job)
+	_, err := datasource.GetMasterDb().NamedExec(insertStr, job)
 	if err != nil {
 		panic(err)
 	}
@@ -174,7 +174,7 @@ func (jobDao *jobDao) DeleteJobByIds(ids []int64) {
 	if err != nil {
 		panic(err)
 	}
-	_, err = mysql.GetMasterMysqlDb().Exec(query, i...)
+	_, err = datasource.GetMasterDb().Exec(query, i...)
 	if err != nil {
 		panic(err)
 	}

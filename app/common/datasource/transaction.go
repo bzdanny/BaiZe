@@ -1,4 +1,4 @@
-package mysql
+package datasource
 
 import "database/sql"
 

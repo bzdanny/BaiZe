@@ -1,7 +1,7 @@
 package systemDaoImpl
 
 import (
-	"baize/app/common/mysql"
+	"baize/app/common/datasource"
 	"baize/app/constant/constants"
 	"baize/app/system/models/systemModels"
 	"fmt"
@@ -28,7 +28,7 @@ func GetSysPostDao() *sysPostDao {
 
 func (postDao *sysPostDao) SelectPostAll() (sysPost []*systemModels.SysPostVo) {
 	sysPost = make([]*systemModels.SysPostVo, 0, 2)
-	err := mysql.GetMasterMysqlDb().Select(&sysPost, postDao.selectPostSql+postDao.fromPostSql)
+	err := datasource.GetMasterDb().Select(&sysPost, postDao.selectPostSql+postDao.fromPostSql)
 	if err != nil {
 		panic(err)
 	}
@@ -42,7 +42,7 @@ func (postDao *sysPostDao) SelectPostListByUserId(userId int64) (list []int64) {
 		left join sys_user u on u.user_id = up.user_id
 		where u.user_id = ?`
 	list = make([]int64, 0, 1)
-	err := mysql.GetMasterMysqlDb().Select(&list, sqlStr, userId)
+	err := datasource.GetMasterDb().Select(&list, sqlStr, userId)
 	if err != nil {
 		panic(err)
 	}
@@ -66,7 +66,7 @@ func (postDao *sysPostDao) SelectPostList(post *systemModels.SysPostDQL) (list [
 	}
 	countSql := constants.MysqlCount + postDao.fromPostSql + whereSql
 
-	countRow, err := mysql.GetMasterMysqlDb().NamedQuery(countSql, post)
+	countRow, err := datasource.GetMasterDb().NamedQuery(countSql, post)
 	if err != nil {
 		panic(err)
 	}
@@ -80,7 +80,7 @@ func (postDao *sysPostDao) SelectPostList(post *systemModels.SysPostDQL) (list [
 		if post.Limit != "" {
 			whereSql += post.Limit
 		}
-		listRows, err := mysql.GetMasterMysqlDb().NamedQuery(postDao.selectPostSql+postDao.fromPostSql+whereSql, post)
+		listRows, err := datasource.GetMasterDb().NamedQuery(postDao.selectPostSql+postDao.fromPostSql+whereSql, post)
 		if err != nil {
 			panic(err)
 		}
@@ -97,7 +97,7 @@ func (postDao *sysPostDao) SelectPostList(post *systemModels.SysPostDQL) (list [
 func (postDao *sysPostDao) SelectPostById(postId int64) (dictData *systemModels.SysPostVo) {
 
 	dictData = new(systemModels.SysPostVo)
-	err := mysql.GetMasterMysqlDb().Get(dictData, postDao.selectPostSql+postDao.fromPostSql+" where post_id = ?", postId)
+	err := datasource.GetMasterDb().Get(dictData, postDao.selectPostSql+postDao.fromPostSql+" where post_id = ?", postId)
 	if err != nil {
 		panic(err)
 	}
@@ -125,7 +125,7 @@ func (postDao *sysPostDao) InsertPost(post *systemModels.SysPostDML) {
 	}
 
 	insertStr := fmt.Sprintf(insertSQL, key, value)
-	_, err := mysql.GetMasterMysqlDb().NamedExec(insertStr, post)
+	_, err := datasource.GetMasterDb().NamedExec(insertStr, post)
 	if err != nil {
 		panic(err)
 	}
@@ -154,7 +154,7 @@ func (postDao *sysPostDao) UpdatePost(post *systemModels.SysPostDML) {
 
 	updateSQL += " where post_id = :post_id"
 
-	_, err := mysql.GetMasterMysqlDb().NamedExec(updateSQL, post)
+	_, err := datasource.GetMasterDb().NamedExec(updateSQL, post)
 	if err != nil {
 		panic(err)
 	}
@@ -166,7 +166,7 @@ func (postDao *sysPostDao) DeletePostByIds(dictCodes []int64) {
 	if err != nil {
 		panic(err)
 	}
-	_, err = mysql.GetMasterMysqlDb().Exec(query, i...)
+	_, err = datasource.GetMasterDb().Exec(query, i...)
 	if err != nil {
 		panic(err)
 	}
@@ -179,7 +179,7 @@ func (postDao *sysPostDao) SelectPostNameListByUserId(userId int64) (list []stri
 		left join sys_user u on u.user_id = up.user_id
 		where u.user_id = ?`
 	list = make([]string, 0, 1)
-	err := mysql.GetMasterMysqlDb().Select(&list, sqlStr, userId)
+	err := datasource.GetMasterDb().Select(&list, sqlStr, userId)
 	if err != nil {
 		panic(err)
 	}

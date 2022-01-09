@@ -1,7 +1,7 @@
 package systemDaoImpl
 
 import (
-	"baize/app/common/mysql"
+	"baize/app/common/datasource"
 	"baize/app/system/models/systemModels"
 	"github.com/jmoiron/sqlx"
 )
@@ -19,12 +19,12 @@ func GetSysUserPostDao() *sysUserPostDao {
 	return sysUserPostDaoImpl
 }
 
-func (sysUserPostDao *sysUserPostDao) BatchUserPost(users []*systemModels.SysUserPost, tx ...mysql.Transaction) {
-	var db mysql.Transaction
+func (sysUserPostDao *sysUserPostDao) BatchUserPost(users []*systemModels.SysUserPost, tx ...datasource.Transaction) {
+	var db datasource.Transaction
 	if len(tx) == 1 {
 		db = tx[0]
 	} else {
-		db = mysql.GetMasterMysqlDb()
+		db = datasource.GetMasterDb()
 	}
 	_, err := db.NamedExec("insert into sys_user_post(user_id, post_id) values (:user_id,:post_id)", users)
 	if err != nil {
@@ -32,12 +32,12 @@ func (sysUserPostDao *sysUserPostDao) BatchUserPost(users []*systemModels.SysUse
 	}
 }
 
-func (sysUserPostDao *sysUserPostDao) DeleteUserPostByUserId(userId int64, tx ...mysql.Transaction) {
-	var db mysql.Transaction
+func (sysUserPostDao *sysUserPostDao) DeleteUserPostByUserId(userId int64, tx ...datasource.Transaction) {
+	var db datasource.Transaction
 	if len(tx) == 1 {
 		db = tx[0]
 	} else {
-		db = mysql.GetMasterMysqlDb()
+		db = datasource.GetMasterDb()
 	}
 	_, err := db.Exec("delete from sys_user_post where user_id= ?", userId)
 	if err != nil {
@@ -45,12 +45,12 @@ func (sysUserPostDao *sysUserPostDao) DeleteUserPostByUserId(userId int64, tx ..
 	}
 }
 
-func (sysUserPostDao *sysUserPostDao) DeleteUserPost(ids []int64, tx ...mysql.Transaction) {
-	var db mysql.Transaction
+func (sysUserPostDao *sysUserPostDao) DeleteUserPost(ids []int64, tx ...datasource.Transaction) {
+	var db datasource.Transaction
 	if len(tx) == 1 {
 		db = tx[0]
 	} else {
-		db = mysql.GetMasterMysqlDb()
+		db = datasource.GetMasterDb()
 	}
 	query, i, err := sqlx.In("delete from sys_user_post where user_id in(?)", ids)
 	if err != nil {

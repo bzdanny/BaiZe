@@ -1,7 +1,7 @@
 package systemDaoImpl
 
 import (
-	"baize/app/common/mysql"
+	"baize/app/common/datasource"
 	"baize/app/system/models/systemModels"
 	"database/sql"
 	"fmt"
@@ -26,7 +26,7 @@ func GetSysMenuDao() *sysMenuDao {
 func (sysMenuDao *sysMenuDao) SelectMenuById(menuId int64) (menu *systemModels.SysMenuVo) {
 	whereSql := ` where menu_id = ?`
 	menu = new(systemModels.SysMenuVo)
-	err := mysql.GetMasterMysqlDb().Get(menu, sysMenuDao.selectMenuSql+whereSql, menuId)
+	err := datasource.GetMasterDb().Get(menu, sysMenuDao.selectMenuSql+whereSql, menuId)
 	if err == sql.ErrNoRows {
 		return nil
 	} else if err != nil {
@@ -52,7 +52,7 @@ func (sysMenuDao *sysMenuDao) SelectMenuList(menu *systemModels.SysMenuDQL) (lis
 	whereSql += " order by m.parent_id, m.order_num"
 
 	list = make([]*systemModels.SysMenuVo, 0, 2)
-	listRows, err := mysql.GetMasterMysqlDb().NamedQuery(sysMenuDao.selectMenuSql+whereSql, menu)
+	listRows, err := datasource.GetMasterDb().NamedQuery(sysMenuDao.selectMenuSql+whereSql, menu)
 	if err != nil {
 		panic(err)
 	}
@@ -83,7 +83,7 @@ func (sysMenuDao *sysMenuDao) SelectMenuListByUserId(menu *systemModels.SysMenuD
 	}
 	whereSql += " m.parent_id, m.order_num"
 	list = make([]*systemModels.SysMenuVo, 0, 2)
-	listRows, err := mysql.GetMasterMysqlDb().NamedQuery(sysMenuDao.selectMenuSql+whereSql, menu)
+	listRows, err := datasource.GetMasterDb().NamedQuery(sysMenuDao.selectMenuSql+whereSql, menu)
 	if err != nil {
 		panic(err)
 	}
@@ -149,7 +149,7 @@ func (sysMenuDao *sysMenuDao) InsertMenu(menu *systemModels.SysMenuDML) {
 	}
 
 	insertStr := fmt.Sprintf(insertSQL, key, value)
-	_, err := mysql.GetMasterMysqlDb().NamedExec(insertStr, menu)
+	_, err := datasource.GetMasterDb().NamedExec(insertStr, menu)
 	if err != nil {
 		panic(err)
 	}
@@ -200,7 +200,7 @@ func (sysMenuDao *sysMenuDao) UpdateMenu(menu *systemModels.SysMenuDML) {
 	}
 	updateSQL += " where menu_id = :menu_id"
 
-	_, err := mysql.GetMasterMysqlDb().NamedExec(updateSQL, menu)
+	_, err := datasource.GetMasterDb().NamedExec(updateSQL, menu)
 	if err != nil {
 		panic(err)
 	}
@@ -208,7 +208,7 @@ func (sysMenuDao *sysMenuDao) UpdateMenu(menu *systemModels.SysMenuDML) {
 }
 
 func (sysMenuDao *sysMenuDao) DeleteMenuById(menuId int64) {
-	_, err := mysql.GetMasterMysqlDb().Exec("delete from sys_menu where menu_id = ?", menuId)
+	_, err := datasource.GetMasterDb().Exec("delete from sys_menu where menu_id = ?", menuId)
 	if err != nil {
 		panic(err)
 	}
@@ -223,7 +223,7 @@ func (sysMenuDao *sysMenuDao) SelectMenuPermsByUserId(userId int64) (perms []str
 				left join sys_role r on r.role_id = ur.role_id
 				where m.status = '0' and r.status = '0' and ur.user_id =  ?`
 	perms = make([]string, 0, 2)
-	err := mysql.GetMasterMysqlDb().Select(&perms, sqlStr, userId)
+	err := datasource.GetMasterDb().Select(&perms, sqlStr, userId)
 	if err != nil {
 		panic(err)
 	}
@@ -234,7 +234,7 @@ func (sysMenuDao *sysMenuDao) SelectMenuTreeAll() (sysMenus []*systemModels.SysM
 	whereSql := ` where m.menu_type in ('M', 'C') and m.status = 0
 		order by m.parent_id, m.order_num`
 	sysMenus = make([]*systemModels.SysMenuVo, 0, 2)
-	err := mysql.GetMasterMysqlDb().Select(&sysMenus, sysMenuDao.selectMenuSql+whereSql)
+	err := datasource.GetMasterDb().Select(&sysMenus, sysMenuDao.selectMenuSql+whereSql)
 	if err != nil {
 		panic(err)
 	}
@@ -248,7 +248,7 @@ func (sysMenuDao *sysMenuDao) SelectMenuTreeByUserId(userId int64) (sysMenus []*
 		where u.user_id = ? and m.menu_type in ('M', 'C') and m.status = 0  AND ro.status = 0
 		order by m.parent_id, m.order_num`
 	sysMenus = make([]*systemModels.SysMenuVo, 0, 2)
-	err := mysql.GetMasterMysqlDb().Select(&sysMenus, sysMenuDao.selectMenuSql+whereSql, userId)
+	err := datasource.GetMasterDb().Select(&sysMenus, sysMenuDao.selectMenuSql+whereSql, userId)
 	if err != nil {
 		panic(err)
 	}
@@ -257,7 +257,7 @@ func (sysMenuDao *sysMenuDao) SelectMenuTreeByUserId(userId int64) (sysMenus []*
 
 func (sysMenuDao *sysMenuDao) CheckMenuNameUnique(menuName string, parentId int64) int64 {
 	var roleId int64 = 0
-	err := mysql.GetMasterMysqlDb().Get(&roleId, "select menu_id from sys_menu where menu_name=? and parent_id = ?", menuName, parentId)
+	err := datasource.GetMasterDb().Get(&roleId, "select menu_id from sys_menu where menu_name=? and parent_id = ?", menuName, parentId)
 	if err != nil && err != sql.ErrNoRows {
 		panic(err)
 	}
@@ -266,7 +266,7 @@ func (sysMenuDao *sysMenuDao) CheckMenuNameUnique(menuName string, parentId int6
 
 func (sysMenuDao *sysMenuDao) HasChildByMenuId(menuId int64) int {
 	var count = 0
-	err := mysql.GetMasterMysqlDb().Get(&count, "select count(1) from sys_menu where parent_id = ?", menuId)
+	err := datasource.GetMasterDb().Get(&count, "select count(1) from sys_menu where parent_id = ?", menuId)
 	if err != nil && err != sql.ErrNoRows {
 		panic(err)
 	}
@@ -281,9 +281,9 @@ func (sysMenuDao *sysMenuDao) SelectMenuListByRoleId(roleId int64, menuCheckStri
         where rm.role_id = ?`
 	if menuCheckStrictly {
 		sqlstr += " and m.menu_id not in (select m.parent_id from sys_menu m inner join sys_role_menu rm on m.menu_id = rm.menu_id and rm.role_id = ?)"
-		err = mysql.GetMasterMysqlDb().Select(&roleIds, sqlstr, roleId, roleId)
+		err = datasource.GetMasterDb().Select(&roleIds, sqlstr, roleId, roleId)
 	} else {
-		err = mysql.GetMasterMysqlDb().Select(&roleIds, sqlstr, roleId)
+		err = datasource.GetMasterDb().Select(&roleIds, sqlstr, roleId)
 	}
 
 	if err != nil {

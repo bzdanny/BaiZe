@@ -1,7 +1,7 @@
 package systemDaoImpl
 
 import (
-	"baize/app/common/mysql"
+	"baize/app/common/datasource"
 	"baize/app/system/models/systemModels"
 	"database/sql"
 	"fmt"
@@ -39,7 +39,7 @@ func (deptDao *sysDeptDao) SelectDeptList(dept *systemModels.SysDeptDQL) (sysDep
 	}
 	fromSql += " order by d.parent_id, d.order_num"
 	sysDeptList = make([]*systemModels.SysDeptVo, 0, 2)
-	listRows, err := mysql.GetMasterMysqlDb().NamedQuery(deptDao.deptSql+fromSql, dept)
+	listRows, err := datasource.GetMasterDb().NamedQuery(deptDao.deptSql+fromSql, dept)
 	if err != nil {
 		panic(err)
 	}
@@ -56,7 +56,7 @@ func (deptDao *sysDeptDao) SelectDeptList(dept *systemModels.SysDeptDQL) (sysDep
 func (deptDao *sysDeptDao) SelectDeptById(deptId int64) (dept *systemModels.SysDeptVo) {
 	whereSql := ` where d.dept_id = ?`
 	dept = new(systemModels.SysDeptVo)
-	err := mysql.GetMasterMysqlDb().Get(dept, deptDao.deptSql+whereSql, deptId)
+	err := datasource.GetMasterDb().Get(dept, deptDao.deptSql+whereSql, deptId)
 	if err == sql.ErrNoRows {
 		return nil
 	} else if err != nil {
@@ -96,7 +96,7 @@ func (deptDao *sysDeptDao) InsertDept(dept *systemModels.SysDeptDML) {
 	}
 
 	insertStr := fmt.Sprintf(insertSQL, key, value)
-	_, err := mysql.GetMasterMysqlDb().NamedExec(insertStr, dept)
+	_, err := datasource.GetMasterDb().NamedExec(insertStr, dept)
 	if err != nil {
 		panic(err)
 	}
@@ -134,7 +134,7 @@ func (deptDao *sysDeptDao) UpdateDept(dept *systemModels.SysDeptDML) {
 
 	updateSQL += " where dept_id = :dept_id"
 
-	_, err := mysql.GetMasterMysqlDb().NamedExec(updateSQL, dept)
+	_, err := datasource.GetMasterDb().NamedExec(updateSQL, dept)
 	if err != nil {
 		panic(err)
 	}
@@ -142,7 +142,7 @@ func (deptDao *sysDeptDao) UpdateDept(dept *systemModels.SysDeptDML) {
 }
 
 func (deptDao *sysDeptDao) DeleteDeptById(deptId int64) {
-	_, err := mysql.GetMasterMysqlDb().Exec("update sys_dept set del_flag = '2' where dept_id =?", deptId)
+	_, err := datasource.GetMasterDb().Exec("update sys_dept set del_flag = '2' where dept_id =?", deptId)
 	if err != nil {
 		panic(err)
 	}
@@ -150,7 +150,7 @@ func (deptDao *sysDeptDao) DeleteDeptById(deptId int64) {
 }
 func (deptDao *sysDeptDao) CheckDeptNameUnique(deptName string, parentId int64) int64 {
 	var roleId int64 = 0
-	err := mysql.GetMasterMysqlDb().Get(&roleId, "select dept_id from sys_dept where dept_name=? and parent_id = ?", deptName, parentId)
+	err := datasource.GetMasterDb().Get(&roleId, "select dept_id from sys_dept where dept_name=? and parent_id = ?", deptName, parentId)
 	if err != nil && err != sql.ErrNoRows {
 		panic(err)
 	}
@@ -158,7 +158,7 @@ func (deptDao *sysDeptDao) CheckDeptNameUnique(deptName string, parentId int64) 
 }
 func (deptDao *sysDeptDao) HasChildByDeptId(deptId int64) int {
 	var count = 0
-	err := mysql.GetMasterMysqlDb().Get(&count, "select count(1) from sys_dept where parent_id = ?", deptId)
+	err := datasource.GetMasterDb().Get(&count, "select count(1) from sys_dept where parent_id = ?", deptId)
 	if err != nil && err != sql.ErrNoRows {
 		panic(err)
 	}
@@ -166,7 +166,7 @@ func (deptDao *sysDeptDao) HasChildByDeptId(deptId int64) int {
 }
 func (deptDao *sysDeptDao) CheckDeptExistUser(deptId int64) int {
 	var count = 0
-	err := mysql.GetMasterMysqlDb().Get(&count, "select count(1) from sys_user where dept_id = ? and del_flag = '0'", deptId)
+	err := datasource.GetMasterDb().Get(&count, "select count(1) from sys_user where dept_id = ? and del_flag = '0'", deptId)
 	if err != nil && err != sql.ErrNoRows {
 		panic(err)
 	}
@@ -185,9 +185,9 @@ func (deptDao *sysDeptDao) SelectDeptListByRoleId(roleId int64, deptCheckStrictl
 	}
 	sqlstr += " order by d.parent_id, d.order_num"
 	if deptCheckStrictly {
-		err = mysql.GetMasterMysqlDb().Select(&deptIds, sqlstr, roleId, roleId)
+		err = datasource.GetMasterDb().Select(&deptIds, sqlstr, roleId, roleId)
 	} else {
-		err = mysql.GetMasterMysqlDb().Select(&deptIds, sqlstr, roleId)
+		err = datasource.GetMasterDb().Select(&deptIds, sqlstr, roleId)
 	}
 
 	if err != nil {

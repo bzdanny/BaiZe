@@ -1,7 +1,7 @@
 package genTableDaoImpl
 
 import (
-	"baize/app/common/mysql"
+	"baize/app/common/datasource"
 	"baize/app/constant/constants"
 	"baize/app/genTable/genTableModels"
 	"fmt"
@@ -43,7 +43,7 @@ func (genTableDao *genTableDao) SelectGenTableList(GenTable *genTableModels.GenT
 	}
 	countSql := constants.MysqlCount + fromSql + whereSql
 
-	countRow, err := mysql.GetMasterMysqlDb().NamedQuery(countSql, GenTable)
+	countRow, err := datasource.GetMasterDb().NamedQuery(countSql, GenTable)
 	if err != nil {
 		panic(err)
 	}
@@ -57,7 +57,7 @@ func (genTableDao *genTableDao) SelectGenTableList(GenTable *genTableModels.GenT
 		if GenTable.Limit != "" {
 			whereSql += GenTable.Limit
 		}
-		listRows, err := mysql.GetMasterMysqlDb().NamedQuery(selectSql+fromSql+whereSql, GenTable)
+		listRows, err := datasource.GetMasterDb().NamedQuery(selectSql+fromSql+whereSql, GenTable)
 		if err != nil {
 			panic(err)
 		}
@@ -94,7 +94,7 @@ func (genTableDao *genTableDao) SelectDbTableList(GenTable *genTableModels.GenTa
 
 	countSql := constants.MysqlCount + fromSql + whereSql
 
-	countRow, err := mysql.GetMasterMysqlDb().NamedQuery(countSql, GenTable)
+	countRow, err := datasource.GetMasterDb().NamedQuery(countSql, GenTable)
 	if err != nil {
 		panic(err)
 	}
@@ -108,7 +108,7 @@ func (genTableDao *genTableDao) SelectDbTableList(GenTable *genTableModels.GenTa
 		if GenTable.Limit != "" {
 			whereSql += GenTable.Limit
 		}
-		listRows, err := mysql.GetMasterMysqlDb().NamedQuery(selectSql+fromSql+whereSql, GenTable)
+		listRows, err := datasource.GetMasterDb().NamedQuery(selectSql+fromSql+whereSql, GenTable)
 		if err != nil {
 			panic(err)
 		}
@@ -131,7 +131,7 @@ func (genTableDao *genTableDao) SelectDbTableListByNames(tableNames []string) (l
 		panic(err)
 	}
 	list = make([]*genTableModels.DBTableVo, 0, 0)
-	err = mysql.GetMasterMysqlDb().Select(&list, query, i...)
+	err = datasource.GetMasterDb().Select(&list, query, i...)
 	if err != nil {
 		panic(err)
 	}
@@ -140,7 +140,7 @@ func (genTableDao *genTableDao) SelectDbTableListByNames(tableNames []string) (l
 
 func (genTableDao *genTableDao) SelectGenTableById(id int64) (genTable *genTableModels.GenTableVo) {
 	genTable = new(genTableModels.GenTableVo)
-	err := mysql.GetMasterMysqlDb().Get(genTable, `SELECT
+	err := datasource.GetMasterDb().Get(genTable, `SELECT
        table_id, table_name, table_comment, sub_table_name,sub_table_fk_name, class_name, 
       tpl_category, package_name,module_name, business_name,function_name, function_author,gen_type,gen_path, options, remark
 		FROM gen_table 
@@ -152,7 +152,7 @@ func (genTableDao *genTableDao) SelectGenTableById(id int64) (genTable *genTable
 }
 func (genTableDao *genTableDao) SelectGenTableByName(name string) (genTable *genTableModels.GenTableVo) {
 	genTable = new(genTableModels.GenTableVo)
-	err := mysql.GetMasterMysqlDb().Get(genTable, `SELECT t.table_id, t.table_name, t.table_comment, t.sub_table_name, t.sub_table_fk_name, t.class_name, t.tpl_category, t.package_name, t.module_name, t.business_name, t.function_name, t.function_author, t.gen_type, t.gen_path, t.options, t.remark
+	err := datasource.GetMasterDb().Get(genTable, `SELECT t.table_id, t.table_name, t.table_comment, t.sub_table_name, t.sub_table_fk_name, t.class_name, t.tpl_category, t.package_name, t.module_name, t.business_name, t.function_name, t.function_author, t.gen_type, t.gen_path, t.options, t.remark
 		FROM gen_table t
 		where t.table_name = ? `, name)
 	if err != nil {
@@ -162,7 +162,7 @@ func (genTableDao *genTableDao) SelectGenTableByName(name string) (genTable *gen
 }
 func (genTableDao *genTableDao) SelectGenTableAll() (list []*genTableModels.GenTableVo) {
 	list = make([]*genTableModels.GenTableVo, 0, 0)
-	err := mysql.GetMasterMysqlDb().Select(&list, `SELECT t.table_id, t.table_name, t.table_comment, t.sub_table_name, t.sub_table_fk_name, t.class_name, t.tpl_category, t.package_name, t.module_name, t.business_name, t.function_name, t.function_author, t.gen_type, t.gen_path, t.options, t.remark
+	err := datasource.GetMasterDb().Select(&list, `SELECT t.table_id, t.table_name, t.table_comment, t.sub_table_name, t.sub_table_fk_name, t.class_name, t.tpl_category, t.package_name, t.module_name, t.business_name, t.function_name, t.function_author, t.gen_type, t.gen_path, t.options, t.remark
 		FROM gen_table t`)
 	if err != nil {
 		panic(err)
@@ -172,7 +172,7 @@ func (genTableDao *genTableDao) SelectGenTableAll() (list []*genTableModels.GenT
 
 func (genTableDao *genTableDao) BatchInsertGenTable(genTables []*genTableModels.GenTableDML) {
 
-	_, err := mysql.GetMasterMysqlDb().NamedExec(`insert into gen_table(table_id,table_name,table_comment,class_name,tpl_category,package_name,module_name,business_name,function_name,function_author,gen_type,gen_path,create_by,create_time,update_by,update_time,remark)
+	_, err := datasource.GetMasterDb().NamedExec(`insert into gen_table(table_id,table_name,table_comment,class_name,tpl_category,package_name,module_name,business_name,function_name,function_author,gen_type,gen_path,create_by,create_time,update_by,update_time,remark)
 							values(:table_id,:table_name,:table_comment,:class_name,:tpl_category,:package_name,:module_name,:business_name,:function_name,:function_author,:gen_type,:gen_path,:create_by,now(),:update_by,now(),:remark)`,
 		genTables)
 	if err != nil {
@@ -193,7 +193,7 @@ func (genTableDao *genTableDao) InsertGenTable(genTable *genTableModels.GenTable
 	}
 
 	insertStr := fmt.Sprintf(insertSQL, key, value)
-	_, err := mysql.GetMasterMysqlDb().NamedExec(insertStr, genTable)
+	_, err := datasource.GetMasterDb().NamedExec(insertStr, genTable)
 	if err != nil {
 		panic(err)
 	}
@@ -250,7 +250,7 @@ func (genTableDao *genTableDao) UpdateGenTable(genTable *genTableModels.GenTable
 
 	updateSQL += " where table_id = :table_id"
 
-	_, err := mysql.GetMasterMysqlDb().NamedExec(updateSQL, genTable)
+	_, err := datasource.GetMasterDb().NamedExec(updateSQL, genTable)
 	if err != nil {
 		panic(err)
 	}
@@ -262,7 +262,7 @@ func (genTableDao *genTableDao) DeleteGenTableByIds(ids []int64) {
 	if err != nil {
 		panic(err)
 	}
-	_, err = mysql.GetMasterMysqlDb().Exec(query, i...)
+	_, err = datasource.GetMasterDb().Exec(query, i...)
 	if err != nil {
 		panic(err)
 	}

@@ -1,7 +1,7 @@
 package monitorDaoImpl
 
 import (
-	"baize/app/common/mysql"
+	"baize/app/common/datasource"
 	"baize/app/constant/constants"
 	"baize/app/monitor/monitorModels"
 	"database/sql"
@@ -24,7 +24,7 @@ func GetOperLogDao() *operLogDao {
 }
 
 func (operLogDao *operLogDao) InsertOperLog(operLog *monitorModels.SysOpenLog) {
-	_, err := mysql.GetMasterMysqlDb().NamedExec("insert into sys_oper_log(oper_id,title, business_type, method, request_method, operator_type, oper_name, dept_name, oper_url, oper_ip, oper_location, oper_param, json_result, status, error_msg, oper_time)"+
+	_, err := datasource.GetMasterDb().NamedExec("insert into sys_oper_log(oper_id,title, business_type, method, request_method, operator_type, oper_name, dept_name, oper_url, oper_ip, oper_location, oper_param, json_result, status, error_msg, oper_time)"+
 		"  values (:oper_id,:title, :business_type, :method, :request_method, :operator_type, :oper_name, :dept_name, :oper_url, :oper_ip, :oper_location, :oper_param, :json_result, :status, :error_msg, sysdate())", operLog)
 	if err != nil {
 		zap.L().Error("登录信息保存错误", zap.Error(err))
@@ -56,7 +56,7 @@ func (operLogDao *operLogDao) SelectOperLogList(openLog *monitorModels.SysOpenLo
 		whereSql = " where " + whereSql[4:]
 	}
 
-	countRow, err := mysql.GetMasterMysqlDb().NamedQuery(constants.MysqlCount+operLogDao.fromSql+whereSql, openLog)
+	countRow, err := datasource.GetMasterDb().NamedQuery(constants.MysqlCount+operLogDao.fromSql+whereSql, openLog)
 	if err != nil {
 		panic(err)
 	}
@@ -71,7 +71,7 @@ func (operLogDao *operLogDao) SelectOperLogList(openLog *monitorModels.SysOpenLo
 		if openLog.Limit != "" {
 			whereSql += openLog.Limit
 		}
-		listRows, err := mysql.GetMasterMysqlDb().NamedQuery(operLogDao.selectSql+operLogDao.fromSql+whereSql, openLog)
+		listRows, err := datasource.GetMasterDb().NamedQuery(operLogDao.selectSql+operLogDao.fromSql+whereSql, openLog)
 		if err != nil {
 			panic(err)
 		}
@@ -92,7 +92,7 @@ func (operLogDao *operLogDao) DeleteOperLogByIds(operIds []int64) {
 	if err != nil {
 		panic(err)
 	}
-	_, err = mysql.GetMasterMysqlDb().Exec(query, i...)
+	_, err = datasource.GetMasterDb().Exec(query, i...)
 	if err != nil {
 		panic(err)
 	}
@@ -100,7 +100,7 @@ func (operLogDao *operLogDao) DeleteOperLogByIds(operIds []int64) {
 func (operLogDao *operLogDao) SelectOperLogById(operId int64) (operLog *monitorModels.SysOpenLog) {
 	whereSql := `  where oper_id = ?`
 	operLog = new(monitorModels.SysOpenLog)
-	err := mysql.GetMasterMysqlDb().Get(operLog, operLogDao.selectSql+operLogDao.fromSql+whereSql, operId)
+	err := datasource.GetMasterDb().Get(operLog, operLogDao.selectSql+operLogDao.fromSql+whereSql, operId)
 	if err == sql.ErrNoRows {
 		return nil
 	} else if err != nil {
@@ -109,7 +109,7 @@ func (operLogDao *operLogDao) SelectOperLogById(operId int64) (operLog *monitorM
 	return
 }
 func (operLogDao *operLogDao) CleanOperLog() {
-	_, err := mysql.GetMasterMysqlDb().Exec("truncate table sys_oper_log")
+	_, err := datasource.GetMasterDb().Exec("truncate table sys_oper_log")
 	if err != nil {
 		panic(err)
 	}

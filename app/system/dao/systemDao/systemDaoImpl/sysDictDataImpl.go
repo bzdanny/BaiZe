@@ -1,7 +1,7 @@
 package systemDaoImpl
 
 import (
-	"baize/app/common/mysql"
+	"baize/app/common/datasource"
 	"baize/app/constant/constants"
 	"baize/app/system/models/systemModels"
 	"database/sql"
@@ -32,7 +32,7 @@ func (sysDictDataDao *sysDictDataDao) SelectDictDataByType(dictType string) (Sys
 
 	SysDictDataList = make([]*systemModels.SysDictDataVo, 0, 0)
 
-	err := mysql.GetMasterMysqlDb().Select(&SysDictDataList, sysDictDataDao.selectDictDataSql+sysDictDataDao.fromDictDataSql+whereSql, dictType)
+	err := datasource.GetMasterDb().Select(&SysDictDataList, sysDictDataDao.selectDictDataSql+sysDictDataDao.fromDictDataSql+whereSql, dictType)
 	if err != nil {
 		panic(err)
 	}
@@ -60,7 +60,7 @@ func (sysDictDataDao *sysDictDataDao) SelectDictDataList(dictData *systemModels.
 	}
 	countSql := constants.MysqlCount + sysDictDataDao.fromDictDataSql + whereSql
 
-	countRow, err := mysql.GetMasterMysqlDb().NamedQuery(countSql, dictData)
+	countRow, err := datasource.GetMasterDb().NamedQuery(countSql, dictData)
 	if err != nil {
 		panic(err)
 	}
@@ -74,7 +74,7 @@ func (sysDictDataDao *sysDictDataDao) SelectDictDataList(dictData *systemModels.
 		if dictData.Limit != "" {
 			whereSql += dictData.Limit
 		}
-		listRows, err := mysql.GetMasterMysqlDb().NamedQuery(sysDictDataDao.selectDictDataSql+sysDictDataDao.fromDictDataSql+whereSql, dictData)
+		listRows, err := datasource.GetMasterDb().NamedQuery(sysDictDataDao.selectDictDataSql+sysDictDataDao.fromDictDataSql+whereSql, dictData)
 		if err != nil {
 			panic(err)
 		}
@@ -91,7 +91,7 @@ func (sysDictDataDao *sysDictDataDao) SelectDictDataList(dictData *systemModels.
 func (sysDictDataDao *sysDictDataDao) SelectDictDataById(dictCode int64) (dictData *systemModels.SysDictDataVo) {
 
 	dictData = new(systemModels.SysDictDataVo)
-	err := mysql.GetMasterMysqlDb().Get(dictData, sysDictDataDao.selectDictDataSql+sysDictDataDao.fromDictDataSql+" where dict_code = ?", dictCode)
+	err := datasource.GetMasterDb().Get(dictData, sysDictDataDao.selectDictDataSql+sysDictDataDao.fromDictDataSql+" where dict_code = ?", dictCode)
 	if err == sql.ErrNoRows {
 		return nil
 	} else if err != nil {
@@ -131,7 +131,7 @@ func (sysDictDataDao *sysDictDataDao) InsertDictData(dictData *systemModels.SysD
 	}
 
 	insertStr := fmt.Sprintf(insertSQL, key, value)
-	_, err := mysql.GetMasterMysqlDb().NamedExec(insertStr, dictData)
+	_, err := datasource.GetMasterDb().NamedExec(insertStr, dictData)
 	if err != nil {
 		panic(err)
 	}
@@ -172,7 +172,7 @@ func (sysDictDataDao *sysDictDataDao) UpdateDictData(dictData *systemModels.SysD
 
 	updateSQL += " where dict_code = :dict_code"
 
-	_, err := mysql.GetMasterMysqlDb().NamedExec(updateSQL, dictData)
+	_, err := datasource.GetMasterDb().NamedExec(updateSQL, dictData)
 	if err != nil {
 		panic(err)
 	}
@@ -184,7 +184,7 @@ func (sysDictDataDao *sysDictDataDao) DeleteDictDataByIds(dictCodes []int64) {
 	if err != nil {
 		panic(err)
 	}
-	_, err = mysql.GetMasterMysqlDb().Exec(query, i...)
+	_, err = datasource.GetMasterDb().Exec(query, i...)
 	if err != nil {
 		panic(err)
 	}
@@ -196,7 +196,7 @@ func (sysDictDataDao *sysDictDataDao) CountDictDataByTypes(dictType []string) in
 	if err != nil {
 		panic(err)
 	}
-	err = mysql.GetMasterMysqlDb().Get(&count, query, i...)
+	err = datasource.GetMasterDb().Get(&count, query, i...)
 	if err != nil {
 		panic(err)
 	}

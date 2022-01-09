@@ -1,7 +1,7 @@
 package systemDaoImpl
 
 import (
-	"baize/app/common/mysql"
+	"baize/app/common/datasource"
 	"baize/app/system/models/systemModels"
 	"database/sql"
 	"github.com/jmoiron/sqlx"
@@ -20,12 +20,12 @@ func GetSysRoleMenuDao() *sysRoleMenuDao {
 	return sysRoleMenuDaoImpl
 }
 
-func (sysRoleMenuDao *sysRoleMenuDao) BatchRoleMenu(list []*systemModels.SysRoleMenu, tx ...mysql.Transaction) {
-	var db mysql.Transaction
+func (sysRoleMenuDao *sysRoleMenuDao) BatchRoleMenu(list []*systemModels.SysRoleMenu, tx ...datasource.Transaction) {
+	var db datasource.Transaction
 	if len(tx) == 1 {
 		db = tx[0]
 	} else {
-		db = mysql.GetMasterMysqlDb()
+		db = datasource.GetMasterDb()
 	}
 	_, err := db.NamedExec("insert into sys_role_menu(role_id, menu_id) values (:role_id,:menu_id)", list)
 	if err != nil {
@@ -33,16 +33,16 @@ func (sysRoleMenuDao *sysRoleMenuDao) BatchRoleMenu(list []*systemModels.SysRole
 	}
 }
 
-func (sysRoleMenuDao *sysRoleMenuDao) DeleteRoleMenu(ids []int64, tx ...mysql.Transaction) {
+func (sysRoleMenuDao *sysRoleMenuDao) DeleteRoleMenu(ids []int64, tx ...datasource.Transaction) {
 	query, i, err := sqlx.In("delete from sys_role_menu where role_id in", ids)
 	if err != nil {
 		panic(err)
 	}
-	var db mysql.Transaction
+	var db datasource.Transaction
 	if len(tx) == 1 {
 		db = tx[0]
 	} else {
-		db = mysql.GetMasterMysqlDb()
+		db = datasource.GetMasterDb()
 	}
 	_, err = db.Exec(query, i...)
 	if err != nil {
@@ -50,12 +50,12 @@ func (sysRoleMenuDao *sysRoleMenuDao) DeleteRoleMenu(ids []int64, tx ...mysql.Tr
 	}
 }
 
-func (sysRoleMenuDao *sysRoleMenuDao) DeleteRoleMenuByRoleId(roleId int64, tx ...mysql.Transaction) {
-	var db mysql.Transaction
+func (sysRoleMenuDao *sysRoleMenuDao) DeleteRoleMenuByRoleId(roleId int64, tx ...datasource.Transaction) {
+	var db datasource.Transaction
 	if len(tx) == 1 {
 		db = tx[0]
 	} else {
-		db = mysql.GetMasterMysqlDb()
+		db = datasource.GetMasterDb()
 	}
 	_, err := db.Exec("delete from sys_role_menu where role_id=?", roleId)
 	if err != nil {
@@ -65,7 +65,7 @@ func (sysRoleMenuDao *sysRoleMenuDao) DeleteRoleMenuByRoleId(roleId int64, tx ..
 
 func (sysRoleMenuDao *sysRoleMenuDao) CheckMenuExistRole(menuId int64) int {
 	var count = 0
-	err := mysql.GetMasterMysqlDb().Get(&count, "select count(1) from sys_role_menu where menu_id = ?", menuId)
+	err := datasource.GetMasterDb().Get(&count, "select count(1) from sys_role_menu where menu_id = ?", menuId)
 	if err != nil && err != sql.ErrNoRows {
 		panic(err)
 	}
