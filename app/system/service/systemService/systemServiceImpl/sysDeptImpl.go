@@ -7,7 +7,11 @@ import (
 	"baize/app/utils/snowflake"
 )
 
-var deptServiceImpl *deptService = &deptService{deptDao: systemDaoImpl.GetSysDeptDao(), roleDao: systemDaoImpl.GetSysRoleDao()}
+var deptServiceImpl *deptService
+
+func init() {
+	deptServiceImpl = &deptService{deptDao: systemDaoImpl.GetSysDeptDao(), roleDao: systemDaoImpl.GetSysRoleDao()}
+}
 
 type deptService struct {
 	deptDao systemDao.IDeptDao

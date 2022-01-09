@@ -10,7 +10,15 @@ import (
 	"baize/app/utils/stringUtils"
 )
 
-var menuServiceImpl *menuService = &menuService{menuDao: systemDaoImpl.GetSysMenuDao(), roleMenuDao: systemDaoImpl.GetSysRoleMenuDao(), roleDao: systemDaoImpl.GetSysRoleDao()}
+var menuServiceImpl *menuService
+
+func init() {
+	menuServiceImpl = &menuService{
+		menuDao:     systemDaoImpl.GetSysMenuDao(),
+		roleMenuDao: systemDaoImpl.GetSysRoleMenuDao(),
+		roleDao:     systemDaoImpl.GetSysRoleDao(),
+	}
+}
 
 type menuService struct {
 	menuDao     systemDao.IMenuDao

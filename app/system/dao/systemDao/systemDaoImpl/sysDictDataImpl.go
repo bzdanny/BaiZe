@@ -1,7 +1,7 @@
 package systemDaoImpl
 
 import (
-	"baize/app/common/mysql"
+	"baize/app/common/datasource"
 	"baize/app/constant/constants"
 	"baize/app/system/models/systemModels"
 	"database/sql"
@@ -9,29 +9,30 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-var sysDictDataDaoImpl *sysDictDataDao = &sysDictDataDao{db: mysql.GetMysqlDb()}
+var sysDictDataDaoImpl *sysDictDataDao
 
 type sysDictDataDao struct {
-	db **sqlx.DB
+	selectDictDataSql string
+	fromDictDataSql   string
+}
+
+func init() {
+	sysDictDataDaoImpl = &sysDictDataDao{
+		selectDictDataSql: `select dict_code, dict_sort, dict_label, dict_value, dict_type, css_class, list_class, is_default , status , create_by, create_time, remark `,
+		fromDictDataSql:   ` from sys_dict_data`,
+	}
 }
 
 func GetSysDictDataDao() *sysDictDataDao {
 	return sysDictDataDaoImpl
 }
 
-func (sysDictDataDao *sysDictDataDao) getDb() *sqlx.DB {
-	return *sysDictDataDao.db
-}
-
-var selectDictDataSql = `select dict_code, dict_sort, dict_label, dict_value, dict_type, css_class, list_class, is_default , status , create_by, create_time, remark `
-var fromDictDataSql = ` from sys_dict_data`
-
 func (sysDictDataDao *sysDictDataDao) SelectDictDataByType(dictType string) (SysDictDataList []*systemModels.SysDictDataVo) {
 	whereSql := ` where status = '0' and dict_type = ? order by dict_sort asc`
 
 	SysDictDataList = make([]*systemModels.SysDictDataVo, 0, 0)
 
-	err := sysDictDataDao.getDb().Select(&SysDictDataList, selectDictDataSql+fromDictDataSql+whereSql, dictType)
+	err := datasource.GetMasterDb().Select(&SysDictDataList, sysDictDataDao.selectDictDataSql+sysDictDataDao.fromDictDataSql+whereSql, dictType)
 	if err != nil {
 		panic(err)
 	}
@@ -57,9 +58,9 @@ func (sysDictDataDao *sysDictDataDao) SelectDictDataList(dictData *systemModels.
 	if whereSql != "" {
 		whereSql = " where " + whereSql[4:]
 	}
-	countSql := constants.MysqlCount + fromDictDataSql + whereSql
+	countSql := constants.MysqlCount + sysDictDataDao.fromDictDataSql + whereSql
 
-	countRow, err := sysDictDataDao.getDb().NamedQuery(countSql, dictData)
+	countRow, err := datasource.GetMasterDb().NamedQuery(countSql, dictData)
 	if err != nil {
 		panic(err)
 	}
@@ -73,7 +74,7 @@ func (sysDictDataDao *sysDictDataDao) SelectDictDataList(dictData *systemModels.
 		if dictData.Limit != "" {
 			whereSql += dictData.Limit
 		}
-		listRows, err := sysDictDataDao.getDb().NamedQuery(selectDictDataSql+fromDictDataSql+whereSql, dictData)
+		listRows, err := datasource.GetMasterDb().NamedQuery(sysDictDataDao.selectDictDataSql+sysDictDataDao.fromDictDataSql+whereSql, dictData)
 		if err != nil {
 			panic(err)
 		}
@@ -90,7 +91,7 @@ func (sysDictDataDao *sysDictDataDao) SelectDictDataList(dictData *systemModels.
 func (sysDictDataDao *sysDictDataDao) SelectDictDataById(dictCode int64) (dictData *systemModels.SysDictDataVo) {
 
 	dictData = new(systemModels.SysDictDataVo)
-	err := sysDictDataDao.getDb().Get(dictData, selectDictDataSql+fromDictDataSql+" where dict_code = ?", dictCode)
+	err := datasource.GetMasterDb().Get(dictData, sysDictDataDao.selectDictDataSql+sysDictDataDao.fromDictDataSql+" where dict_code = ?", dictCode)
 	if err == sql.ErrNoRows {
 		return nil
 	} else if err != nil {
@@ -130,7 +131,7 @@ func (sysDictDataDao *sysDictDataDao) InsertDictData(dictData *systemModels.SysD
 	}
 
 	insertStr := fmt.Sprintf(insertSQL, key, value)
-	_, err := sysDictDataDao.getDb().NamedExec(insertStr, dictData)
+	_, err := datasource.GetMasterDb().NamedExec(insertStr, dictData)
 	if err != nil {
 		panic(err)
 	}
@@ -171,7 +172,7 @@ func (sysDictDataDao *sysDictDataDao) UpdateDictData(dictData *systemModels.SysD
 
 	updateSQL += " where dict_code = :dict_code"
 
-	_, err := sysDictDataDao.getDb().NamedExec(updateSQL, dictData)
+	_, err := datasource.GetMasterDb().NamedExec(updateSQL, dictData)
 	if err != nil {
 		panic(err)
 	}
@@ -183,7 +184,7 @@ func (sysDictDataDao *sysDictDataDao) DeleteDictDataByIds(dictCodes []int64) {
 	if err != nil {
 		panic(err)
 	}
-	_, err = sysDictDataDao.getDb().Exec(query, i...)
+	_, err = datasource.GetMasterDb().Exec(query, i...)
 	if err != nil {
 		panic(err)
 	}
@@ -195,7 +196,7 @@ func (sysDictDataDao *sysDictDataDao) CountDictDataByTypes(dictType []string) in
 	if err != nil {
 		panic(err)
 	}
-	err = sysDictDataDao.getDb().Get(&count, query, i...)
+	err = datasource.GetMasterDb().Get(&count, query, i...)
 	if err != nil {
 		panic(err)
 	}

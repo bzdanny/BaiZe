@@ -1,7 +1,7 @@
 package monitorDaoImpl
 
 import (
-	"baize/app/common/mysql"
+	"baize/app/common/datasource"
 	"baize/app/constant/constants"
 	"baize/app/monitor/monitorModels"
 	"database/sql"
@@ -9,13 +9,12 @@ import (
 	"go.uber.org/zap"
 )
 
-var sysOperLogImpl = &operLogDao{db: mysql.GetMysqlDb(),
+var sysOperLogImpl = &operLogDao{
 	selectSql: ` select oper_id, title, business_type, method, request_method, operator_type, oper_name, dept_name, oper_url, oper_ip, oper_location, oper_param, json_result, status, error_msg, oper_time`,
 	fromSql:   ` from sys_oper_log`,
 }
 
 type operLogDao struct {
-	db        **sqlx.DB
 	selectSql string
 	fromSql   string
 }
@@ -23,12 +22,9 @@ type operLogDao struct {
 func GetOperLogDao() *operLogDao {
 	return sysOperLogImpl
 }
-func (operLogDao *operLogDao) getDb() *sqlx.DB {
-	return *operLogDao.db
-}
 
 func (operLogDao *operLogDao) InsertOperLog(operLog *monitorModels.SysOpenLog) {
-	_, err := operLogDao.getDb().NamedExec("insert into sys_oper_log(oper_id,title, business_type, method, request_method, operator_type, oper_name, dept_name, oper_url, oper_ip, oper_location, oper_param, json_result, status, error_msg, oper_time)"+
+	_, err := datasource.GetMasterDb().NamedExec("insert into sys_oper_log(oper_id,title, business_type, method, request_method, operator_type, oper_name, dept_name, oper_url, oper_ip, oper_location, oper_param, json_result, status, error_msg, oper_time)"+
 		"  values (:oper_id,:title, :business_type, :method, :request_method, :operator_type, :oper_name, :dept_name, :oper_url, :oper_ip, :oper_location, :oper_param, :json_result, :status, :error_msg, sysdate())", operLog)
 	if err != nil {
 		zap.L().Error("登录信息保存错误", zap.Error(err))
@@ -60,7 +56,7 @@ func (operLogDao *operLogDao) SelectOperLogList(openLog *monitorModels.SysOpenLo
 		whereSql = " where " + whereSql[4:]
 	}
 
-	countRow, err := operLogDao.getDb().NamedQuery(constants.MysqlCount+operLogDao.fromSql+whereSql, openLog)
+	countRow, err := datasource.GetMasterDb().NamedQuery(constants.MysqlCount+operLogDao.fromSql+whereSql, openLog)
 	if err != nil {
 		panic(err)
 	}
@@ -75,7 +71,7 @@ func (operLogDao *operLogDao) SelectOperLogList(openLog *monitorModels.SysOpenLo
 		if openLog.Limit != "" {
 			whereSql += openLog.Limit
 		}
-		listRows, err := operLogDao.getDb().NamedQuery(operLogDao.selectSql+operLogDao.fromSql+whereSql, openLog)
+		listRows, err := datasource.GetMasterDb().NamedQuery(operLogDao.selectSql+operLogDao.fromSql+whereSql, openLog)
 		if err != nil {
 			panic(err)
 		}
@@ -96,7 +92,7 @@ func (operLogDao *operLogDao) DeleteOperLogByIds(operIds []int64) {
 	if err != nil {
 		panic(err)
 	}
-	_, err = operLogDao.getDb().Exec(query, i...)
+	_, err = datasource.GetMasterDb().Exec(query, i...)
 	if err != nil {
 		panic(err)
 	}
@@ -104,7 +100,7 @@ func (operLogDao *operLogDao) DeleteOperLogByIds(operIds []int64) {
 func (operLogDao *operLogDao) SelectOperLogById(operId int64) (operLog *monitorModels.SysOpenLog) {
 	whereSql := `  where oper_id = ?`
 	operLog = new(monitorModels.SysOpenLog)
-	err := operLogDao.getDb().Get(operLog, operLogDao.selectSql+operLogDao.fromSql+whereSql, operId)
+	err := datasource.GetMasterDb().Get(operLog, operLogDao.selectSql+operLogDao.fromSql+whereSql, operId)
 	if err == sql.ErrNoRows {
 		return nil
 	} else if err != nil {
@@ -113,7 +109,7 @@ func (operLogDao *operLogDao) SelectOperLogById(operId int64) (operLog *monitorM
 	return
 }
 func (operLogDao *operLogDao) CleanOperLog() {
-	_, err := operLogDao.getDb().Exec("truncate table sys_oper_log")
+	_, err := datasource.GetMasterDb().Exec("truncate table sys_oper_log")
 	if err != nil {
 		panic(err)
 	}
