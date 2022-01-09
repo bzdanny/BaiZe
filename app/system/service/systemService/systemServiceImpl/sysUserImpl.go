@@ -1,6 +1,7 @@
 package systemServiceImpl
 
 import (
+	"baize/app/common/datasource"
 	"baize/app/system/dao/systemDao"
 	"baize/app/system/dao/systemDao/systemDaoImpl"
 	"baize/app/system/models/systemModels"
@@ -11,12 +12,20 @@ import (
 	"strconv"
 )
 
-var userServiceImpl *userService = &userService{userDao: systemDaoImpl.GetSysUserDao(), userPostDao: systemDaoImpl.GetSysUserPostDao(), userRoleDao: systemDaoImpl.GetSysUserRoleDao()}
+var userServiceImpl *userService
 
 type userService struct {
 	userDao     systemDao.IUserDao
 	userPostDao systemDao.IUserPostDao
 	userRoleDao systemDao.IUserRoleDao
+}
+
+func init() {
+	userServiceImpl = &userService{
+		userDao:     systemDaoImpl.GetSysUserDao(),
+		userPostDao: systemDaoImpl.GetSysUserPostDao(),
+		userRoleDao: systemDaoImpl.GetSysUserRoleDao(),
+	}
 }
 
 func GetUserService() *userService {
@@ -41,7 +50,6 @@ func (userService *userService) ImportTemplate() (data []byte) {
 
 }
 
-
 func (userService *userService) SelectUserById(userId int64) (sysUser *systemModels.SysUserVo) {
 	return userService.userDao.SelectUserById(userId)
 
@@ -50,26 +58,43 @@ func (userService *userService) SelectUserById(userId int64) (sysUser *systemMod
 func (userService *userService) InsertUser(sysUser *systemModels.SysUserDML) {
 	sysUser.UserId = snowflake.GenID()
 	sysUser.Password = bCryptPasswordEncoder.HashPassword(sysUser.Password)
-	userService.userDao.InsertUser(sysUser)
-
-	userService.InsertUserPost(sysUser)
-
-	userService.insertUserRole(sysUser)
+	tx, err := datasource.GetMasterDb().Beginx()
+	if err != nil {
+		panic(err)
+	}
+	defer func() {
+		if p := recover(); p != nil {
+			tx.Rollback()
+			panic(p) // re-throw panic after Rollback
+		} else {
+			err = tx.Commit() // err is nil; if Commit returns error update err
+		}
+	}()
+	userService.userDao.InsertUser(sysUser, tx)
+	userService.insertUserPost(sysUser, tx)
+	userService.insertUserRole(sysUser, tx)
 
 }
 
 func (userService *userService) UpdateUser(sysUser *systemModels.SysUserDML) {
 	userId := sysUser.UserId
-
-	userService.userPostDao.DeleteUserPostByUserId(userId)
-
-	userService.InsertUserPost(sysUser)
-
-	userService.userRoleDao.DeleteUserRoleByUserId(userId)
-
-	userService.insertUserRole(sysUser)
-
-	userService.userDao.UpdateUser(sysUser)
+	tx, err := datasource.GetMasterDb().Beginx()
+	if err != nil {
+		panic(err)
+	}
+	defer func() {
+		if p := recover(); p != nil {
+			tx.Rollback()
+			panic(p) // re-throw panic after Rollback
+		} else {
+			err = tx.Commit() // err is nil; if Commit returns error update err
+		}
+	}()
+	userService.userPostDao.DeleteUserPostByUserId(userId, tx)
+	userService.insertUserPost(sysUser, tx)
+	userService.userRoleDao.DeleteUserRoleByUserId(userId, tx)
+	userService.insertUserRole(sysUser, tx)
+	userService.userDao.UpdateUser(sysUser, tx)
 
 }
 
@@ -83,7 +108,7 @@ func (userService *userService) ResetPwd(sysUser *systemModels.SysUserDML) {
 
 }
 
-func (userService *userService) InsertUserPost(user *systemModels.SysUserDML) {
+func (userService *userService) insertUserPost(user *systemModels.SysUserDML, tx ...datasource.Transaction) {
 	posts := user.PostIds
 	if len(posts) != 0 {
 		list := make([]*systemModels.SysUserPost, 0, len(posts))
@@ -92,12 +117,12 @@ func (userService *userService) InsertUserPost(user *systemModels.SysUserDML) {
 			post := systemModels.NewSysUserPost(user.UserId, parseInt)
 			list = append(list, post)
 		}
-		userService.userPostDao.BatchUserPost(list)
+		userService.userPostDao.BatchUserPost(list, tx...)
 	}
 
 }
 
-func (userService *userService) insertUserRole(user *systemModels.SysUserDML) {
+func (userService *userService) insertUserRole(user *systemModels.SysUserDML, tx ...datasource.Transaction) {
 	roles := user.RoleIds
 	if len(roles) != 0 {
 		list := make([]*systemModels.SysUserRole, 0, len(roles))
@@ -106,7 +131,7 @@ func (userService *userService) insertUserRole(user *systemModels.SysUserDML) {
 			role := systemModels.NewSysUserRole(user.UserId, parseInt)
 			list = append(list, role)
 		}
-		userService.userRoleDao.BatchUserRole(list)
+		userService.userRoleDao.BatchUserRole(list, tx...)
 	}
 
 }
@@ -139,10 +164,21 @@ func (userService *userService) CheckEmailUnique(user *systemModels.SysUserDML) 
 }
 
 func (userService *userService) DeleteUserByIds(ids []int64) {
-
-	userService.userRoleDao.DeleteUserRole(ids)
-	userService.userPostDao.DeleteUserPost(ids)
-	userService.userDao.DeleteUserByIds(ids)
+	tx, err := datasource.GetMasterDb().Beginx()
+	if err != nil {
+		panic(err)
+	}
+	defer func() {
+		if p := recover(); p != nil {
+			tx.Rollback()
+			panic(p)
+		} else {
+			err = tx.Commit()
+		}
+	}()
+	userService.userRoleDao.DeleteUserRole(ids, tx)
+	userService.userPostDao.DeleteUserPost(ids, tx)
+	userService.userDao.DeleteUserByIds(ids, tx)
 
 }
 
@@ -150,13 +186,25 @@ func (userService *userService) UserImportData(rows [][]string, operName string,
 	successNum := 0
 	list, failureMsg, failureNum := systemModels.RowsToSysUserDMLList(rows)
 	password := bCryptPasswordEncoder.HashPassword("123456")
+	tx, err := datasource.GetMasterDb().Beginx()
+	if err != nil {
+		panic(err)
+	}
+	defer func() {
+		if p := recover(); p != nil {
+			tx.Rollback()
+			panic(p)
+		} else {
+			err = tx.Commit()
+		}
+	}()
 	for _, user := range list {
 		unique := userService.userDao.CheckUserNameUnique(user.UserName)
 		if unique < 1 {
 			user.DeptId = deptId
 			user.Password = password
 			user.SetCreateBy(operName)
-			userService.userDao.InsertUser(user)
+			userService.userDao.InsertUser(user, tx)
 			successNum++
 		} else {
 			failureNum++
@@ -187,7 +235,7 @@ func (userService *userService) MatchesPassword(rawPassword string, userId int64
 
 	return bCryptPasswordEncoder.CheckPasswordHash(rawPassword, userService.userDao.SelectPasswordByUserId(userId))
 }
-func (userService *userService) InsertUserAuth(userId int64, roleIds []int64)  {
+func (userService *userService) InsertUserAuth(userId int64, roleIds []int64) {
 	userService.userRoleDao.DeleteUserRoleByUserId(userId)
 	if len(roleIds) != 0 {
 		list := make([]*systemModels.SysUserRole, 0, len(roleIds))

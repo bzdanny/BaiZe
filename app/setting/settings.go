@@ -19,12 +19,17 @@ type AppConfig struct {
 	Port      int    `mapstructure:"port"`
 
 	*LogConfig   `mapstructure:"log"`
-	*MySQLConfig `mapstructure:"mysql"`
+	*Datasource  `mapstructure:"datasource"`
 	*RedisConfig `mapstructure:"redis"`
 	*TokenConfig `mapstructure:"token"`
 }
 
-type MySQLConfig struct {
+type Datasource struct {
+	*Master `mapstructure:"master"`
+	*Slave  `mapstructure:"slave"`
+}
+type Master struct {
+	DriverName   string `mapstructure:"driver_name"`
 	Host         string `mapstructure:"host"`
 	User         string `mapstructure:"user"`
 	Password     string `mapstructure:"password"`
@@ -32,6 +37,18 @@ type MySQLConfig struct {
 	Port         int    `mapstructure:"port"`
 	MaxOpenConns int    `mapstructure:"max_open_conns"`
 	MaxIdleConns int    `mapstructure:"max_idle_conns"`
+}
+
+type Slave struct {
+	Count         int      `mapstructure:"count"`
+	DriverName    string   `mapstructure:"driver_name"`
+	Hosts         []string `mapstructure:"hosts"`
+	Users         []string `mapstructure:"users"`
+	Passwords     []string `mapstructure:"passwords"`
+	DBs           []string `mapstructure:"dbnames"`
+	Ports         []int    `mapstructure:"ports"`
+	MaxOpenConnss []int    `mapstructure:"max_open_connss"`
+	MaxIdleConnss []int    `mapstructure:"max_idle_connss"`
 }
 
 type RedisConfig struct {

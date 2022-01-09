@@ -1,7 +1,7 @@
 package systemDaoImpl
 
 import (
-	"baize/app/common/mysql"
+	"baize/app/common/datasource"
 	"baize/app/constant/constants"
 	"baize/app/system/models/loginModels"
 	"baize/app/system/models/systemModels"
@@ -10,22 +10,22 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-var sysUserDaoImpl *sysUserDao = &sysUserDao{db: mysql.GetMysqlDb()}
+var sysUserDaoImpl *sysUserDao
 
 type sysUserDao struct {
-	db **sqlx.DB
+}
+
+func init() {
+	sysUserDaoImpl = &sysUserDao{}
 }
 
 func GetSysUserDao() *sysUserDao {
 	return sysUserDaoImpl
 }
-func (userDao *sysUserDao) getDb() *sqlx.DB {
-	return *userDao.db
-}
 
 func (userDao *sysUserDao) CheckUserNameUnique(userName string) int {
 	var count = 0
-	err := userDao.getDb().Get(&count, "select count(*) from sys_user where user_name = ?", userName)
+	err := datasource.GetMasterDb().Get(&count, "select count(*) from sys_user where user_name = ?", userName)
 	if err == sql.ErrNoRows {
 		return 0
 	} else if err != nil {
@@ -35,7 +35,7 @@ func (userDao *sysUserDao) CheckUserNameUnique(userName string) int {
 }
 func (userDao *sysUserDao) CheckPhoneUnique(phonenumber string) int64 {
 	var userId int64 = 0
-	err := userDao.getDb().Get(&userId, "select user_id from sys_user where phonenumber = ?", phonenumber)
+	err := datasource.GetMasterDb().Get(&userId, "select user_id from sys_user where phonenumber = ?", phonenumber)
 	if err == sql.ErrNoRows {
 		return 0
 	} else if err != nil {
@@ -46,7 +46,7 @@ func (userDao *sysUserDao) CheckPhoneUnique(phonenumber string) int64 {
 
 func (userDao *sysUserDao) CheckEmailUnique(email string) int64 {
 	var userId int64 = 0
-	err := userDao.getDb().Get(&userId, "select user_id from sys_user where email = ?", email)
+	err := datasource.GetMasterDb().Get(&userId, "select user_id from sys_user where email = ?", email)
 	if err == sql.ErrNoRows {
 		return 0
 	} else if err != nil {
@@ -55,7 +55,7 @@ func (userDao *sysUserDao) CheckEmailUnique(email string) int64 {
 	return userId
 }
 
-func (userDao *sysUserDao) InsertUser(sysUser *systemModels.SysUserDML) {
+func (userDao *sysUserDao) InsertUser(sysUser *systemModels.SysUserDML, tx ...datasource.Transaction) {
 	insertSQL := `insert into sys_user(user_id,user_name,nick_name,sex,password,status,create_by,create_time,update_by,update_time %s)
 					values(:user_id,:user_name,:nick_name,:sex,:password,:status,:create_by,now(),:update_by,now() %s)`
 	key := ""
@@ -81,14 +81,20 @@ func (userDao *sysUserDao) InsertUser(sysUser *systemModels.SysUserDML) {
 		value += ":remake"
 	}
 	insertStr := fmt.Sprintf(insertSQL, key, value)
-	_, err := userDao.getDb().NamedExec(insertStr, sysUser)
+	var db datasource.Transaction
+	if len(tx) == 1 {
+		db = tx[0]
+	} else {
+		db = datasource.GetMasterDb()
+	}
+	_, err := db.NamedExec(insertStr, sysUser)
+
 	if err != nil {
 		panic(err)
 	}
-	return
 }
 
-func (userDao *sysUserDao) UpdateUser(sysUser *systemModels.SysUserDML) {
+func (userDao *sysUserDao) UpdateUser(sysUser *systemModels.SysUserDML, tx ...datasource.Transaction) {
 	updateSQL := `update sys_user set update_time = now() , update_by = :update_by`
 
 	if sysUser.DeptId != nil {
@@ -119,8 +125,13 @@ func (userDao *sysUserDao) UpdateUser(sysUser *systemModels.SysUserDML) {
 		updateSQL += ",status = :status"
 	}
 	updateSQL += " where user_id = :user_id"
-
-	_, err := userDao.getDb().NamedExec(updateSQL, sysUser)
+	var db datasource.Transaction
+	if len(tx) == 1 {
+		db = tx[0]
+	} else {
+		db = datasource.GetMasterDb()
+	}
+	_, err := db.NamedExec(updateSQL, sysUser)
 	if err != nil {
 		panic(err)
 	}
@@ -135,7 +146,7 @@ func (userDao *sysUserDao) SelectUserByUserName(userName string) (loginUser *log
 			`
 
 	loginUser = new(loginModels.User)
-	err := userDao.getDb().Get(loginUser, sqlStr, userName)
+	err := datasource.GetMasterDb().Get(loginUser, sqlStr, userName)
 	if err == sql.ErrNoRows {
 		return nil
 	} else if err != nil {
@@ -154,7 +165,7 @@ func (userDao *sysUserDao) SelectUserById(userId int64) (sysUser *systemModels.S
 			`
 
 	sysUser = new(systemModels.SysUserVo)
-	err := userDao.getDb().Get(sysUser, sqlStr, userId)
+	err := datasource.GetMasterDb().Get(sysUser, sqlStr, userId)
 	if err == sql.ErrNoRows {
 		return nil
 	} else if err != nil {
@@ -190,7 +201,7 @@ func (userDao *sysUserDao) SelectUserList(user *systemModels.SysUserDQL) (sysUse
 	}
 	countSql := constants.MysqlCount + whereSql
 
-	countRow, err := userDao.getDb().NamedQuery(countSql, user)
+	countRow, err := datasource.GetMasterDb().NamedQuery(countSql, user)
 	if err != nil {
 		panic(err)
 	}
@@ -205,7 +216,7 @@ func (userDao *sysUserDao) SelectUserList(user *systemModels.SysUserDQL) (sysUse
 		if user.Limit != "" {
 			whereSql += user.Limit
 		}
-		listRows, err := userDao.getDb().NamedQuery(sql+whereSql, user)
+		listRows, err := datasource.GetMasterDb().NamedQuery(sql+whereSql, user)
 		if err != nil {
 			panic(err)
 		}
@@ -222,31 +233,31 @@ func (userDao *sysUserDao) SelectUserList(user *systemModels.SysUserDQL) (sysUse
 	return
 }
 
-func (userDao *sysUserDao) DeleteUserByIds(ids []int64) {
+func (userDao *sysUserDao) DeleteUserByIds(ids []int64, tx ...datasource.Transaction) {
 	query, i, err := sqlx.In("update sys_user set del_flag = '2' where user_id in(?)", ids)
 	if err != nil {
 		panic(err)
 	}
-	_, err = userDao.getDb().Exec(query, i...)
+	_, err = datasource.GetMasterDb().Exec(query, i...)
 	if err != nil {
 		panic(err)
 	}
 	return
 }
 func (userDao *sysUserDao) UpdateLoginInformation(userId int64, ip string) {
-	_, err := userDao.getDb().Exec(`update sys_user set login_date = now() , login_ip = ?  where user_id = ?`, ip, userId)
+	_, err := datasource.GetMasterDb().Exec(`update sys_user set login_date = now() , login_ip = ?  where user_id = ?`, ip, userId)
 	if err != nil {
 		panic(err)
 	}
 }
 func (userDao *sysUserDao) UpdateUserAvatar(userId int64, avatar string) {
-	_, err := userDao.getDb().Exec(`update sys_user set avatar = ?  where user_id = ?`, avatar, userId)
+	_, err := datasource.GetMasterDb().Exec(`update sys_user set avatar = ?  where user_id = ?`, avatar, userId)
 	if err != nil {
 		panic(err)
 	}
 }
 func (userDao *sysUserDao) ResetUserPwd(userId int64, password string) {
-	_, err := userDao.getDb().Exec(`update sys_user set password = ?  where user_id = ?`, password, userId)
+	_, err := datasource.GetMasterDb().Exec(`update sys_user set password = ?  where user_id = ?`, password, userId)
 	if err != nil {
 		panic(err)
 	}
@@ -258,7 +269,7 @@ func (userDao *sysUserDao) SelectPasswordByUserId(userId int64) string {
 			`
 
 	password := new(string)
-	err := userDao.getDb().Get(password, sqlStr, userId)
+	err := datasource.GetMasterDb().Get(password, sqlStr, userId)
 	if err != nil {
 		panic(err)
 	}

@@ -1,7 +1,7 @@
 package systemDaoImpl
 
 import (
-	"baize/app/common/mysql"
+	"baize/app/common/datasource"
 	"baize/app/constant/constants"
 	"baize/app/system/models/systemModels"
 	"database/sql"
@@ -9,21 +9,23 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-var sysDictTypeDaoImpl *sysDictTypeDao = &sysDictTypeDao{db: mysql.GetMysqlDb()}
+var sysDictTypeDaoImpl *sysDictTypeDao
+
+func init() {
+	sysDictTypeDaoImpl = &sysDictTypeDao{
+		selectDictTypeSql: `select dict_id, dict_name, dict_type, status, create_by, create_time, remark  `,
+		fromDictTypeSql:   ` from sys_dict_type`,
+	}
+}
 
 type sysDictTypeDao struct {
-	db **sqlx.DB
+	selectDictTypeSql string
+	fromDictTypeSql   string
 }
 
 func GetSysDictTypeDao() *sysDictTypeDao {
 	return sysDictTypeDaoImpl
 }
-func (sysDictTypeDao *sysDictTypeDao) getDb() *sqlx.DB {
-	return *sysDictTypeDao.db
-}
-
-var selectDictTypeSql = `select dict_id, dict_name, dict_type, status, create_by, create_time, remark  `
-var fromDictTypeSql = ` from sys_dict_type`
 
 func (sysDictTypeDao *sysDictTypeDao) SelectDictTypeList(dictType *systemModels.SysDictTypeDQL) (list []*systemModels.SysDictTypeVo, total *int64) {
 	whereSql := ``
@@ -41,7 +43,7 @@ func (sysDictTypeDao *sysDictTypeDao) SelectDictTypeList(dictType *systemModels.
 		whereSql = " where " + whereSql[4:]
 	}
 
-	countRow, err := sysDictTypeDao.getDb().NamedQuery(constants.MysqlCount+fromDictTypeSql+whereSql, dictType)
+	countRow, err := datasource.GetMasterDb().NamedQuery(constants.MysqlCount+sysDictTypeDao.fromDictTypeSql+whereSql, dictType)
 	if err != nil {
 		panic(err)
 	}
@@ -55,7 +57,7 @@ func (sysDictTypeDao *sysDictTypeDao) SelectDictTypeList(dictType *systemModels.
 		if dictType.Limit != "" {
 			whereSql += dictType.Limit
 		}
-		listRows, err := sysDictTypeDao.getDb().NamedQuery(selectDictTypeSql+fromDictTypeSql+whereSql, dictType)
+		listRows, err := datasource.GetMasterDb().NamedQuery(sysDictTypeDao.selectDictTypeSql+sysDictTypeDao.fromDictTypeSql+whereSql, dictType)
 		if err != nil {
 			panic(err)
 		}
@@ -72,7 +74,7 @@ func (sysDictTypeDao *sysDictTypeDao) SelectDictTypeList(dictType *systemModels.
 func (sysDictTypeDao *sysDictTypeDao) SelectDictTypeAll() (list []*systemModels.SysDictTypeVo) {
 
 	list = make([]*systemModels.SysDictTypeVo, 0, 2)
-	err := sysDictTypeDao.getDb().Select(&list, selectDictTypeSql+fromDictTypeSql)
+	err := datasource.GetMasterDb().Select(&list, sysDictTypeDao.selectDictTypeSql+sysDictTypeDao.fromDictTypeSql)
 	if err != nil {
 		panic(err)
 	}
@@ -82,7 +84,7 @@ func (sysDictTypeDao *sysDictTypeDao) SelectDictTypeAll() (list []*systemModels.
 func (sysDictTypeDao *sysDictTypeDao) SelectDictTypeById(dictId int64) (dictType *systemModels.SysDictTypeVo) {
 
 	dictType = new(systemModels.SysDictTypeVo)
-	err := sysDictTypeDao.getDb().Get(dictType, selectDictTypeSql+fromDictTypeSql+" where dict_id = ?", dictId)
+	err := datasource.GetMasterDb().Get(dictType, sysDictTypeDao.selectDictTypeSql+sysDictTypeDao.fromDictTypeSql+" where dict_id = ?", dictId)
 	if err == sql.ErrNoRows {
 		return nil
 	} else if err != nil {
@@ -100,7 +102,7 @@ func (sysDictTypeDao *sysDictTypeDao) SelectDictTypeByIds(dictId []int64) (dictT
 		panic(err)
 	}
 	return
-	err = sysDictTypeDao.getDb().Select(&dictTypes, query, i)
+	err = datasource.GetMasterDb().Select(&dictTypes, query, i)
 	if err != nil {
 		panic(err)
 	}
@@ -124,7 +126,7 @@ func (sysDictTypeDao *sysDictTypeDao) InsertDictType(dictType *systemModels.SysD
 	}
 
 	insertStr := fmt.Sprintf(insertSQL, key, value)
-	_, err := sysDictTypeDao.getDb().NamedExec(insertStr, dictType)
+	_, err := datasource.GetMasterDb().NamedExec(insertStr, dictType)
 	if err != nil {
 		panic(err)
 	}
@@ -149,7 +151,7 @@ func (sysDictTypeDao *sysDictTypeDao) UpdateDictType(dictType *systemModels.SysD
 
 	updateSQL += " where dict_id = :dict_id"
 
-	_, err := sysDictTypeDao.getDb().NamedExec(updateSQL, dictType)
+	_, err := datasource.GetMasterDb().NamedExec(updateSQL, dictType)
 	if err != nil {
 		panic(err)
 	}
@@ -161,7 +163,7 @@ func (sysDictTypeDao *sysDictTypeDao) DeleteDictTypeByIds(dictIds []int64) (err 
 	if err != nil {
 		panic(err)
 	}
-	_, err = sysDictTypeDao.getDb().Exec(query, i...)
+	_, err = datasource.GetMasterDb().Exec(query, i...)
 	if err != nil {
 		panic(err)
 	}
@@ -169,7 +171,7 @@ func (sysDictTypeDao *sysDictTypeDao) DeleteDictTypeByIds(dictIds []int64) (err 
 }
 func (sysDictTypeDao *sysDictTypeDao) CheckDictTypeUnique(dictType string) int64 {
 	var dictId int64 = 0
-	err := sysDictTypeDao.getDb().Get(&dictId, "select dict_id from sys_dict_type where dict_type = ?", dictType)
+	err := datasource.GetMasterDb().Get(&dictId, "select dict_id from sys_dict_type where dict_type = ?", dictType)
 	if err != nil && err != sql.ErrNoRows {
 		panic(err)
 	}

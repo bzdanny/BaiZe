@@ -2,7 +2,7 @@ package main
 
 import (
 	"baize/app/common/commonModels"
-	"baize/app/common/mysql"
+	"baize/app/common/datasource"
 	"baize/app/common/redis"
 	"baize/app/routes"
 	"baize/app/setting"
@@ -13,7 +13,6 @@ import (
 	"net/http"
 	"os"
 )
-
 
 // @title 白泽
 // @version 1.0.x
@@ -29,8 +28,6 @@ import (
 
 // @host localhost:8080
 
-
-
 func main() {
 
 	var filePath string
@@ -44,8 +41,8 @@ func main() {
 	//2.初始化日志
 	logger.Init()
 	//3.初始化MySQL
-	mysql.Init()
-	defer mysql.Close() // 程序退出关闭数据库连接
+	datasource.Init()
+	defer datasource.Close() // 程序退出关闭数据库连接
 	//4.初始化Redis
 	redis.Init()
 	defer redis.Close()
@@ -58,7 +55,6 @@ func main() {
 		panic(err)
 	}
 }
-
 
 // @Summary 添加用户
 // @accept multipart/form-data
