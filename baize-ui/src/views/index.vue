@@ -113,6 +113,14 @@
             <span>更新日志</span>
           </div>
           <el-collapse accordion>
+            <el-collapse-item  title="v1.1.1 - 2022-01-09">
+              <ol>
+                <li>添加多数据源</li>
+                <li>添加事务回滚</li>
+              </ol>
+            </el-collapse-item>
+          </el-collapse>
+          <el-collapse accordion>
             <el-collapse-item  title="v1.1.0 - 2021-12-26">
               <ol>
                 <li>添加swagger</li>
@@ -136,7 +144,7 @@
 </template>
 
 <script setup name="Index">
-const version = ref('1.0.0')
+const version = ref('v1.1.1')
 
 function goTarget(url) {
   window.open(url, '__blank')

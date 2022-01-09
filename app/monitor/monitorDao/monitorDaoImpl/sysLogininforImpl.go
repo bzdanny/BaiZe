@@ -8,25 +8,27 @@ import (
 	"go.uber.org/zap"
 )
 
-var sysLogininforImpl = &logininforDao{db: mysql.GetMysqlDb()}
+var sysLogininforImpl *logininforDao
+
+func init() {
+	sysLogininforImpl = &logininforDao{
+		selectLogininforSql: `select info_id, user_name, ipaddr, login_location, browser, os, status, msg, login_time `,
+		fromLogininforSql:   ` from sys_logininfor`,
+	}
+}
 
 type logininforDao struct {
-	db **sqlx.DB
+	selectLogininforSql string
+	fromLogininforSql   string
 }
 
 func GetLogininforDao() *logininforDao {
 	return sysLogininforImpl
 }
-func (logininforDao *logininforDao) getDb() *sqlx.DB {
-	return *logininforDao.db
-}
-
-var selectLogininforSql = `select info_id, user_name, ipaddr, login_location, browser, os, status, msg, login_time `
-var fromLogininforSql = ` from sys_logininfor`
 
 func (logininforDao *logininforDao) InserLogininfor(logininfor *monitorModels.Logininfor) {
 
-	_, err := logininforDao.getDb().NamedExec("insert into sys_logininfor (info_id,user_name, status, ipaddr, login_location, browser, os, msg, login_time) values (:info_id,:user_name, :status, :ipaddr, :login_location, :browser, :os, :msg, sysdate())", logininfor)
+	_, err := mysql.GetMasterMysqlDb().NamedExec("insert into sys_logininfor (info_id,user_name, status, ipaddr, login_location, browser, os, msg, login_time) values (:info_id,:user_name, :status, :ipaddr, :login_location, :browser, :os, :msg, sysdate())", logininfor)
 	if err != nil {
 		zap.L().Error("登录信息保存错误", zap.Error(err))
 	}
@@ -48,7 +50,7 @@ func (logininforDao *logininforDao) SelectLogininforList(logininfor *monitorMode
 		whereSql = " where " + whereSql[4:]
 	}
 
-	countRow, err := logininforDao.getDb().NamedQuery(constants.MysqlCount+fromLogininforSql+whereSql, logininfor)
+	countRow, err := mysql.GetMasterMysqlDb().NamedQuery(constants.MysqlCount+logininforDao.fromLogininforSql+whereSql, logininfor)
 	if err != nil {
 		panic(err)
 	}
@@ -59,11 +61,11 @@ func (logininforDao *logininforDao) SelectLogininforList(logininfor *monitorMode
 	defer countRow.Close()
 	list = make([]*monitorModels.Logininfor, 0, logininfor.Size)
 	if *total > logininfor.Offset {
-		whereSql +=" order by info_id desc"
+		whereSql += " order by info_id desc"
 		if logininfor.Limit != "" {
 			whereSql += logininfor.Limit
 		}
-		listRows, err := logininforDao.getDb().NamedQuery(selectLogininforSql+fromLogininforSql+whereSql, logininfor)
+		listRows, err := mysql.GetMasterMysqlDb().NamedQuery(logininforDao.selectLogininforSql+logininforDao.fromLogininforSql+whereSql, logininfor)
 		if err != nil {
 			panic(err)
 		}
@@ -82,14 +84,14 @@ func (logininforDao *logininforDao) DeleteLogininforByIds(infoIds []int64) {
 	if err != nil {
 		panic(err)
 	}
-	_, err = logininforDao.getDb().Exec(query, i...)
+	_, err = mysql.GetMasterMysqlDb().Exec(query, i...)
 	if err != nil {
 		panic(err)
 	}
 }
 
 func (logininforDao *logininforDao) CleanLogininfor() {
-	_, err := logininforDao.getDb().Exec("truncate table sys_logininfor")
+	_, err := mysql.GetMasterMysqlDb().Exec("truncate table sys_logininfor")
 	if err != nil {
 		panic(err)
 	}

@@ -11,7 +11,11 @@ import (
 	"baize/app/utils/snowflake"
 )
 
-var dictTypeServiceImpl *dictTypeService = &dictTypeService{dictTypeDao: systemDaoImpl.GetSysDictTypeDao()}
+var dictTypeServiceImpl *dictTypeService
+
+func init() {
+	dictTypeServiceImpl = &dictTypeService{dictTypeDao: systemDaoImpl.GetSysDictTypeDao()}
+}
 
 type dictTypeService struct {
 	dictTypeDao systemDao.IDictTypeDao

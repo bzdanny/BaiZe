@@ -23,7 +23,16 @@ import (
 	"time"
 )
 
-var instance *loginService = &loginService{userDao: systemDaoImpl.GetSysUserDao(), menuDao: systemDaoImpl.GetSysMenuDao(), roleService: systemServiceImpl.GetRoleService(), iLoginforService: monitorServiceImpl.GetLogininforService()}
+var instance *loginService
+
+func init() {
+	instance = &loginService{
+		userDao:          systemDaoImpl.GetSysUserDao(),
+		menuDao:          systemDaoImpl.GetSysMenuDao(),
+		roleService:      systemServiceImpl.GetRoleService(),
+		iLoginforService: monitorServiceImpl.GetLogininforService(),
+	}
+}
 
 type loginService struct {
 	userDao          systemDao.IUserDao

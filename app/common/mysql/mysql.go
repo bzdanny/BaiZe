@@ -8,27 +8,27 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-var mysqlDb *sqlx.DB
+var masterMysqlDb *sqlx.DB
 
 // Init 初始化MySQL连接
 func Init() {
 	var err error = nil
 	// "user:password@tcp(host:port)/dbname"
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true&loc=Local", setting.Conf.MySQLConfig.User, setting.Conf.MySQLConfig.Password, setting.Conf.MySQLConfig.Host, setting.Conf.MySQLConfig.Port, setting.Conf.MySQLConfig.DB)
-	mysqlDb, err = sqlx.Connect("mysql", dsn)
+	masterMysqlDb, err = sqlx.Connect("mysql", dsn)
 	if err != nil {
-		return
+		panic(err)
 	}
-	mysqlDb.SetMaxOpenConns(setting.Conf.MySQLConfig.MaxOpenConns)
-	mysqlDb.SetMaxIdleConns(setting.Conf.MySQLConfig.MaxIdleConns)
+	masterMysqlDb.SetMaxOpenConns(setting.Conf.MySQLConfig.MaxOpenConns)
+	masterMysqlDb.SetMaxIdleConns(setting.Conf.MySQLConfig.MaxIdleConns)
 	return
 }
 
-func GetMysqlDb() **sqlx.DB {
-	return &mysqlDb
+func GetMasterMysqlDb() *sqlx.DB {
+	return masterMysqlDb
 }
 
 // Close 关闭MySQL连接
 func Close() {
-	_ = mysqlDb.Close()
+	_ = masterMysqlDb.Close()
 }
