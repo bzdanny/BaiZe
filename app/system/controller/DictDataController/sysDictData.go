@@ -1,72 +1,72 @@
 package DictDataController
 
 import (
-	"baize/app/common/commonController"
-	"baize/app/common/commonLog"
-	"baize/app/common/commonModels"
+	"baize/app/common/baize/baizeContext"
 	"baize/app/system/models/systemModels"
 	"baize/app/system/service/systemService"
 	"baize/app/system/service/systemService/systemServiceImpl"
-	"baize/app/utils/slicesUtils"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
-	"net/http"
-	"strconv"
-	"strings"
 )
 
 var iDictData systemService.IDictDataService = systemServiceImpl.GetDictDataService()
 
 func DictDataList(c *gin.Context) {
+	bzc := baizeContext.NewBaiZeContext(c)
 	dictData := new(systemModels.SysDictDataDQL)
 	c.ShouldBind(dictData)
 	dictData.SetLimit(c)
 	list, count := iDictData.SelectDictDataList(dictData)
-	c.JSON(http.StatusOK, commonModels.SuccessListData(list, count))
+	bzc.SuccessListData(list, count)
 
 }
 func DictDataExport(c *gin.Context) {
+	bzc := baizeContext.NewBaiZeContext(c)
 	dictData := new(systemModels.SysDictDataDQL)
 	c.ShouldBind(dictData)
-	commonController.DataPackageExcel(c,iDictData.ExportDictData(dictData))
+	bzc.DataPackageExcel(iDictData.ExportDictData(dictData))
 }
 func DictDataGetInfo(c *gin.Context) {
-	dictCode, err := strconv.ParseInt(c.Param("dictCode"), 10, 64)
-	if err != nil {
-		zap.L().Error("参数错误", zap.Error(err))
-		c.JSON(http.StatusOK, commonModels.ParameterError())
+	bzc := baizeContext.NewBaiZeContext(c)
+	dictCode := bzc.ParamInt64("dictCode")
+	if dictCode == 0 {
+		zap.L().Error("参数错误")
+		bzc.ParameterError()
 		return
 	}
 	dictData := iDictData.SelectDictDataById(dictCode)
-	c.JSON(http.StatusOK, commonModels.SuccessData(dictData))
+	bzc.SuccessData(dictData)
 }
 func DictDataType(c *gin.Context) {
+	bzc := baizeContext.NewBaiZeContext(c)
 	sysDictDataList := iDictData.SelectDictDataByType(c.Param("dictType"))
-	c.JSON(http.StatusOK, commonModels.SuccessData(sysDictDataList))
+	bzc.SuccessData(sysDictDataList)
 }
 
 func DictDataAdd(c *gin.Context) {
-	commonLog.SetLog(c, "字典数据", "INSERT")
-	loginUser := commonController.GetCurrentLoginUser(c)
+	bzc := baizeContext.NewBaiZeContext(c)
+	bzc.SetLog("字典数据", "INSERT")
+	loginUser := bzc.GetCurrentLoginUser()
 	dictData := new(systemModels.SysDictDataDML)
 	c.ShouldBind(dictData)
 	dictData.SetCreateBy(loginUser.User.UserName)
 	iDictData.InsertDictData(dictData)
-
-	c.JSON(http.StatusOK, commonModels.Success())
+	bzc.Success()
 }
 func DictDataEdit(c *gin.Context) {
-	commonLog.SetLog(c, "字典数据", "UPDATE")
-	loginUser := commonController.GetCurrentLoginUser(c)
+	bzc := baizeContext.NewBaiZeContext(c)
+	bzc.SetLog("字典数据", "UPDATE")
+	loginUser := bzc.GetCurrentLoginUser()
 	dictData := new(systemModels.SysDictDataDML)
 	c.ShouldBind(dictData)
 	dictData.SetCreateBy(loginUser.User.UserName)
 	iDictData.UpdateDictData(dictData)
-	c.JSON(http.StatusOK, commonModels.Success())
+	bzc.Success()
 }
 func DictDataRemove(c *gin.Context) {
-	commonLog.SetLog(c, "字典数据", "DELETE")
-	var s slicesUtils.Slices = strings.Split(c.Param("dictCodes"), ",")
-	iDictData.DeleteDictDataByIds(s.StrSlicesToInt())
-	c.JSON(http.StatusOK, commonModels.Success())
+	bzc := baizeContext.NewBaiZeContext(c)
+	bzc.SetLog("字典数据", "DELETE")
+	array := bzc.ParamInt64Array("dictCodes")
+	iDictData.DeleteDictDataByIds(array)
+	bzc.Success()
 }

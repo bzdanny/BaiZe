@@ -1,10 +1,10 @@
 package genTableModels
 
 import (
+	"baize/app/common/baize/baizeUnix"
 	"baize/app/common/commonModels"
 	genUtils "baize/app/genTable/utils"
 	"baize/app/utils/stringUtils"
-	"baize/app/utils/unix"
 	"strings"
 	"time"
 )
@@ -77,8 +77,8 @@ type GenTableVo struct {
 }
 
 type DBTableVo struct {
-	TableName    string          `json:"tableName" db:"TABLE_NAME"`
-	TableComment string          `json:"tableComment" db:"TABLE_COMMENT"`
-	CreateTime   *unix.BaiZeTime `json:"createTime" db:"CREATE_TIME"`
-	UpdateTime   *unix.BaiZeTime `json:"updateTime" db:"UPDATE_TIME"`
+	TableName    string               `json:"tableName" db:"TABLE_NAME"`
+	TableComment string               `json:"tableComment" db:"TABLE_COMMENT"`
+	CreateTime   *baizeUnix.BaiZeTime `json:"createTime" db:"CREATE_TIME"`
+	UpdateTime   *baizeUnix.BaiZeTime `json:"updateTime" db:"UPDATE_TIME"`
 }

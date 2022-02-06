@@ -1,100 +1,98 @@
 package DictTypeController
 
 import (
-	commonController "baize/app/common/commonController"
-	"baize/app/common/commonLog"
-	commonModels "baize/app/common/commonModels"
+	"baize/app/common/baize/baizeContext"
 	"baize/app/system/models/systemModels"
 	"baize/app/system/service/systemService"
 	"baize/app/system/service/systemService/systemServiceImpl"
-	"baize/app/utils/slicesUtils"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
-	"net/http"
-	"strconv"
-	"strings"
 )
 
 var iDictType systemService.IDictTypeService = systemServiceImpl.GetDictTypeService()
 var iDictData systemService.IDictDataService = systemServiceImpl.GetDictDataService()
 
 func DictTypeList(c *gin.Context) {
+	bzc := baizeContext.NewBaiZeContext(c)
 	dictType := new(systemModels.SysDictTypeDQL)
 	c.ShouldBind(dictType)
 	dictType.SetLimit(c)
 	list, count := iDictType.SelectDictTypeList(dictType)
-	c.JSON(http.StatusOK, commonModels.SuccessListData(list, count))
+	bzc.SuccessListData(list, count)
 
 }
 
 func DictTypeExport(c *gin.Context) {
+	bzc := baizeContext.NewBaiZeContext(c)
 	dictType := new(systemModels.SysDictTypeDQL)
 	c.ShouldBind(dictType)
-	commonController.DataPackageExcel(c,iDictType.ExportDictType(dictType))
+	bzc.DataPackageExcel(iDictType.ExportDictType(dictType))
 }
 
 func DictTypeGetInfo(c *gin.Context) {
-	dictId, err := strconv.ParseInt(c.Param("dictId"), 10, 64)
-	if err != nil {
-		zap.L().Error("参数错误", zap.Error(err))
-		c.JSON(http.StatusOK, commonModels.ParameterError())
+	bzc := baizeContext.NewBaiZeContext(c)
+	dictId := bzc.ParamInt64("dictId")
+	if dictId == 0 {
+		zap.L().Error("参数错误")
+		bzc.ParameterError()
 		return
 	}
 	dictData := iDictType.SelectDictTypeById(dictId)
 
-	c.JSON(http.StatusOK, commonModels.SuccessData(dictData))
+	bzc.SuccessData(dictData)
 }
 
 func DictTypeAdd(c *gin.Context) {
-	commonLog.SetLog(c, "字典类型", "INSERT")
-	loginUser := commonController.GetCurrentLoginUser(c)
+	bzc := baizeContext.NewBaiZeContext(c)
+	bzc.SetLog("字典类型", "INSERT")
+	loginUser := bzc.GetCurrentLoginUser()
 	dictType := new(systemModels.SysDictTypeDML)
 	c.ShouldBind(dictType)
 	if iDictType.CheckDictTypeUnique(dictType) {
-		c.JSON(http.StatusOK, commonModels.Waring("新增字典'"+dictType.DictName+"'失败，字典类型已存在"))
+		bzc.Waring("新增字典'" + dictType.DictName + "'失败，字典类型已存在")
 		return
 	}
 	dictType.SetCreateBy(loginUser.User.UserName)
 	iDictType.InsertDictType(dictType)
-
-	c.JSON(http.StatusOK, commonModels.Success())
+	bzc.Success()
 }
 
 func DictTypeEdit(c *gin.Context) {
-	commonLog.SetLog(c, "字典类型", "UPDATE")
-	loginUser := commonController.GetCurrentLoginUser(c)
+	bzc := baizeContext.NewBaiZeContext(c)
+	bzc.SetLog("字典类型", "UPDATE")
+	loginUser := bzc.GetCurrentLoginUser()
 	dictType := new(systemModels.SysDictTypeDML)
 	if iDictType.CheckDictTypeUnique(dictType) {
-		c.JSON(http.StatusOK, commonModels.Waring("修改字典'"+dictType.DictName+"'失败，字典类型已存在"))
+		bzc.Waring("修改字典'" + dictType.DictName + "'失败，字典类型已存在")
 		return
 	}
 	c.ShouldBind(dictType)
 	dictType.SetCreateBy(loginUser.User.UserName)
 	iDictType.UpdateDictType(dictType)
-
-	c.JSON(http.StatusOK, commonModels.Success())
+	bzc.Success()
 }
 
 func DictTypeRemove(c *gin.Context) {
-	commonLog.SetLog(c, "字典类型", "DELETE")
-	var s slicesUtils.Slices = strings.Split(c.Param("dictIds"), ",")
-	dictIds := s.StrSlicesToInt()
+	bzc := baizeContext.NewBaiZeContext(c)
+	bzc.SetLog("字典类型", "DELETE")
+	dictIds := bzc.ParamInt64Array("dictIds")
 	dictTypes := iDictType.SelectDictTypeByIds(dictIds)
 	if iDictData.CheckDictDataByTypes(dictTypes) {
-		c.JSON(http.StatusOK, commonModels.Waring("有已分配的字典,不能删除"))
+		bzc.Waring("有已分配的字典,不能删除")
 		return
 	}
 	iDictType.DeleteDictTypeByIds(dictIds)
-	c.JSON(http.StatusOK, commonModels.Success())
+	bzc.Success()
 }
 
 func DictTypeClearCache(c *gin.Context) {
-	commonLog.SetLog(c, "字典类型", "CLEAN")
+	bzc := baizeContext.NewBaiZeContext(c)
+	bzc.SetLog("字典类型", "CLEAN")
 	iDictType.DictTypeClearCache()
-	c.JSON(http.StatusOK, commonModels.Success())
+	bzc.Success()
 }
 
 func DictTypeOptionselect(c *gin.Context) {
-
-	c.JSON(http.StatusOK, commonModels.SuccessData(iDictType.SelectDictTypeAll()))
+	bzc := baizeContext.NewBaiZeContext(c)
+	bzc.SuccessData(iDictType.SelectDictTypeAll())
 }

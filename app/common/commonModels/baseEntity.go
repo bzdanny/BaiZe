@@ -1,20 +1,20 @@
 package commonModels
 
 import (
+	"baize/app/common/baize/baizeUnix"
 	"baize/app/constant/dataScopeAspect"
 	"baize/app/system/models/loginModels"
 	"baize/app/utils/stringUtils"
-	"baize/app/utils/unix"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"strconv"
 )
 
 type BaseEntity struct {
-	CreateBy   string          `json:"createBy" db:"create_by"`
-	CreateTime *unix.BaiZeTime `json:"createTime" db:"create_time"`
-	UpdateBy   string          `json:"updateBy" db:"update_by"`
-	UpdateTime *unix.BaiZeTime `json:"updateTime" db:"update_time"`
+	CreateBy   string               `json:"createBy" db:"create_by"`
+	CreateTime *baizeUnix.BaiZeTime `json:"createTime" db:"create_time"`
+	UpdateBy   string               `json:"updateBy" db:"update_by"`
+	UpdateTime *baizeUnix.BaiZeTime `json:"updateTime" db:"update_time"`
 }
 
 type BaseEntityDML struct {
@@ -32,10 +32,10 @@ func (b *BaseEntityDML) SetUpdateBy(userName string) {
 }
 
 type BaseEntityDQL struct {
-	CreateTime *unix.BaiZeTime `db:"create_time"`
-	UpdateTime *unix.BaiZeTime `db:"update_time"`
-	CreateBy   string          `db:"create_by"`
-	UpdateBy   string          `db:"update_by"`
+	CreateTime *baizeUnix.BaiZeTime `db:"create_time"`
+	UpdateTime *baizeUnix.BaiZeTime `db:"update_time"`
+	CreateBy   string               `db:"create_by"`
+	UpdateBy   string               `db:"update_by"`
 	DataScope  string
 	Limit      string
 	Offset     int64
