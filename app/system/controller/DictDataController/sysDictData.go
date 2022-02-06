@@ -46,20 +46,18 @@ func DictDataType(c *gin.Context) {
 func DictDataAdd(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	bzc.SetLog("字典数据", "INSERT")
-	loginUser := bzc.GetCurrentLoginUser()
 	dictData := new(systemModels.SysDictDataDML)
 	c.ShouldBind(dictData)
-	dictData.SetCreateBy(loginUser.User.UserName)
+	dictData.SetCreateBy(bzc.GetCurrentUserName())
 	iDictData.InsertDictData(dictData)
 	bzc.Success()
 }
 func DictDataEdit(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	bzc.SetLog("字典数据", "UPDATE")
-	loginUser := bzc.GetCurrentLoginUser()
 	dictData := new(systemModels.SysDictDataDML)
 	c.ShouldBind(dictData)
-	dictData.SetCreateBy(loginUser.User.UserName)
+	dictData.SetCreateBy(bzc.GetCurrentUserName())
 	iDictData.UpdateDictData(dictData)
 	bzc.Success()
 }

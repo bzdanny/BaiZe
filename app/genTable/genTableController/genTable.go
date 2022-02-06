@@ -55,15 +55,14 @@ func ColumnList(c *gin.Context) {
 }
 func ImportTable(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	iGenTableService.ImportTableSave(strings.Split(c.Query("tables"), ","), bzc.GetCurrentLoginUser().User.UserName)
+	iGenTableService.ImportTableSave(strings.Split(c.Query("tables"), ","), bzc.GetCurrentUserName())
 	bzc.Success()
 }
 func EditSave(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	loginUser := bzc.GetCurrentLoginUser()
 	genTable := new(genTableModels.GenTableDML)
 	c.ShouldBindJSON(genTable)
-	genTable.SetUpdateBy(loginUser.User.UserName)
+	genTable.SetUpdateBy(bzc.GetCurrentUserName())
 	iGenTableService.UpdateGenTable(genTable)
 	bzc.Success()
 }

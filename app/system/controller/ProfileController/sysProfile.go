@@ -17,11 +17,11 @@ var iUser systemService.IUserService = systemServiceImpl.GetUserService()
 
 func Profile(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	loginUser := bzc.GetCurrentLoginUser()
+	User := bzc.GetCurrentUser()
 	m := make(map[string]interface{})
-	m["user"] = loginUser.User
-	m["roleGroup"] = iRole.SelectUserRoleGroupByUserId(loginUser.User.UserId)
-	m["postGroup"] = iPost.SelectUserPostGroupByUserId(loginUser.User.UserId)
+	m["user"] = User
+	m["roleGroup"] = iRole.SelectUserRoleGroupByUserId(User.UserId)
+	m["postGroup"] = iPost.SelectUserPostGroupByUserId(User.UserId)
 	bzc.SuccessData(m)
 }
 
@@ -61,7 +61,7 @@ func ProfileUpdatePwd(c *gin.Context) {
 		bzc.Waring("新密码不能与旧密码相同")
 		return
 	}
-	userId := bzc.GetCurrentLoginUser().User.UserId
+	userId := bzc.GetCurrentUserId()
 	if !iUser.MatchesPassword(oldPassword, userId) {
 		bzc.Waring("修改密码失败，旧密码错误")
 		return

@@ -30,20 +30,18 @@ func JobGetInfo(c *gin.Context) {
 func JobAdd(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	bzc.SetLog("定时任务", "INSERT")
-	loginUser := bzc.GetCurrentLoginUser()
 	job := new(quartzModels.JobDML)
 	c.ShouldBind(job)
-	job.SetCreateBy(loginUser.User.UserName)
+	job.SetCreateBy(bzc.GetCurrentUserName())
 	iJob.InsertJob(job)
 	bzc.Success()
 }
 func JobEdit(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	bzc.SetLog("定时任务", "UPDATE")
-	loginUser := bzc.GetCurrentLoginUser()
 	job := new(quartzModels.JobDML)
 	c.ShouldBind(job)
-	job.SetCreateBy(loginUser.User.UserName)
+	job.SetCreateBy(bzc.GetCurrentUserName())
 	iJob.UpdateJob(job)
 	bzc.Success()
 }

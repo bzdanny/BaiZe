@@ -13,11 +13,10 @@ var iRole systemService.IRoleService = systemServiceImpl.GetRoleService()
 
 func RoleList(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	loginUser := bzc.GetCurrentLoginUser()
 	role := new(systemModels.SysRoleDQL)
 	c.ShouldBind(role)
 	role.SetLimit(c)
-	role.SetDataScope(loginUser, "d", "")
+	role.SetDataScope(bzc.GetCurrentUser(), "d", "")
 	list, count := iRole.SelectRoleList(role)
 	bzc.SuccessListData(list, count)
 
@@ -25,10 +24,9 @@ func RoleList(c *gin.Context) {
 
 func RoleExport(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	loginUser := bzc.GetCurrentLoginUser()
 	role := new(systemModels.SysRoleDQL)
 	c.ShouldBind(role)
-	role.SetDataScope(loginUser, "d", "")
+	role.SetDataScope(bzc.GetCurrentUser(), "d", "")
 	data := iRole.RoleExport(role)
 	bzc.DataPackageExcel(data)
 
@@ -47,7 +45,6 @@ func RoleGetInfo(c *gin.Context) {
 func RoleAdd(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	bzc.SetLog("角色管理", "INSERT")
-	loginUser := bzc.GetCurrentLoginUser()
 	sysRole := new(systemModels.SysRoleDML)
 	if err := c.ShouldBindJSON(sysRole); err != nil {
 		zap.L().Error("参数错误", zap.Error(err))
@@ -62,7 +59,7 @@ func RoleAdd(c *gin.Context) {
 		bzc.Waring("新增角色'" + sysRole.RoleKey + "'失败，角色权限已存在")
 		return
 	}
-	sysRole.SetCreateBy(loginUser.User.UserName)
+	sysRole.SetCreateBy(bzc.GetCurrentUserName())
 	iRole.InsertRole(sysRole)
 	bzc.Success()
 
@@ -70,7 +67,7 @@ func RoleAdd(c *gin.Context) {
 func RoleEdit(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	bzc.SetLog("角色管理", "UPDATE")
-	loginUser := bzc.GetCurrentLoginUser()
+
 	sysRole := new(systemModels.SysRoleDML)
 	if err := c.ShouldBindJSON(sysRole); err != nil {
 		zap.L().Error("参数错误", zap.Error(err))
@@ -85,17 +82,16 @@ func RoleEdit(c *gin.Context) {
 		bzc.Waring("新增角色'" + sysRole.RoleKey + "'失败，角色权限已存在")
 		return
 	}
-	sysRole.SetUpdateBy(loginUser.User.UserName)
+	sysRole.SetUpdateBy(bzc.GetCurrentUserName())
 	iRole.UpdateRole(sysRole)
 	bzc.Success()
 }
 func RoleDataScope(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	bzc.SetLog("角色管理", "UPDATE")
-	loginUser := bzc.GetCurrentLoginUser()
 	sysRole := new(systemModels.SysRoleDML)
 	c.ShouldBindJSON(sysRole)
-	sysRole.SetUpdateBy(loginUser.User.UserName)
+	sysRole.SetUpdateBy(bzc.GetCurrentUserName())
 	iRole.AuthDataScope(sysRole)
 	bzc.Success()
 }
@@ -103,10 +99,9 @@ func RoleDataScope(c *gin.Context) {
 func RoleChangeStatus(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	bzc.SetLog("角色管理", "UPDATE")
-	loginUser := bzc.GetCurrentLoginUser()
 	sysRole := new(systemModels.SysRoleDML)
 	c.ShouldBindJSON(sysRole)
-	sysRole.SetUpdateBy(loginUser.User.UserName)
+	sysRole.SetUpdateBy(bzc.GetCurrentUserName())
 	iRole.UpdateRoleStatus(sysRole)
 	bzc.Success()
 }
@@ -123,22 +118,20 @@ func RoleRemove(c *gin.Context) {
 }
 func AllocatedList(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	loginUser := bzc.GetCurrentLoginUser()
 	user := new(systemModels.SysRoleAndUserDQL)
 	c.ShouldBind(user)
 	user.SetLimit(c)
-	user.SetDataScope(loginUser, "d", "u")
+	user.SetDataScope(bzc.GetCurrentUser(), "d", "u")
 	list, count := iRole.SelectAllocatedList(user)
 	bzc.SuccessListData(list, count)
 
 }
 func UnallocatedList(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	loginUser := bzc.GetCurrentLoginUser()
 	user := new(systemModels.SysRoleAndUserDQL)
 	c.ShouldBind(user)
 	user.SetLimit(c)
-	user.SetDataScope(loginUser, "d", "u")
+	user.SetDataScope(bzc.GetCurrentUser(), "d", "u")
 	list, count := iRole.SelectUnallocatedList(user)
 	bzc.SuccessListData(list, count)
 }

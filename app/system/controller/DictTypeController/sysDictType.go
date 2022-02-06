@@ -45,14 +45,13 @@ func DictTypeGetInfo(c *gin.Context) {
 func DictTypeAdd(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	bzc.SetLog("字典类型", "INSERT")
-	loginUser := bzc.GetCurrentLoginUser()
 	dictType := new(systemModels.SysDictTypeDML)
 	c.ShouldBind(dictType)
 	if iDictType.CheckDictTypeUnique(dictType) {
 		bzc.Waring("新增字典'" + dictType.DictName + "'失败，字典类型已存在")
 		return
 	}
-	dictType.SetCreateBy(loginUser.User.UserName)
+	dictType.SetCreateBy(bzc.GetCurrentUserName())
 	iDictType.InsertDictType(dictType)
 	bzc.Success()
 }
@@ -60,14 +59,13 @@ func DictTypeAdd(c *gin.Context) {
 func DictTypeEdit(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	bzc.SetLog("字典类型", "UPDATE")
-	loginUser := bzc.GetCurrentLoginUser()
 	dictType := new(systemModels.SysDictTypeDML)
 	if iDictType.CheckDictTypeUnique(dictType) {
 		bzc.Waring("修改字典'" + dictType.DictName + "'失败，字典类型已存在")
 		return
 	}
 	c.ShouldBind(dictType)
-	dictType.SetCreateBy(loginUser.User.UserName)
+	dictType.SetCreateBy(bzc.GetCurrentUserName())
 	iDictType.UpdateDictType(dictType)
 	bzc.Success()
 }

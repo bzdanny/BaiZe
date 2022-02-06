@@ -77,8 +77,7 @@ func GetInfo(c *gin.Context) {
 }
 func GetRouters(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	loginUser := bzc.GetCurrentLoginUser()
-	menus := iMenu.SelectMenuTreeByUserId(loginUser.User.UserId)
+	menus := iMenu.SelectMenuTreeByUserId(bzc.GetCurrentUserId())
 	buildMenus := iMenu.BuildMenus(menus)
 	bzc.SuccessData(buildMenus)
 

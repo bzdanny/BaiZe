@@ -13,10 +13,9 @@ var iMenu systemService.IMenuService = systemServiceImpl.GetMenuService()
 
 func MenuList(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	loginUser := bzc.GetCurrentLoginUser()
 	menu := new(systemModels.SysMenuDQL)
 	c.ShouldBind(menu)
-	list := iMenu.SelectMenuList(menu, loginUser.User.UserId)
+	list := iMenu.SelectMenuList(menu, bzc.GetCurrentUserId())
 	bzc.SuccessData(list)
 }
 func MenuGetInfo(c *gin.Context) {
@@ -32,34 +31,32 @@ func MenuGetInfo(c *gin.Context) {
 }
 func MenuTreeSelect(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	userId := bzc.GetCurrentLoginUser().User.UserId
+	userId := bzc.GetCurrentUserId()
 	bzc.SuccessData(iMenu.SelectMenuList(new(systemModels.SysMenuDQL), userId))
 }
 func MenuAdd(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	bzc.SetLog("菜单管理", "INSERT")
-	loginUser := bzc.GetCurrentLoginUser()
 	sysMenu := new(systemModels.SysMenuDML)
 	c.ShouldBind(sysMenu)
 	if iMenu.CheckMenuNameUnique(sysMenu) {
 		bzc.Waring("新增菜单'" + sysMenu.MenuName + "'失败，菜单名称已存在")
 		return
 	}
-	sysMenu.SetCreateBy(loginUser.User.UserName)
+	sysMenu.SetCreateBy(bzc.GetCurrentUserName())
 	iMenu.InsertMenu(sysMenu)
 	bzc.Success()
 }
 func MenuEdit(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	bzc.SetLog("菜单管理", "UPDATE")
-	loginUser := bzc.GetCurrentLoginUser()
 	sysMenu := new(systemModels.SysMenuDML)
 	if iMenu.CheckMenuNameUnique(sysMenu) {
 		bzc.Waring("修改菜单'" + sysMenu.MenuName + "'失败，菜单名称已存在")
 		return
 	}
 	c.ShouldBind(sysMenu)
-	sysMenu.SetCreateBy(loginUser.User.UserName)
+	sysMenu.SetCreateBy(bzc.GetCurrentUserName())
 	iMenu.UpdateMenu(sysMenu)
 	bzc.Success()
 }
@@ -90,7 +87,7 @@ func RoleMenuTreeselect(c *gin.Context) {
 		zap.L().Error("参数错误")
 		bzc.ParameterError()
 	}
-	userId := bzc.GetCurrentLoginUser().User.UserId
+	userId := bzc.GetCurrentUserId()
 	m := make(map[string]interface{})
 	m["checkedKeys"] = iMenu.SelectMenuListByRoleId(roleId)
 	m["menus"] = iMenu.SelectMenuList(new(systemModels.SysMenuDQL), userId)

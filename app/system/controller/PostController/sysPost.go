@@ -45,14 +45,13 @@ func PostGetInfo(c *gin.Context) {
 func PostAdd(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	bzc.SetLog("岗位管理", "INSERT")
-	loginUser := bzc.GetCurrentLoginUser()
 	sysPost := new(systemModels.SysPostDML)
 	if err := c.ShouldBindJSON(sysPost); err != nil {
 		zap.L().Error("参数错误", zap.Error(err))
 		bzc.ParameterError()
 		return
 	}
-	sysPost.SetCreateBy(loginUser.User.UserName)
+	sysPost.SetCreateBy(bzc.GetCurrentUserName())
 	iPost.InsertPost(sysPost)
 	bzc.Success()
 }
@@ -60,10 +59,9 @@ func PostAdd(c *gin.Context) {
 func PostEdit(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	bzc.SetLog("岗位管理", "UPDATE")
-	loginUser := bzc.GetCurrentLoginUser()
 	post := new(systemModels.SysPostDML)
 	c.ShouldBindJSON(post)
-	post.SetUpdateBy(loginUser.User.UserName)
+	post.SetUpdateBy(bzc.GetCurrentUserName())
 	iPost.UpdatePost(post)
 	bzc.Success()
 

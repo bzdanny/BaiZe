@@ -14,10 +14,9 @@ var iDept systemService.IDeptService = systemServiceImpl.GetDeptService()
 //DeptList 部门列表查询
 func DeptList(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	loginUser := bzc.GetCurrentLoginUser()
 	dept := new(systemModels.SysDeptDQL)
 	c.ShouldBind(dept)
-	dept.SetDataScope(loginUser, "d", "")
+	dept.SetDataScope(bzc.GetCurrentUser(), "d", "")
 	list := iDept.SelectDeptList(dept)
 	bzc.SuccessData(list)
 
@@ -50,28 +49,26 @@ func RoleDeptTreeselect(c *gin.Context) {
 func DeptAdd(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	bzc.SetLog("部门管理", "INSERT")
-	loginUser := bzc.GetCurrentLoginUser()
 	sysDept := new(systemModels.SysDeptDML)
 	c.ShouldBind(sysDept)
 	if iDept.CheckDeptNameUnique(sysDept) {
 		bzc.Waring("新增部门'" + sysDept.DeptName + "'失败，部门名称已存在")
 		return
 	}
-	sysDept.SetCreateBy(loginUser.User.UserName)
+	sysDept.SetCreateBy(bzc.GetCurrentUserName())
 	iDept.InsertDept(sysDept)
 	bzc.Success()
 }
 func DeptEdit(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	bzc.SetLog("部门管理", "UPDATE")
-	loginUser := bzc.GetCurrentLoginUser()
 	sysDept := new(systemModels.SysDeptDML)
 	if iDept.CheckDeptNameUnique(sysDept) {
 		bzc.Waring("修改部门'" + sysDept.DeptName + "'失败，部门名称已存在")
 		return
 	}
 	c.ShouldBind(sysDept)
-	sysDept.SetCreateBy(loginUser.User.UserName)
+	sysDept.SetCreateBy(bzc.GetCurrentUserName())
 	iDept.UpdateDept(sysDept)
 	bzc.Success()
 }

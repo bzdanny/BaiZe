@@ -19,20 +19,19 @@ var iRole systemService.IRoleService = systemServiceImpl.GetRoleService()
 func ChangeStatus(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	bzc.SetLog("用户管理", "UPDATE")
-	loginUser := bzc.GetCurrentLoginUser()
+
 	sysUser := new(systemModels.SysUserDML)
 	c.ShouldBindJSON(sysUser)
-	sysUser.SetUpdateBy(loginUser.User.UserName)
+	sysUser.SetUpdateBy(bzc.GetCurrentUserName())
 	iUser.UpdateuserStatus(sysUser)
 	bzc.Success()
 }
 func ResetPwd(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	bzc.SetLog("用户管理", "UPDATE")
-	loginUser := bzc.GetCurrentLoginUser()
 	sysUser := new(systemModels.SysUserDML)
 	c.ShouldBindJSON(sysUser)
-	sysUser.SetUpdateBy(loginUser.User.UserName)
+	sysUser.SetUpdateBy(bzc.GetCurrentUserName())
 	iUser.ResetPwd(sysUser)
 	bzc.Success()
 
@@ -40,7 +39,6 @@ func ResetPwd(c *gin.Context) {
 func UserEdit(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	bzc.SetLog("用户管理", "UPDATE")
-	loginUser := bzc.GetCurrentLoginUser()
 	sysUser := new(systemModels.SysUserDML)
 	c.ShouldBindJSON(sysUser)
 	if iUser.CheckPhoneUnique(sysUser) {
@@ -51,7 +49,7 @@ func UserEdit(c *gin.Context) {
 		bzc.Waring("新增用户'" + sysUser.UserName + "'失败，邮箱账号已存在")
 		return
 	}
-	sysUser.SetUpdateBy(loginUser.User.UserName)
+	sysUser.SetUpdateBy(bzc.GetCurrentUserName())
 	iUser.UpdateUser(sysUser)
 	bzc.Success()
 }
@@ -59,7 +57,7 @@ func UserEdit(c *gin.Context) {
 func UserAdd(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	bzc.SetLog("用户管理", "INSERT")
-	loginUser := bzc.GetCurrentLoginUser()
+	user := bzc.GetCurrentUser()
 	sysUser := new(systemModels.SysUserDML)
 	if err := c.ShouldBindJSON(sysUser); err != nil {
 		zap.L().Error("参数错误", zap.Error(err))
@@ -67,7 +65,7 @@ func UserAdd(c *gin.Context) {
 		return
 	}
 	if sysUser.DeptId == nil {
-		sysUser.UserId = loginUser.User.UserId
+		sysUser.UserId = user.UserId
 	}
 	if iUser.CheckUserNameUnique(sysUser.UserName) {
 		bzc.Waring("新增用户'" + sysUser.UserName + "'失败，登录账号已存在")
@@ -82,18 +80,16 @@ func UserAdd(c *gin.Context) {
 		bzc.Waring("新增用户'" + sysUser.UserName + "'失败，邮箱账号已存在")
 		return
 	}
-	sysUser.SetCreateBy(loginUser.User.UserName)
+	sysUser.SetCreateBy(user.UserName)
 	iUser.InsertUser(sysUser)
-
 	bzc.Success()
 }
 func UserList(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	loginUser := bzc.GetCurrentLoginUser()
 	user := new(systemModels.SysUserDQL)
 	c.ShouldBind(user)
 	user.SetLimit(c)
-	user.SetDataScope(loginUser, "d", "u")
+	user.SetDataScope(bzc.GetCurrentUser(), "d", "u")
 	list, count := iUser.SelectUserList(user)
 	bzc.SuccessListData(list, count)
 
@@ -102,12 +98,12 @@ func UserGetInfo(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	m := make(map[string]interface{})
 	m["posts"] = iPost.SelectPostAll()
-	loginUser := bzc.GetCurrentLoginUser()
+	user := bzc.GetCurrentUser()
 	role := new(systemModels.SysRoleDQL)
 	c.ShouldBind(role)
-	role.SetDataScope(loginUser, "d", "")
+	role.SetDataScope(user, "d", "")
 	roleList := iRole.SelectRoleAll(role)
-	if !admin.IsAdmin(loginUser.User.UserId) {
+	if !admin.IsAdmin(user.UserId) {
 		for i, role := range roleList {
 			if role.RoleId == 1 {
 				roleList = append(roleList[:i], roleList[i+1:]...)
@@ -129,10 +125,10 @@ func UserAuthRole(c *gin.Context) {
 	m := make(map[string]interface{})
 	m["user"] = iUser.SelectUserById(userId)
 	role := new(systemModels.SysRoleDQL)
-	loginUser := bzc.GetCurrentLoginUser()
-	role.SetDataScope(loginUser, "d", "")
+	user := bzc.GetCurrentUser()
+	role.SetDataScope(user, "d", "")
 	roles := iRole.SelectRoleAll(role)
-	if !admin.IsAdmin(loginUser.User.UserId) {
+	if !admin.IsAdmin(user.UserId) {
 		for i, role := range roles {
 			if role.RoleId == 1 {
 				roles = append(roles[:i], roles[i+1:]...)
@@ -155,11 +151,11 @@ func UserGetInfoById(c *gin.Context) {
 	m := make(map[string]interface{})
 	postList := iPost.SelectPostAll()
 	m["posts"] = postList
-	loginUser := bzc.GetCurrentLoginUser()
+	user := bzc.GetCurrentUser()
 	role := new(systemModels.SysRoleDQL)
-	role.SetDataScope(loginUser, "d", "")
+	role.SetDataScope(user, "d", "")
 	roleList := iRole.SelectRoleAll(role)
-	if !admin.IsAdmin(loginUser.User.UserId) {
+	if !admin.IsAdmin(user.UserId) {
 		for i, role := range roleList {
 			if role.RoleId == 1 {
 				roleList = append(roleList[:i], roleList[i+1:]...)
@@ -192,8 +188,8 @@ func UserImportData(c *gin.Context) {
 	defer file.Close()
 	excelFile, _ := excelize.OpenReader(file)
 	rows := excelFile.GetRows("Sheet1")
-	loginUser := bzc.GetCurrentLoginUser()
-	data, num := iUser.UserImportData(rows, loginUser.User.UserName, loginUser.User.DeptId)
+	loginUser := bzc.GetCurrentUser()
+	data, num := iUser.UserImportData(rows, loginUser.UserName, loginUser.DeptId)
 	if num > 0 {
 		bzc.ErrorMsg(data)
 		return
@@ -203,10 +199,9 @@ func UserImportData(c *gin.Context) {
 
 func UserExport(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	loginUser := bzc.GetCurrentLoginUser()
 	user := new(systemModels.SysUserDQL)
 	c.ShouldBind(user)
-	user.SetDataScope(loginUser, "d", "u")
+	user.SetDataScope(bzc.GetCurrentUser(), "d", "u")
 	data := iUser.UserExport(user)
 	bzc.DataPackageExcel(data)
 	return
