@@ -94,15 +94,14 @@ func (sysDictTypeDao *sysDictTypeDao) SelectDictTypeById(dictId int64) (dictType
 }
 
 func (sysDictTypeDao *sysDictTypeDao) SelectDictTypeByIds(dictId []int64) (dictTypes []string) {
-
-	dictTypes = make([]string, 0, 2)
-
-	query, i, err := sqlx.In("select dict_type from sys_dict_type where dict_id in(?)", dictId)
+	dictTypes = make([]string, 0)
+	query, args, err := sqlx.In("select dict_type from sys_dict_type where dict_id in(?)", dictId)
 	if err != nil {
 		panic(err)
 	}
-	return
-	err = datasource.GetMasterDb().Select(&dictTypes, query, i)
+	query = datasource.GetMasterDb().Rebind(query)
+
+	err = datasource.GetMasterDb().Select(&dictTypes, query, args...)
 	if err != nil {
 		panic(err)
 	}

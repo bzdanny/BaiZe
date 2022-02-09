@@ -9,7 +9,7 @@ import (
 func InitGenTableRouter(router *gin.RouterGroup) {
 	genTable := router.Group("/tool/gen")
 	genTable.GET("/list", middlewares.HasPermission("tool:gen:list"), genTableController.GenTableList)
-	genTable.GET(":talbleId", middlewares.HasPermission("tool:gen:query"), genTableController.GenTableGetInfo)
+	genTable.GET(":tableId", middlewares.HasPermission("tool:gen:query"), genTableController.GenTableGetInfo)
 	genTable.GET("/db/list", middlewares.HasPermission("tool:gen:list"), genTableController.DataList)
 	genTable.GET("/column/:talbleId", middlewares.HasPermission("tool:gen:list"), genTableController.ColumnList)
 	genTable.POST("/importTable", middlewares.HasPermission("tool:gen:list"), genTableController.ImportTable)
