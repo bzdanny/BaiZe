@@ -1,8 +1,7 @@
 package logger
 
 import (
-	"baize/app/common/commonModels"
-
+	"baize/app/common/baize/baizeContext"
 	"baize/app/constant/business"
 	"baize/app/constant/constants"
 	"baize/app/monitor/monitorModels"
@@ -13,7 +12,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net"
-	"net/http"
 	"net/http/httputil"
 	"os"
 	"runtime/debug"
@@ -102,6 +100,7 @@ func GinLogger() gin.HandlerFunc {
 // GinRecovery recover掉项目可能出现的panic，并使用zap记录相关日志
 func GinRecovery(stack bool) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		bzc := baizeContext.NewBaiZeContext(c)
 		data, _ := c.GetRawData()
 		c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(data))
 		defer func() {
@@ -153,13 +152,17 @@ func GinRecovery(stack bool) gin.HandlerFunc {
 						zap.String("user-agent", c.Request.UserAgent()),
 						zap.String("stack", string(debug.Stack())),
 					)
+					if setting.Conf.Mode == "dev"  {
+						fmt.Printf("error:%s\n", err)
+						fmt.Println("stack:"+string(debug.Stack()))
+					}
 				} else {
 					lg.Error("[Recovery from panic]",
 						zap.Any("error", err),
 						zap.String("request", string(httpRequest)),
 					)
 				}
-				c.JSON(http.StatusOK, commonModels.Error())
+				bzc.BzError()
 			}
 		}()
 		c.Next()

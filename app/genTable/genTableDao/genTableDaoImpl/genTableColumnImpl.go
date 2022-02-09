@@ -32,7 +32,7 @@ func (genTableColumnDao *genTableColumnDao) SelectDbTableColumnsByName(tableName
 
 func (genTableColumnDao *genTableColumnDao) SelectGenTableColumnListByTableId(tableId int64) (list []*genTableModels.GenTableColumnVo) {
 	list = make([]*genTableModels.GenTableColumnVo, 0, 0)
-	datasource.GetMasterDb().Select(&list, `select column_id, table_id, column_name, column_comment, column_type, go_type, go_field,html_field, is_pk,  is_required, is_insert, is_edit, is_list, is_query, query_type, html_type, dict_type, sort, create_by, create_time, update_by, update_time 
+	datasource.GetMasterDb().Select(&list, `select column_id, table_id, column_name, column_comment, column_type, go_type, go_field,html_field, is_pk,  is_required, is_insert, is_edit, is_list, is_query, is_entity,query_type, html_type, dict_type, sort, create_by, create_time, update_by, update_time 
 	from gen_table_column
        where table_id = ?
         order by sort`, tableId)
@@ -42,8 +42,8 @@ func (genTableColumnDao *genTableColumnDao) SelectGenTableColumnListByTableId(ta
 
 func (genTableColumnDao *genTableColumnDao) BatchInsertGenTableColumn(genTables []*genTableModels.GenTableColumnDML) {
 
-	_, err := datasource.GetMasterDb().NamedExec(`insert into gen_table_column(column_id,table_id,column_name,column_comment,column_type,go_type,go_field,html_field,is_pk,is_required,is_insert,is_edit,is_list, is_query, query_type, html_type, dict_type, sort,create_by,create_time,update_by,update_time)
-							values(:column_id,:table_id,:column_name,:column_comment,:column_type,:go_type,:go_field,:html_field,:is_pk,:is_required,:is_insert,:is_edit,:is_list, :is_query, :query_type, :html_type, :dict_type, :sort,:create_by,now(),:update_by,now())`,
+	_, err := datasource.GetMasterDb().NamedExec(`insert into gen_table_column(column_id,table_id,column_name,column_comment,column_type,go_type,go_field,html_field,is_pk,is_required,is_insert,is_edit,is_list, is_query,is_entity, query_type, html_type, dict_type, sort,create_by,create_time,update_by,update_time)
+							values(:column_id,:table_id,:column_name,:column_comment,:column_type,:go_type,:go_field,:html_field,:is_pk,:is_required,:is_insert,:is_edit,:is_list, :is_query, :is_entity, :query_type, :html_type, :dict_type, :sort,:create_by,now(),:update_by,now())`,
 		genTables)
 	if err != nil {
 		panic(err)

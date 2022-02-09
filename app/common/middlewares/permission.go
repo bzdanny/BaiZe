@@ -1,17 +1,17 @@
 package middlewares
 
 import (
-	commonModels "baize/app/common/commonModels"
+	"baize/app/common/baize/baizeContext"
 	"baize/app/constant/constants"
 	"baize/app/system/models/loginModels"
 	"baize/app/utils/admin"
 	"baize/app/utils/slicesUtils"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 func HasPermission(permission string) func(c *gin.Context) {
 	return func(c *gin.Context) {
+		bzc := baizeContext.NewBaiZeContext(c)
 		if permission == "" {
 			c.Next()
 			return
@@ -24,12 +24,12 @@ func HasPermission(permission string) func(c *gin.Context) {
 		}
 		permissions := user.Permissions
 		if permissions == nil || len(permissions) == 0 {
-			c.JSON(http.StatusOK, commonModels.PermissionDenied())
+			bzc.PermissionDenied()
 			c.Abort()
 			return
 		}
 		if !hasPermissions(permissions, permission) {
-			c.JSON(http.StatusOK, commonModels.PermissionDenied())
+			bzc.PermissionDenied()
 			c.Abort()
 			return
 		}

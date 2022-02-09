@@ -1,24 +1,26 @@
 package genUtils
 
-//数据库字符串类型
-var COLUMNTYPE_STR = []string{"char", "varchar", "narchar", "varchar2", "tinytext", "text", "mediumtext", "longtext"}
+//ColumnTypeStr 数据库字符串类型
+var ColumnTypeStr = []string{"char", "varchar", "narchar", "varchar2", "tinytext", "text", "mediumtext", "longtext"}
 
-//数据库时间类型
-var COLUMNTYPE_TIME = []string{"datetime", "time", "date", "timestamp"}
+//ColumnTypeTime 数据库时间类型
+var ColumnTypeTime = []string{"datetime", "time", "date", "timestamp"}
 
-//数据库数字类型
-var COLUMNTYPE_NUMBER = []string{"tinyint", "smallint", "mediumint", "int", "number", "integer", "bigint", "float", "float", "double", "decimal"}
+//ColumnTypeNumber 数据库数字类型
+var ColumnTypeNumber= []string{"tinyint", "smallint", "mediumint", "int", "number", "integer", "bigint", "float", "float", "double", "decimal"}
 
-//页面不需要编辑字段
-var COLUMNNAME_NOT_EDIT = []string{"id", "create_by", "create_time", "del_flag", "update_by", "update_time"}
+//ColumnNameNotEdit 页面不需要编辑字段
+var ColumnNameNotEdit = []string{"id", "create_by", "create_time", "del_flag", "update_by", "update_time"}
 
-//页面不需要显示的列表字段
-var COLUMNNAME_NOT_LIST = []string{"id", "create_by", "create_time", "del_flag", "update_by", "update_time"}
+//ColumnNameNotList 页面不需要显示的列表字段
+var ColumnNameNotList = []string{"id", "create_by", "create_time", "del_flag", "update_by", "update_time"}
 
-//页面不需要查询字段
-var COLUMNNAME_NOT_QUERY = []string{"id", "create_by", "create_time", "del_flag", "update_by", "update_time", "remark"}
+//ColumnNameNotQuery 页面不需要查询字段
+var ColumnNameNotQuery = []string{"id", "create_by", "create_time", "del_flag", "update_by", "update_time", "remark"}
+//ColumnNameBaseEntity 在BaseEntity字段
+var ColumnNameBaseEntity = []string{"create_by", "create_time", "del_flag", "update_by", "update_time"}
 
-//判断string 是否存在在数组中
+//IsExistInArray 判断string 是否存在在数组中
 func IsExistInArray(value string, array []string) bool {
 	for _, v := range array {
 		if v == value {
@@ -28,32 +30,36 @@ func IsExistInArray(value string, array []string) bool {
 	return false
 }
 
-//判断是否是数据库字符串类型
+//IsStringObject 判断是否是数据库字符串类型
 func IsStringObject(value string) bool {
-	return IsExistInArray(value, COLUMNTYPE_STR)
+	return IsExistInArray(value, ColumnTypeStr)
 }
 
-//判断是否是数据库时间类型
+//IsTimeObject 判断是否是数据库时间类型
 func IsTimeObject(value string) bool {
-	return IsExistInArray(value, COLUMNTYPE_TIME)
+	return IsExistInArray(value, ColumnTypeTime)
 }
 
-//判断是否是数据库数字类型
+//IsNumberObject 判断是否是数据库数字类型
 func IsNumberObject(value string) bool {
-	return IsExistInArray(value, COLUMNTYPE_NUMBER)
+	return IsExistInArray(value, ColumnTypeNumber)
 }
 
-//页面不需要编辑字段
+//IsNotEdit 页面不需要编辑字段
 func IsNotEdit(value string) bool {
-	return !IsExistInArray(value, COLUMNNAME_NOT_EDIT)
+	return !IsExistInArray(value, ColumnNameNotEdit)
 }
 
-//页面不需要显示的列表字段
+//IsNotList 页面不需要显示的列表字段
 func IsNotList(value string) bool {
-	return !IsExistInArray(value, COLUMNNAME_NOT_LIST)
+	return !IsExistInArray(value, ColumnNameNotList)
 }
 
-//页面不需要查询字段
+//IsNotQuery 页面不需要查询字段
 func IsNotQuery(value string) bool {
-	return !IsExistInArray(value, COLUMNNAME_NOT_QUERY)
+	return !IsExistInArray(value, ColumnNameNotQuery)
+}
+//IsBaseEntity 在BaseEntity里面
+func IsBaseEntity(value string) bool {
+	return IsExistInArray(value, ColumnNameNotQuery)
 }

@@ -1,102 +1,95 @@
 package MenuController
 
 import (
-	"baize/app/common/commonController"
-	"baize/app/common/commonLog"
-	"baize/app/common/commonModels"
+	"baize/app/common/baize/baizeContext"
 	"baize/app/system/models/systemModels"
 	"baize/app/system/service/systemService"
 	"baize/app/system/service/systemService/systemServiceImpl"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
-	"net/http"
-	"strconv"
 )
 
 var iMenu systemService.IMenuService = systemServiceImpl.GetMenuService()
 
 func MenuList(c *gin.Context) {
-	loginUser := commonController.GetCurrentLoginUser(c)
+	bzc := baizeContext.NewBaiZeContext(c)
 	menu := new(systemModels.SysMenuDQL)
 	c.ShouldBind(menu)
-	list := iMenu.SelectMenuList(menu, loginUser.User.UserId)
-
-	c.JSON(http.StatusOK, commonModels.SuccessData(list))
-
+	list := iMenu.SelectMenuList(menu, bzc.GetCurrentUserId())
+	bzc.SuccessData(list)
 }
 func MenuGetInfo(c *gin.Context) {
-	menuId, err := strconv.ParseInt(c.Param("menuId"), 10, 64)
-	if err != nil {
-		zap.L().Error("参数错误", zap.Error(err))
-		c.JSON(http.StatusOK, commonModels.ParameterError())
+	bzc := baizeContext.NewBaiZeContext(c)
+	menuId := bzc.ParamInt64("menuId")
+	if menuId == 0 {
+		zap.L().Error("参数错误")
+		bzc.ParameterError()
 		return
 	}
 	menu := iMenu.SelectMenuById(menuId)
-
-	c.JSON(http.StatusOK, commonModels.SuccessData(menu))
+	bzc.SuccessData(menu)
 }
 func MenuTreeSelect(c *gin.Context) {
-	userId := commonController.GetCurrentLoginUser(c).User.UserId
-	c.JSON(http.StatusOK, commonModels.SuccessData(iMenu.SelectMenuList(new(systemModels.SysMenuDQL), userId)))
+	bzc := baizeContext.NewBaiZeContext(c)
+	userId := bzc.GetCurrentUserId()
+	bzc.SuccessData(iMenu.SelectMenuList(new(systemModels.SysMenuDQL), userId))
 }
 func MenuAdd(c *gin.Context) {
-	commonLog.SetLog(c, "菜单管理", "INSERT")
-	loginUser := commonController.GetCurrentLoginUser(c)
+	bzc := baizeContext.NewBaiZeContext(c)
+	bzc.SetLog("菜单管理", "INSERT")
 	sysMenu := new(systemModels.SysMenuDML)
 	c.ShouldBind(sysMenu)
 	if iMenu.CheckMenuNameUnique(sysMenu) {
-		c.JSON(http.StatusOK, commonModels.Waring("新增菜单'"+sysMenu.MenuName+"'失败，菜单名称已存在"))
+		bzc.Waring("新增菜单'" + sysMenu.MenuName + "'失败，菜单名称已存在")
 		return
 	}
-	sysMenu.SetCreateBy(loginUser.User.UserName)
+	sysMenu.SetCreateBy(bzc.GetCurrentUserName())
 	iMenu.InsertMenu(sysMenu)
-
-	c.JSON(http.StatusOK, commonModels.Success())
+	bzc.Success()
 }
 func MenuEdit(c *gin.Context) {
-	commonLog.SetLog(c, "菜单管理", "UPDATE")
-	loginUser := commonController.GetCurrentLoginUser(c)
+	bzc := baizeContext.NewBaiZeContext(c)
+	bzc.SetLog("菜单管理", "UPDATE")
 	sysMenu := new(systemModels.SysMenuDML)
 	if iMenu.CheckMenuNameUnique(sysMenu) {
-		c.JSON(http.StatusOK, commonModels.Waring("修改菜单'"+sysMenu.MenuName+"'失败，菜单名称已存在"))
+		bzc.Waring("修改菜单'" + sysMenu.MenuName + "'失败，菜单名称已存在")
 		return
 	}
 	c.ShouldBind(sysMenu)
-	sysMenu.SetCreateBy(loginUser.User.UserName)
+	sysMenu.SetCreateBy(bzc.GetCurrentUserName())
 	iMenu.UpdateMenu(sysMenu)
-
-	c.JSON(http.StatusOK, commonModels.Success())
+	bzc.Success()
 }
 func MenuRemove(c *gin.Context) {
-	commonLog.SetLog(c, "菜单管理", "DELETE")
-	menuId, err := strconv.ParseInt(c.Param("menuId"), 10, 64)
-	if err != nil {
-		zap.L().Error("参数错误", zap.Error(err))
-		c.JSON(http.StatusOK, commonModels.ParameterError())
+	bzc := baizeContext.NewBaiZeContext(c)
+	bzc.SetLog("菜单管理", "DELETE")
+	menuId := bzc.ParamInt64("menuId")
+	if menuId == 0 {
+		zap.L().Error("参数错误")
+		bzc.ParameterError()
+		return
 	}
 	if iMenu.HasChildByMenuId(menuId) {
-		c.JSON(http.StatusOK, commonModels.Waring("存在子菜单,不允许删除"))
+		bzc.Waring("存在子菜单,不允许删除")
 		return
 	}
 	if iMenu.CheckMenuExistRole(menuId) {
-		c.JSON(http.StatusOK, commonModels.Waring("菜单已分配,不允许删除"))
+		bzc.Waring("菜单已分配,不允许删除")
 		return
 	}
-
 	iMenu.DeleteMenuById(menuId)
-
-	c.JSON(http.StatusOK, commonModels.Success())
+	bzc.Success()
 }
 func RoleMenuTreeselect(c *gin.Context) {
-	roleId, err := strconv.ParseInt(c.Param("roleId"), 10, 64)
-	if err != nil {
-		zap.L().Error("参数错误", zap.Error(err))
-		c.JSON(http.StatusOK, commonModels.ParameterError())
+	bzc := baizeContext.NewBaiZeContext(c)
+	roleId := bzc.ParamInt64("roleId")
+	if roleId == 0 {
+		zap.L().Error("参数错误")
+		bzc.ParameterError()
 	}
-	userId := commonController.GetCurrentLoginUser(c).User.UserId
-
+	userId := bzc.GetCurrentUserId()
 	m := make(map[string]interface{})
 	m["checkedKeys"] = iMenu.SelectMenuListByRoleId(roleId)
 	m["menus"] = iMenu.SelectMenuList(new(systemModels.SysMenuDQL), userId)
-	c.JSON(http.StatusOK, commonModels.SuccessData(m))
+	bzc.SuccessData(m)
 }

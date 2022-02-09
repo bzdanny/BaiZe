@@ -1,12 +1,10 @@
 package testController
 
 import (
-	"baize/app/common/commonModels"
+	"baize/app/common/baize/baizeContext"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
-	"net/http"
-	"strconv"
 )
 
 type UserEntity struct {
@@ -31,12 +29,13 @@ func init() {
 // @Success 200 {object} commonModels.ResponseData
 // @Router /test/user/list [get]
 func DemoUserList(c *gin.Context) {
+	bzc := baizeContext.NewBaiZeContext(c)
 	entities := make([]UserEntity, 0, len(users))
 	for _, user := range users {
 		entities = append(entities, user)
 	}
 	i := int64(len(entities))
-	c.JSON(http.StatusOK, commonModels.SuccessListData(entities, &i))
+	bzc.SuccessListData(entities, &i)
 }
 
 // GetUser 获取用户详细
@@ -48,17 +47,18 @@ func DemoUserList(c *gin.Context) {
 // @Success 200 {object} commonModels.ResponseData
 // @Router /test/user/{userId} [get]
 func GetUser(c *gin.Context) {
-	userId, err := strconv.ParseInt(c.Param("userId"), 10, 64)
-	if err != nil {
-		c.JSON(http.StatusOK, commonModels.ParameterError())
+	bzc := baizeContext.NewBaiZeContext(c)
+	userId := bzc.ParamInt64("userId")
+	if userId == 0 {
+		bzc.ParameterError()
 		return
 	}
 	entity := users[userId]
 	if entity.UserId == 0 {
-		c.JSON(http.StatusOK, commonModels.ParameterError())
+		bzc.ParameterError()
 		return
 	}
-	c.JSON(http.StatusOK, commonModels.SuccessData(entity))
+	bzc.SuccessData(entity)
 }
 
 // Save 新增用户
@@ -70,19 +70,20 @@ func GetUser(c *gin.Context) {
 // @Success 200 {object} commonModels.ResponseData
 // @Router /test/user [post]
 func Save(c *gin.Context) {
+	bzc := baizeContext.NewBaiZeContext(c)
 	user := new(UserEntity)
 	if err := c.ShouldBindJSON(user); err != nil {
 		zap.L().Error("参数错误", zap.Error(err))
-		c.JSON(http.StatusOK, commonModels.ParameterError())
+		bzc.ParameterError()
 		return
 	}
 	fmt.Println(users[user.UserId])
 	if user.UserId == 0 || users[user.UserId].UserId != 0 {
-		c.JSON(http.StatusOK, commonModels.ErrorMsg("用户ID不能为空"))
+		bzc.ErrorMsg("用户ID不能为空")
 		return
 	}
 	users[user.UserId] = *user
-	c.JSON(http.StatusOK, commonModels.Success())
+	bzc.Success()
 }
 
 // Update 更新用户
@@ -94,19 +95,20 @@ func Save(c *gin.Context) {
 // @Success 200 {object} commonModels.ResponseData
 // @Router /test/user [put]
 func Update(c *gin.Context) {
+	bzc := baizeContext.NewBaiZeContext(c)
 	user := new(UserEntity)
 	if err := c.ShouldBindJSON(user); err != nil {
 		zap.L().Error("参数错误", zap.Error(err))
-		c.JSON(http.StatusOK, commonModels.ParameterError())
+		bzc.ParameterError()
 		return
 	}
 	fmt.Println(users[user.UserId])
 	if user.UserId == 0 || users[user.UserId].UserId == 0 {
-		c.JSON(http.StatusOK, commonModels.ErrorMsg("用户不存在"))
+		bzc.ErrorMsg("用户不存在")
 		return
 	}
 	users[user.UserId] = *user
-	c.JSON(http.StatusOK, commonModels.Success())
+	bzc.Success()
 }
 
 // Delete 删除用户
@@ -118,11 +120,12 @@ func Update(c *gin.Context) {
 // @Success 200 {object} commonModels.ResponseData
 // @Router /test/user/{userId} [delete]
 func Delete(c *gin.Context) {
-	userId, err := strconv.ParseInt(c.Param("userId"), 10, 64)
-	if err != nil {
-		c.JSON(http.StatusOK, commonModels.ParameterError())
+	bzc := baizeContext.NewBaiZeContext(c)
+	userId := bzc.ParamInt64("userId")
+	if userId == 0 {
+		bzc.ParameterError()
 		return
 	}
 	delete(users, userId)
-	c.JSON(http.StatusOK, commonModels.Success())
+	bzc.Success()
 }

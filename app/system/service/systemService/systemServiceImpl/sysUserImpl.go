@@ -4,6 +4,7 @@ import (
 	"baize/app/common/datasource"
 	"baize/app/system/dao/systemDao"
 	"baize/app/system/dao/systemDao/systemDaoImpl"
+	"baize/app/system/models/loginModels"
 	"baize/app/system/models/systemModels"
 	"baize/app/utils/bCryptPasswordEncoder"
 	"baize/app/utils/exceLize"
@@ -32,6 +33,10 @@ func GetUserService() *userService {
 	return userServiceImpl
 }
 
+func (userService *userService) SelectUserByUserName(userName string) *loginModels.User {
+	return userService.userDao.SelectUserByUserName(userName)
+
+}
 func (userService *userService) SelectUserList(user *systemModels.SysUserDQL) (sysUserList []*systemModels.SysUserVo, count *int64) {
 	sysUserList, count = userService.userDao.SelectUserList(user)
 	return

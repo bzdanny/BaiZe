@@ -30,8 +30,16 @@
         <el-table-column type="selection" width="55"></el-table-column>
         <el-table-column prop="tableName" label="表名称" :show-overflow-tooltip="true"></el-table-column>
         <el-table-column prop="tableComment" label="表描述" :show-overflow-tooltip="true"></el-table-column>
-        <el-table-column prop="createTime" label="创建时间"></el-table-column>
-        <el-table-column prop="updateTime" label="更新时间"></el-table-column>
+        <el-table-column prop="createTime" label="创建时间">
+          <template #default="scope">
+            <span>{{ parseTime(scope.row.createTime,'{y}-{m}-{d}') }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="updateTime" label="更新时间">
+          <template #default="scope">
+            <span>{{ parseTime(scope.row.updateTime,'{y}-{m}-{d}') }}</span>
+          </template>
+        </el-table-column>
       </el-table>
       <pagination
         v-show="total>0"
@@ -84,8 +92,8 @@ function handleSelectionChange(selection) {
 /** 查询表数据 */
 function getList() {
   listDbTable(queryParams).then(res => {
-    dbTableList.value = res.rows;
-    total.value = res.total;
+    dbTableList.value = res.data.rows;
+    total.value = res.data.total;
   });
 }
 /** 搜索按钮操作 */

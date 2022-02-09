@@ -6,7 +6,6 @@ import (
 	"baize/app/genTable/genTableModels"
 	"baize/app/utils/snowflake"
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"html/template"
@@ -71,9 +70,9 @@ func (genTabletService *genTabletService) PreviewCode(tableId int64) (genTable *
 	genTable.Columns = genTabletService.genTabletColumnDao.SelectGenTableColumnListByTableId(tableId)
 
 	genTable.GenerateTime = time.Now()
-	jsons, _ := json.Marshal(genTable)
-	fmt.Println(string(jsons))
-	s := genTabletService.loadTemplate("./template/vm/go/dao.go.vm", genTable)
+	//jsons, _ := json.Marshal(genTable)
+	//fmt.Println(string(jsons))
+	s := genTabletService.loadTemplate("./template/vm/go/model/model.go.vm", genTable)
 	fmt.Println(s)
 	return genTable, nil
 }
