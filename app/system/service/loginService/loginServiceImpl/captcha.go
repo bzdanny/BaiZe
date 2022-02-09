@@ -14,16 +14,16 @@ var fonts = []string{"wqy-microhei.ttc"}
 //生成driver，      高，宽，背景文字的干扰，画线条数，背景颜色的指针，字体
 var driver = base64Captcha.NewDriverMath(38, 106, 0, 0, &rgba, fonts)
 
-func GenerateCode() (m *systemModels.CaptchaVo, err error) {
+func GenerateCode() (m *systemModels.CaptchaVo) {
 	captcha := base64Captcha.NewCaptcha(driver, store)
 	id, b64s, err := captcha.Generate()
 	if err != nil {
-		return m, err
+		panic(err)
 	}
 	m = new(systemModels.CaptchaVo)
 	m.Id = id
 	m.Img = b64s
-	return m, nil
+	return m
 }
 
 func VerityCaptcha(id, base64 string) bool {

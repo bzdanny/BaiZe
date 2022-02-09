@@ -1,98 +1,95 @@
 package DeptController
 
 import (
-	"baize/app/common/commonController"
-	"baize/app/common/commonLog"
-	"baize/app/common/commonModels"
+	"baize/app/common/baize/baizeContext"
 	"baize/app/system/models/systemModels"
 	"baize/app/system/service/systemService"
 	"baize/app/system/service/systemService/systemServiceImpl"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
-	"net/http"
-	"strconv"
 )
 
 var iDept systemService.IDeptService = systemServiceImpl.GetDeptService()
 
-//  DeptList部门列表查询
+//DeptList 部门列表查询
 func DeptList(c *gin.Context) {
-	loginUser := commonController.GetCurrentLoginUser(c)
+	bzc := baizeContext.NewBaiZeContext(c)
 	dept := new(systemModels.SysDeptDQL)
 	c.ShouldBind(dept)
-	dept.SetDataScope(loginUser, "d", "")
+	dept.SetDataScope(bzc.GetCurrentUser(), "d", "")
 	list := iDept.SelectDeptList(dept)
-	c.JSON(http.StatusOK, commonModels.SuccessData(list))
+	bzc.SuccessData(list)
 
 }
 
 func DeptGetInfo(c *gin.Context) {
-	deptId, err := strconv.ParseInt(c.Param("deptId"), 10, 64)
-	if err != nil {
-		zap.L().Error("参数错误", zap.Error(err))
-		c.JSON(http.StatusOK, commonModels.ParameterError())
+	bzc := baizeContext.NewBaiZeContext(c)
+	deptId := bzc.ParamInt64("deptId")
+	if deptId == 0 {
+		zap.L().Error("参数错误")
+		bzc.ParameterError()
 		return
 	}
 	menu := iDept.SelectDeptById(deptId)
-	c.JSON(http.StatusOK, commonModels.SuccessData(menu))
+	bzc.SuccessData(menu)
 }
 func RoleDeptTreeselect(c *gin.Context) {
-	roleId, err := strconv.ParseInt(c.Param("roleId"), 10, 64)
-	if err != nil {
-		zap.L().Error("参数错误", zap.Error(err))
-		c.JSON(http.StatusOK, commonModels.ParameterError())
+	bzc := baizeContext.NewBaiZeContext(c)
+	roleId := bzc.ParamInt64("roleId")
+	if roleId == 0 {
+		zap.L().Error("参数错误")
+		bzc.ParameterError()
 	}
 	m := make(map[string]interface{})
 	m["checkedKeys"] = iDept.SelectDeptListByRoleId(roleId)
 	m["depts"] = iDept.SelectDeptList(new(systemModels.SysDeptDQL))
-	c.JSON(http.StatusOK, commonModels.SuccessData(m))
+	bzc.SuccessData(m)
 }
 
 func DeptAdd(c *gin.Context) {
-	commonLog.SetLog(c, "部门管理", "INSERT")
-	loginUser := commonController.GetCurrentLoginUser(c)
+	bzc := baizeContext.NewBaiZeContext(c)
+	bzc.SetLog("部门管理", "INSERT")
 	sysDept := new(systemModels.SysDeptDML)
 	c.ShouldBind(sysDept)
 	if iDept.CheckDeptNameUnique(sysDept) {
-		c.JSON(http.StatusOK, commonModels.Waring("新增部门'"+sysDept.DeptName+"'失败，部门名称已存在"))
+		bzc.Waring("新增部门'" + sysDept.DeptName + "'失败，部门名称已存在")
 		return
 	}
-
-	sysDept.SetCreateBy(loginUser.User.UserName)
+	sysDept.SetCreateBy(bzc.GetCurrentUserName())
 	iDept.InsertDept(sysDept)
-
-	c.JSON(http.StatusOK, commonModels.Success())
+	bzc.Success()
 }
 func DeptEdit(c *gin.Context) {
-	commonLog.SetLog(c, "部门管理", "UPDATE")
-	loginUser := commonController.GetCurrentLoginUser(c)
+	bzc := baizeContext.NewBaiZeContext(c)
+	bzc.SetLog("部门管理", "UPDATE")
 	sysDept := new(systemModels.SysDeptDML)
 	if iDept.CheckDeptNameUnique(sysDept) {
-		c.JSON(http.StatusOK, commonModels.Waring("修改部门'"+sysDept.DeptName+"'失败，部门名称已存在"))
+		bzc.Waring("修改部门'" + sysDept.DeptName + "'失败，部门名称已存在")
 		return
 	}
 	c.ShouldBind(sysDept)
-	sysDept.SetCreateBy(loginUser.User.UserName)
+	sysDept.SetCreateBy(bzc.GetCurrentUserName())
 	iDept.UpdateDept(sysDept)
-	c.JSON(http.StatusOK, commonModels.Success())
+	bzc.Success()
 }
 func DeptRemove(c *gin.Context) {
-	commonLog.SetLog(c, "部门管理", "DELETE")
-	deptId, err := strconv.ParseInt(c.Param("deptId"), 10, 64)
-	if err != nil {
-		zap.L().Error("参数错误", zap.Error(err))
-		c.JSON(http.StatusOK, commonModels.ParameterError())
+	bzc := baizeContext.NewBaiZeContext(c)
+	bzc.SetLog("部门管理", "DELETE")
+	deptId := bzc.ParamInt64("deptId")
+	if deptId == 0 {
+		zap.L().Error("参数错误")
+		bzc.ParameterError()
 		return
 	}
 	if iDept.HasChildByDeptId(deptId) {
-		c.JSON(http.StatusOK, commonModels.Waring("存在下级部门,不允许删除"))
+		bzc.Waring("存在下级部门,不允许删除")
 		return
 	}
 	if iDept.CheckDeptExistUser(deptId) {
-		c.JSON(http.StatusOK, commonModels.Waring("部门存在用户,不允许删除"))
+		bzc.Waring("部门存在用户,不允许删除")
 		return
 	}
 	iDept.DeleteDeptById(deptId)
 
-	c.JSON(http.StatusOK, commonModels.Success())
+	bzc.Success()
 }

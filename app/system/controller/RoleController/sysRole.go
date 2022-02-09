@@ -1,172 +1,160 @@
 package RoleController
 
 import (
-	"baize/app/common/commonController"
-	"baize/app/common/commonLog"
-	"baize/app/common/commonModels"
+	"baize/app/common/baize/baizeContext"
 	"baize/app/system/models/systemModels"
 	"baize/app/system/service/systemService"
 	"baize/app/system/service/systemService/systemServiceImpl"
-	"baize/app/utils/slicesUtils"
 	"github.com/gin-gonic/gin"
-	"github.com/gogf/gf/util/gconv"
 	"go.uber.org/zap"
-	"net/http"
-	"strconv"
-	"strings"
 )
 
 var iRole systemService.IRoleService = systemServiceImpl.GetRoleService()
 
 func RoleList(c *gin.Context) {
-	loginUser := commonController.GetCurrentLoginUser(c)
+	bzc := baizeContext.NewBaiZeContext(c)
 	role := new(systemModels.SysRoleDQL)
 	c.ShouldBind(role)
 	role.SetLimit(c)
-	role.SetDataScope(loginUser, "d", "")
+	role.SetDataScope(bzc.GetCurrentUser(), "d", "")
 	list, count := iRole.SelectRoleList(role)
-
-	c.JSON(http.StatusOK, commonModels.SuccessListData(list, count))
+	bzc.SuccessListData(list, count)
 
 }
 
 func RoleExport(c *gin.Context) {
-	loginUser := commonController.GetCurrentLoginUser(c)
+	bzc := baizeContext.NewBaiZeContext(c)
 	role := new(systemModels.SysRoleDQL)
 	c.ShouldBind(role)
-	role.SetDataScope(loginUser, "d", "")
+	role.SetDataScope(bzc.GetCurrentUser(), "d", "")
 	data := iRole.RoleExport(role)
-	commonController.DataPackageExcel(c,data)
+	bzc.DataPackageExcel(data)
 
 }
 func RoleGetInfo(c *gin.Context) {
-	roleId, err := strconv.ParseInt(c.Param("roleId"), 10, 64)
-	if err != nil {
-		zap.L().Error("参数错误", zap.Error(err))
-		c.JSON(http.StatusOK, commonModels.ParameterError())
+	bzc := baizeContext.NewBaiZeContext(c)
+	roleId := bzc.ParamInt64("roleId")
+	if roleId == 0 {
+		zap.L().Error("参数错误")
+		bzc.ParameterError()
 		return
 	}
 	sysUser := iRole.SelectRoleById(roleId)
-
-	c.JSON(http.StatusOK, commonModels.SuccessData(sysUser))
+	bzc.SuccessData(sysUser)
 }
 func RoleAdd(c *gin.Context) {
-	commonLog.SetLog(c, "角色管理", "INSERT")
-	loginUser := commonController.GetCurrentLoginUser(c)
+	bzc := baizeContext.NewBaiZeContext(c)
+	bzc.SetLog("角色管理", "INSERT")
 	sysRole := new(systemModels.SysRoleDML)
 	if err := c.ShouldBindJSON(sysRole); err != nil {
 		zap.L().Error("参数错误", zap.Error(err))
-		c.JSON(http.StatusOK, commonModels.ParameterError())
+		bzc.ParameterError()
 		return
 	}
 	if iRole.CheckRoleNameUnique(sysRole) {
-		c.JSON(http.StatusOK, commonModels.Waring("新增角色'"+sysRole.RoleName+"'失败，角色名称已存在"))
+		bzc.Waring("新增角色'" + sysRole.RoleName + "'失败，角色名称已存在")
 		return
 	}
 	if iRole.CheckRoleKeyUnique(sysRole) {
-		c.JSON(http.StatusOK, commonModels.Waring("新增角色'"+sysRole.RoleKey+"'失败，角色权限已存在"))
+		bzc.Waring("新增角色'" + sysRole.RoleKey + "'失败，角色权限已存在")
 		return
 	}
-	sysRole.SetCreateBy(loginUser.User.UserName)
+	sysRole.SetCreateBy(bzc.GetCurrentUserName())
 	iRole.InsertRole(sysRole)
-	c.JSON(http.StatusOK, commonModels.Success())
+	bzc.Success()
 
 }
 func RoleEdit(c *gin.Context) {
-	commonLog.SetLog(c, "角色管理", "UPDATE")
-	loginUser := commonController.GetCurrentLoginUser(c)
+	bzc := baizeContext.NewBaiZeContext(c)
+	bzc.SetLog("角色管理", "UPDATE")
+
 	sysRole := new(systemModels.SysRoleDML)
 	if err := c.ShouldBindJSON(sysRole); err != nil {
 		zap.L().Error("参数错误", zap.Error(err))
-		c.JSON(http.StatusOK, commonModels.ParameterError())
+		bzc.ParameterError()
 		return
 	}
 	if iRole.CheckRoleNameUnique(sysRole) {
-		c.JSON(http.StatusOK, commonModels.Waring("新增角色'"+sysRole.RoleName+"'失败，角色名称已存在"))
+		bzc.Waring("新增角色'" + sysRole.RoleName + "'失败，角色名称已存在")
 		return
 	}
 	if iRole.CheckRoleKeyUnique(sysRole) {
-		c.JSON(http.StatusOK, commonModels.Waring("新增角色'"+sysRole.RoleKey+"'失败，角色权限已存在"))
+		bzc.Waring("新增角色'" + sysRole.RoleKey + "'失败，角色权限已存在")
 		return
 	}
-	sysRole.SetUpdateBy(loginUser.User.UserName)
+	sysRole.SetUpdateBy(bzc.GetCurrentUserName())
 	iRole.UpdateRole(sysRole)
-	c.JSON(http.StatusOK, commonModels.Success())
-
+	bzc.Success()
 }
 func RoleDataScope(c *gin.Context) {
-	commonLog.SetLog(c, "角色管理", "UPDATE")
-	loginUser := commonController.GetCurrentLoginUser(c)
+	bzc := baizeContext.NewBaiZeContext(c)
+	bzc.SetLog("角色管理", "UPDATE")
 	sysRole := new(systemModels.SysRoleDML)
 	c.ShouldBindJSON(sysRole)
-	sysRole.SetUpdateBy(loginUser.User.UserName)
+	sysRole.SetUpdateBy(bzc.GetCurrentUserName())
 	iRole.AuthDataScope(sysRole)
-	c.JSON(http.StatusOK, commonModels.Success())
-
+	bzc.Success()
 }
+
 func RoleChangeStatus(c *gin.Context) {
-	commonLog.SetLog(c, "角色管理", "UPDATE")
-	loginUser := commonController.GetCurrentLoginUser(c)
+	bzc := baizeContext.NewBaiZeContext(c)
+	bzc.SetLog("角色管理", "UPDATE")
 	sysRole := new(systemModels.SysRoleDML)
 	c.ShouldBindJSON(sysRole)
-
-	sysRole.SetUpdateBy(loginUser.User.UserName)
+	sysRole.SetUpdateBy(bzc.GetCurrentUserName())
 	iRole.UpdateRoleStatus(sysRole)
-
-	c.JSON(http.StatusOK, commonModels.Success())
+	bzc.Success()
 }
 func RoleRemove(c *gin.Context) {
-	commonLog.SetLog(c, "角色管理", "DELETE")
-	var s slicesUtils.Slices = strings.Split(c.Param("rolesIds"), ",")
-	ids := s.StrSlicesToInt()
+	bzc := baizeContext.NewBaiZeContext(c)
+	bzc.SetLog("角色管理", "DELETE")
+	ids := bzc.ParamInt64Array("rolesIds")
 	if iRole.CountUserRoleByRoleId(ids) {
-		c.JSON(http.StatusOK, commonModels.Waring("角色已分配，不能删除"))
+		bzc.Waring("角色已分配，不能删除")
 		return
 	}
 	iRole.DeleteRoleByIds(ids)
-	c.JSON(http.StatusOK, commonModels.Success())
+	bzc.Success()
 }
 func AllocatedList(c *gin.Context) {
-	loginUser := commonController.GetCurrentLoginUser(c)
+	bzc := baizeContext.NewBaiZeContext(c)
 	user := new(systemModels.SysRoleAndUserDQL)
 	c.ShouldBind(user)
 	user.SetLimit(c)
-	user.SetDataScope(loginUser, "d", "u")
+	user.SetDataScope(bzc.GetCurrentUser(), "d", "u")
 	list, count := iRole.SelectAllocatedList(user)
-	c.JSON(http.StatusOK, commonModels.SuccessListData(list, count))
+	bzc.SuccessListData(list, count)
 
 }
 func UnallocatedList(c *gin.Context) {
-	loginUser := commonController.GetCurrentLoginUser(c)
+	bzc := baizeContext.NewBaiZeContext(c)
 	user := new(systemModels.SysRoleAndUserDQL)
 	c.ShouldBind(user)
 	user.SetLimit(c)
-	user.SetDataScope(loginUser, "d", "u")
+	user.SetDataScope(bzc.GetCurrentUser(), "d", "u")
 	list, count := iRole.SelectUnallocatedList(user)
-	c.JSON(http.StatusOK, commonModels.SuccessListData(list, count))
-
+	bzc.SuccessListData(list, count)
 }
 func InsertAuthUser(c *gin.Context) {
-	commonLog.SetLog(c, "角色管理", "GRANT")
-	var userIds slicesUtils.Slices = strings.Split(c.Query("userIds"), ",")
-	roleId := c.Query("roleId")
-	iRole.InsertAuthUsers(gconv.Int64(roleId), userIds.StrSlicesToInt())
-	c.JSON(http.StatusOK, commonModels.Success())
+	bzc := baizeContext.NewBaiZeContext(c)
+	bzc.SetLog("角色管理", "GRANT")
+	iRole.InsertAuthUsers(bzc.QueryInt64("roleId"), bzc.QueryInt64Array("userIds"))
+	bzc.Success()
 	return
 }
 func CancelAuthUser(c *gin.Context) {
-	commonLog.SetLog(c, "角色管理", "GRANT")
+	bzc := baizeContext.NewBaiZeContext(c)
+	bzc.SetLog("角色管理", "GRANT")
 	userRole := new(systemModels.SysUserRole)
 	c.ShouldBindJSON(userRole)
 	iRole.DeleteAuthUserRole(userRole)
-	c.JSON(http.StatusOK, commonModels.Success())
+	bzc.Success()
 	return
 }
 func CancelAuthUserAll(c *gin.Context) {
-	commonLog.SetLog(c, "角色管理", "GRANT")
-	var userIds slicesUtils.Slices = strings.Split(c.Query("userIds"), ",")
-	roleId := c.Query("roleId")
-	iRole.DeleteAuthUsers(gconv.Int64(roleId), userIds.StrSlicesToInt())
-	c.JSON(http.StatusOK, commonModels.Success())
+	bzc := baizeContext.NewBaiZeContext(c)
+	bzc.SetLog("角色管理", "GRANT")
+	iRole.DeleteAuthUsers(bzc.QueryInt64("roleId"), bzc.QueryInt64Array("userIds"))
+	bzc.Success()
 	return
 }

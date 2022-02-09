@@ -1,10 +1,12 @@
 package systemService
 
 import (
+	"baize/app/system/models/loginModels"
 	"baize/app/system/models/systemModels"
 )
 
 type IUserService interface {
+	SelectUserByUserName(userName string) *loginModels.User
 	SelectUserList(user *systemModels.SysUserDQL) (sysUserList []*systemModels.SysUserVo, count *int64)
 	UserExport(user *systemModels.SysUserDQL) (data []byte)
 	SelectUserById(userId int64) (sysUser *systemModels.SysUserVo)

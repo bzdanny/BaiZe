@@ -1,7 +1,6 @@
 package main
 
 import (
-	"baize/app/common/commonModels"
 	"baize/app/common/datasource"
 	"baize/app/common/redis"
 	"baize/app/routes"
@@ -9,8 +8,6 @@ import (
 	"baize/app/utils"
 	"baize/app/utils/logger"
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"net/http"
 	"os"
 )
 
@@ -54,18 +51,4 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-}
-
-// @Summary 添加用户
-// @accept multipart/form-data
-// @Produce json
-// @Param email formData string true "用户邮箱地址"
-// @Param username formData string true "用户名"
-// @Param password formData string true "用户密码"
-// @Success 200 {string} json "{"code":200,"data":[],"msg":{"title":"ok"}}"
-// @Router /api/v1/users [post]
-
-func DemoUserList(c *gin.Context) {
-	c.JSON(http.StatusOK, commonModels.Success())
-
 }
