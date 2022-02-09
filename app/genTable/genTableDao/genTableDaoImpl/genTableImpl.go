@@ -22,7 +22,7 @@ func GetGenTableDao() *genTableDao {
 }
 
 func (genTableDao *genTableDao) SelectGenTableList(GenTable *genTableModels.GenTableDQL) (list []*genTableModels.GenTableVo, total *int64) {
-	var selectSql = `select table_id, table_name, table_comment, sub_table_name, sub_table_fk_name, class_name, tpl_category, package_name, module_name, business_name, function_name, function_author, gen_type, gen_path, options, create_by, create_time, update_by, update_time, remark `
+	var selectSql = `select table_id, table_name, table_comment, sub_table_name, sub_table_fk_name, class_name,private_class_name, tpl_category, package_name, module_name, business_name, function_name, function_author, gen_type, gen_path, options, create_by, create_time, update_by, update_time, remark `
 	var fromSql = ` from gen_table`
 	whereSql := ``
 	if GenTable.TableName != "" {
@@ -141,7 +141,7 @@ func (genTableDao *genTableDao) SelectDbTableListByNames(tableNames []string) (l
 func (genTableDao *genTableDao) SelectGenTableById(id int64) (genTable *genTableModels.GenTableVo) {
 	genTable = new(genTableModels.GenTableVo)
 	err := datasource.GetMasterDb().Get(genTable, `SELECT
-       table_id, table_name, table_comment, sub_table_name,sub_table_fk_name, class_name, 
+       table_id, table_name, table_comment, sub_table_name,sub_table_fk_name, class_name, private_class_name,
       tpl_category, package_name,module_name, business_name,function_name, function_author,gen_type,gen_path, options, remark
 		FROM gen_table 
 		where table_id = ?`, id)
@@ -152,7 +152,7 @@ func (genTableDao *genTableDao) SelectGenTableById(id int64) (genTable *genTable
 }
 func (genTableDao *genTableDao) SelectGenTableByName(name string) (genTable *genTableModels.GenTableVo) {
 	genTable = new(genTableModels.GenTableVo)
-	err := datasource.GetMasterDb().Get(genTable, `SELECT t.table_id, t.table_name, t.table_comment, t.sub_table_name, t.sub_table_fk_name, t.class_name, t.tpl_category, t.package_name, t.module_name, t.business_name, t.function_name, t.function_author, t.gen_type, t.gen_path, t.options, t.remark
+	err := datasource.GetMasterDb().Get(genTable, `SELECT t.table_id, t.table_name, t.table_comment, t.sub_table_name, t.sub_table_fk_name, t.class_name, t.private_class_name,t.tpl_category, t.package_name, t.module_name, t.business_name, t.function_name, t.function_author, t.gen_type, t.gen_path, t.options, t.remark
 		FROM gen_table t
 		where t.table_name = ? `, name)
 	if err != nil {
@@ -162,7 +162,7 @@ func (genTableDao *genTableDao) SelectGenTableByName(name string) (genTable *gen
 }
 func (genTableDao *genTableDao) SelectGenTableAll() (list []*genTableModels.GenTableVo) {
 	list = make([]*genTableModels.GenTableVo, 0, 0)
-	err := datasource.GetMasterDb().Select(&list, `SELECT t.table_id, t.table_name, t.table_comment, t.sub_table_name, t.sub_table_fk_name, t.class_name, t.tpl_category, t.package_name, t.module_name, t.business_name, t.function_name, t.function_author, t.gen_type, t.gen_path, t.options, t.remark
+	err := datasource.GetMasterDb().Select(&list, `SELECT t.table_id, t.table_name, t.table_comment, t.sub_table_name, t.sub_table_fk_name, t.class_name, t.private_class_name,t.tpl_category, t.package_name, t.module_name, t.business_name, t.function_name, t.function_author, t.gen_type, t.gen_path, t.options, t.remark
 		FROM gen_table t`)
 	if err != nil {
 		panic(err)
@@ -172,8 +172,8 @@ func (genTableDao *genTableDao) SelectGenTableAll() (list []*genTableModels.GenT
 
 func (genTableDao *genTableDao) BatchInsertGenTable(genTables []*genTableModels.GenTableDML) {
 
-	_, err := datasource.GetMasterDb().NamedExec(`insert into gen_table(table_id,table_name,table_comment,class_name,tpl_category,package_name,module_name,business_name,function_name,function_author,gen_type,gen_path,create_by,create_time,update_by,update_time,remark)
-							values(:table_id,:table_name,:table_comment,:class_name,:tpl_category,:package_name,:module_name,:business_name,:function_name,:function_author,:gen_type,:gen_path,:create_by,now(),:update_by,now(),:remark)`,
+	_, err := datasource.GetMasterDb().NamedExec(`insert into gen_table(table_id,table_name,table_comment,class_name,private_class_name,tpl_category,package_name,module_name,business_name,function_name,function_author,gen_type,gen_path,create_by,create_time,update_by,update_time,remark)
+							values(:table_id,:table_name,:table_comment,:class_name,:private_class_name,:tpl_category,:package_name,:module_name,:business_name,:function_name,:function_author,:gen_type,:gen_path,:create_by,now(),:update_by,now(),:remark)`,
 		genTables)
 	if err != nil {
 		panic(err)
@@ -182,8 +182,8 @@ func (genTableDao *genTableDao) BatchInsertGenTable(genTables []*genTableModels.
 }
 
 func (genTableDao *genTableDao) InsertGenTable(genTable *genTableModels.GenTableDML) {
-	insertSQL := `insert into gen_table(table_id,table_name,table_comment,class_name,tpl_category,package_name,module_name,business_name,function_name,function_author,gen_type,gen_path,create_by,create_time,update_by,update_time %s)
-					values(:table_id,:table_name,:table_comment,:class_name,:tpl_category,:package_name,:module_name,:business_name,:function_name,:function_author,:gen_type,:gen_path,:create_by,now(),:update_by,now() %s)`
+	insertSQL := `insert into gen_table(table_id,table_name,table_comment,class_name,private_class_name,tpl_category,package_name,module_name,business_name,function_name,function_author,gen_type,gen_path,create_by,create_time,update_by,update_time %s)
+					values(:table_id,:table_name,:table_comment,:class_name,:private_class_name,:tpl_category,:package_name,:module_name,:business_name,:function_name,:function_author,:gen_type,:gen_path,:create_by,now(),:update_by,now() %s)`
 	key := ""
 	value := ""
 
@@ -216,6 +216,9 @@ func (genTableDao *genTableDao) UpdateGenTable(genTable *genTableModels.GenTable
 	}
 	if genTable.ClassName != "" {
 		updateSQL += ",class_name = :class_name"
+	}
+	if genTable.PrivateClassName != "" {
+		updateSQL += ",private_class_name = :private_class_name"
 	}
 	if genTable.FunctionAuthor != "" {
 		updateSQL += ",function_author = :function_author"

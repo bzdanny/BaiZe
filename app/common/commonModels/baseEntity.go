@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"strconv"
+	"time"
 )
 
 type BaseEntity struct {
@@ -19,16 +20,21 @@ type BaseEntity struct {
 
 type BaseEntityDML struct {
 	CreateBy string `db:"create_by"`
+	CreateTime time.Time `db:"create_time"`
 	UpdateBy string `db:"update_by"`
+	UpdateTime time.Time `db:"update_time"`
 }
 
 func (b *BaseEntityDML) SetCreateBy(userName string) {
 	b.CreateBy = userName
+	b.CreateTime=time.Now()
 	b.UpdateBy = userName
+	b.UpdateTime=time.Now()
 }
 
 func (b *BaseEntityDML) SetUpdateBy(userName string) {
 	b.UpdateBy = userName
+	b.UpdateTime=time.Now()
 }
 
 type BaseEntityDQL struct {

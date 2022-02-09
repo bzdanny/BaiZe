@@ -1,7 +1,7 @@
 package systemModels
 
 import (
-	commonModels "baize/app/common/commonModels"
+	"baize/app/common/commonModels"
 )
 
 type SysDictDataVo struct {
@@ -21,7 +21,7 @@ type SysDictDataVo struct {
 type SysDictDataDQL struct {
 	DictType  string `form:"dictType" db:"dict_type"`
 	DictLabel string `form:"dictLabel" db:"dict_label"`
-	Status    string `form:"status"`
+	Status    string `form:"status" db:"status"`
 	commonModels.BaseEntityDQL
 }
 
@@ -41,7 +41,13 @@ type SysDictDataDML struct {
 
 func SysDictDataListToRows(dictDatas []*SysDictDataVo) (rows [][]string) {
 	rows = make([][]string, 0, len(dictDatas)+1)
-	row1 := []string{"字典类型", "字典标签", "字典键值", "状态", "备注"}
+	row1 := []string{
+		"字典类型",
+		"字典标签",
+		"字典键值",
+		"状态",
+		"备注",
+	}
 	rows = append(rows, row1)
 	for _, dictData := range dictDatas {
 		row := make([]string, 4)
@@ -54,7 +60,7 @@ func SysDictDataListToRows(dictDatas []*SysDictDataVo) (rows [][]string) {
 			row[3] = "停用"
 		}
 		if dictData.Remark != nil {
-			row[3] = *dictData.Remark
+			row[4] = *dictData.Remark
 		}
 		rows = append(rows, row)
 

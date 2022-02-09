@@ -56,7 +56,7 @@ func ColumnList(c *gin.Context) {
 func ImportTable(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	iGenTableService.ImportTableSave(strings.Split(c.Query("tables"), ","), bzc.GetCurrentUserName())
-	bzc.Success()
+	bzc.SuccessMsg("导入成功")
 }
 func EditSave(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
@@ -68,7 +68,7 @@ func EditSave(c *gin.Context) {
 }
 func GenTableRemove(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	iGenTableService.DeleteGenTableByIds(bzc.ParamInt64Array(c.Param("tableIds")))
+	iGenTableService.DeleteGenTableByIds(bzc.ParamInt64Array("tableIds"))
 	bzc.Success()
 }
 func Preview(c *gin.Context) {

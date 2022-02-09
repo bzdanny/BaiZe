@@ -1,7 +1,7 @@
 package systemModels
 
 import (
-	commonModels "baize/app/common/commonModels"
+	"baize/app/common/commonModels"
 )
 
 type SysDictTypeVo struct {

@@ -1,0 +1,46 @@
+package {{.table.PackageName}}Dao
+
+import (
+    "baize/app/common/datasource"
+    "baize/app/constant/constants"
+    "{{.table.FunctionAuthor}}/app/{{.table.PackageName}}/{{.table.PackageName}}Models"
+    "database/sql"
+    "fmt"
+    "github.com/jmoiron/sqlx"
+)
+
+// ==========================================================================
+// date：{{.table.GenerateTime.Format "2006-01-02 15:04:05" }}
+// author：{{.table.FunctionAuthor}}
+// version: v1.0
+// ==========================================================================
+
+var {{.table.PrivateClassName}}DaoImpl *{{.table.PrivateClassName}}Dao
+
+type {{.table.PrivateClassName}}Dao struct {
+	select{{.table.ClassName}}Sql string
+	from{{.table.ClassName}}Sql   string
+}
+
+func init() {
+	{{.table.PrivateClassName}}Impl = &{{.table.PrivateClassName}}Dao{
+		select{{.table.ClassName}}Sql: `select {{range $index, $column := .table.Columns}}{{$column.ColumnName}} {{end}} `,
+		from{{.table.ClassName}}Sql:   ` from {{.table.TableName }}`,
+	}
+}
+
+func Get{{.table.ClassName}}Dao() *{{.table.PrivateClassName}}Dao {
+	return {{.table.PrivateClassName}}DaoImpl
+}
+
+func Select{{.table.ClassName}}ById({{range $index, $column := .table.Columns}}{{if eq $column.IsPk "1"}}{{$column.HtmlField}} {{$column.GoType}}{{end}}{{end}}) ({{.table.BusinessName}} *{{.table.PackageName}}Models.{{.table.ClassName}}Vo) {
+
+	{{.table.BusinessName}} = new({{.table.PackageName}}Models.{{.table.ClassName}}Vo)
+	err := mysql.MysqlDb.Get({{.table.BusinessName}}, select{{.table.ClassName}}Sql+from{{.table.ClassName}}Sql+" where {{range $index, $column := .table.Columns}}{{if eq $column.IsPk "1"}}{{$column.ColumnName}} = ？", {{$column.HtmlField}}{{end}}{{end}})
+	if err == sql.ErrNoRows {
+		return nil
+	} else if err != nil {
+		panic(err)
+	}
+	return
+}

@@ -152,6 +152,10 @@ func GinRecovery(stack bool) gin.HandlerFunc {
 						zap.String("user-agent", c.Request.UserAgent()),
 						zap.String("stack", string(debug.Stack())),
 					)
+					if setting.Conf.Mode == "dev"  {
+						fmt.Printf("error:%s\n", err)
+						fmt.Println("stack:"+string(debug.Stack()))
+					}
 				} else {
 					lg.Error("[Recovery from panic]",
 						zap.Any("error", err),
