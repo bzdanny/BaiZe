@@ -5,7 +5,6 @@ import (
 	"baize/app/constant/constants"
 	"baize/app/monitor/monitorModels"
 	"github.com/jmoiron/sqlx"
-	"go.uber.org/zap"
 )
 
 var sysLogininforImpl *logininforDao
@@ -30,7 +29,7 @@ func (logininforDao *logininforDao) InserLogininfor(logininfor *monitorModels.Lo
 
 	_, err := datasource.GetMasterDb().NamedExec("insert into sys_logininfor (info_id,user_name, status, ipaddr, login_location, browser, os, msg, login_time) values (:info_id,:user_name, :status, :ipaddr, :login_location, :browser, :os, :msg, sysdate())", logininfor)
 	if err != nil {
-		zap.L().Error("登录信息保存错误", zap.Error(err))
+		panic(err)
 	}
 	return
 }

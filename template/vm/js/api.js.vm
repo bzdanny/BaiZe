@@ -1,0 +1,48 @@
+import request from '@/utils/request'
+
+{{$Key:=""}}{{range $index, $column := .table.Columns}}{{if eq $column.IsPk "1"}}{{$Key = $column.HtmlField}}{{if eq $column.GoType "string"}}{{end}}{{end}}{{end}}
+
+
+// 查询{{.table.FunctionName}}列表
+export function list{{.table.ClassName}}(query) {
+  return request({
+    url: '/{{.table.PackageName}}/{{.table.BusinessName}}/list',
+    method: 'get',
+    params: query
+  })
+}
+
+// 查询{{.table.FunctionName}}详细
+export function get{{.table.ClassName}}({{$Key}}) {
+  return request({
+    url: '/{{.table.PackageName}}/{{.table.BusinessName}}/' + {{$Key}},
+    method: 'get',
+  })
+}
+
+// 新增{{.table.FunctionName}}
+export function add{{.table.ClassName}}(data) {
+  return request({
+    url: '/{{.table.PackageName}}/{{.table.BusinessName}}'
+    method: 'post',
+    data: data
+  })
+}
+
+// 修改{{.table.FunctionName}}
+export function update{{.table.ClassName}}(data) {
+  return request({
+    url: '/{{.table.PackageName}}/{{.table.BusinessName}}',
+    method: 'put',
+    data: data
+  })
+}
+
+// 删除{{.table.FunctionName}}
+export function del{{.table.ClassName}}({{$Key}}s) {
+  return request({
+    url: '/{{.table.PackageName}}/{{.table.BusinessName}}/' + {{$Key}}s,
+    method: 'delete',
+  })
+}
+

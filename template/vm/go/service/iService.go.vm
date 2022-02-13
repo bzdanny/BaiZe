@@ -1,0 +1,14 @@
+package {{.table.PackageName}}Service
+
+import (
+	"baize/app/{{.table.PackageName}}/{{.table.PackageName}}Models"
+)
+
+type I{{.table.ClassName}}Service interface {
+	Select{{.table.ClassName}}List({{.table.BusinessName}} *{{.table.PackageName}}Models.{{.table.ClassName}}DQL) ({{.table.BusinessName}}List []*{{.table.PackageName}}Models.{{.table.ClassName}}Vo, total *int64)
+	Export{{.table.ClassName}}({{.table.BusinessName}} *{{.table.PackageName}}Models.{{.table.ClassName}}DQL) (data []byte)
+	Select{{.table.ClassName}}ById({{range $index, $column := .table.Columns}}{{if eq $column.IsPk "1"}}{{$column.HtmlField}} {{$column.GoType}}{{end}}{{end}}) ({{.table.BusinessName}} *{{.table.PackageName}}Models.{{.table.ClassName}}Vo)
+	Insert{{.table.ClassName}}({{.table.BusinessName}} *{{.table.PackageName}}Models.{{.table.ClassName}}DML)
+	Update{{.table.ClassName}}({{.table.BusinessName}} *{{.table.PackageName}}Models.{{.table.ClassName}}DML)
+	Delete{{.table.ClassName}}ByIds({{range $index, $column := .table.Columns}}{{if eq $column.IsPk "1"}}{{$column.HtmlField}}s []{{$column.GoType}}{{end}}{{end}})
+}

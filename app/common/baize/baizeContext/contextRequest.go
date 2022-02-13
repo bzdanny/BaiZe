@@ -16,6 +16,10 @@ func (bzc *BaiZeContext) ParamInt64Array(key string) []int64 {
 	}
 	return list
 }
+func (bzc *BaiZeContext) ParamStringArray(key string) []string {
+	return strings.Split(bzc.Param(key), ",")
+}
+
 func (bzc *BaiZeContext) QueryInt64(key string) int64 {
 	return gconv.Int64(bzc.Query(key))
 }

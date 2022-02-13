@@ -34,7 +34,7 @@ func Init() *gin.Engine {
 	group.Static(constants.ResourcePrefix, setting.Conf.Profile)
 	//不做鉴权的
 	{
-		systemRouter.InitLoginRouter(group) //获取登录信息
+		systemRouter.InitLoginRouter(group)   //获取登录信息
 		swaggerTest.InitGenTableRouter(group) //swaggerTest演示
 	}
 	//做鉴权的
@@ -57,7 +57,6 @@ func Init() *gin.Engine {
 		monitorRoutes.InitServerRouter(group)        //服务监控
 		genTableRoutes.InitGenTableRouter(group)     //代码生成
 		quartzRoutes.InitJobRouter(group)            //定时任务
-
 	}
 
 	r.NoRoute(func(c *gin.Context) {

@@ -1,4 +1,4 @@
-package DictTypeController
+package dictTypeController
 
 import (
 	"baize/app/common/baize/baizeContext"

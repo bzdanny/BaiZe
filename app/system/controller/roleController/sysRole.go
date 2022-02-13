@@ -1,4 +1,4 @@
-package RoleController
+package roleController
 
 import (
 	"baize/app/common/baize/baizeContext"

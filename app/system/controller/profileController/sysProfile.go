@@ -1,4 +1,4 @@
-package ProfileController
+package profileController
 
 import (
 	"baize/app/common/baize/baizeContext"

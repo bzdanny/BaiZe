@@ -1,0 +1,160 @@
+package {{.table.PackageName}}DaoImpl
+
+import (
+    "baize/app/common/datasource"
+    "baize/app/constant/constants"
+    "{{.table.FunctionAuthor}}/app/{{.table.PackageName}}/{{.table.PackageName}}Models"
+    "database/sql"
+    "fmt"
+    "github.com/jmoiron/sqlx"
+)
+
+// ==========================================================================
+// date：{{.table.GenerateTime.Format "2006-01-02 15:04:05" }}
+// author：{{.table.FunctionAuthor}}
+// version: v1.0
+// ==========================================================================
+
+var {{.table.BusinessName}}DaoImpl *{{.table.BusinessName}}Dao
+
+type {{.table.BusinessName}}Dao struct {
+	select{{.table.ClassName}}Sql string
+	from{{.table.ClassName}}Sql   string
+}
+
+func init() {
+	{{.table.BusinessName}}DaoImpl = &{{.table.BusinessName}}Dao{
+		select{{.table.ClassName}}Sql: `select {{range $index, $column := .table.Columns}}{{$column.ColumnName}} {{end}} `,
+		from{{.table.ClassName}}Sql:   ` from {{.table.TableName }}`,
+	}
+}
+
+func Get{{.table.ClassName}}Dao() *{{.table.BusinessName}}Dao {
+	return {{.table.BusinessName}}DaoImpl
+}
+
+func ({{.table.BusinessName}}Dao *{{.table.BusinessName}}Dao) Select{{.table.ClassName}}List({{.table.BusinessName}}DQL *{{.table.PackageName}}Models.{{.table.ClassName}}DQL) ({{.table.BusinessName}}List []*{{.table.PackageName}}Models.{{.table.ClassName}}Vo, total *int64){
+    whereSql :=""
+{{$className:=.table.PrivateClassName}}{{range $index, $column := .table.Columns}}{{if eq $column.IsQuery "1"}}
+{{if eq $column.QueryType "EQ"}}    if {{$className}}DQL.{{$column.GoField}} != {{if eq $column.GoType "string"}}""{{else}}nil{{end}} {
+        whereSql += " AND {{$column.ColumnName}} = :{{$column.ColumnName}}"
+    }
+        {{else if eq $column.QueryType "NE"}}
+    if {{$className}}DQL.{{$column.GoField}} != {{if eq $column.GoType "string"}}""{{else}}*{{$column.GoType}}{{end}} {
+        whereSql += " AND {{$column.ColumnName}} = :{{$column.ColumnName}}"
+    }
+        {{else if eq $column.QueryType "GT"}}
+    if {{$className}}DQL.{{$column.GoField}} != {{if eq $column.GoType "string"}}""{{else}}*{{$column.GoType}}{{end}} {
+        whereSql += " AND {{$column.ColumnName}} > :{{$column.ColumnName}}"
+    }
+        {{else if eq $column.QueryType "GTE"}}
+    if {{$className}}DQL.{{$column.GoField}} != {{if eq $column.GoType "string"}}""{{else}}*{{$column.GoType}}{{end}} {
+        whereSql += " AND {{$column.ColumnName}} >= :{{$column.ColumnName}}"
+    }
+        {{else if eq $column.QueryType "LT"}} AND {{$column.ColumnName}} < :{{$column.ColumnName}}
+    if {{$className}}DQL.{{$column.GoField}} != {{if eq $column.GoType "string"}}""{{else}}*{{$column.GoType}}{{end}} {
+        whereSql += " AND {{$column.ColumnName}} < :{{$column.ColumnName}}"
+    }
+        {{else if eq $column.QueryType "LTE"}} AND {{$column.ColumnName}} <= :{{$column.ColumnName}}
+    if {{$className}}DQL.{{$column.GoField}} != {{if eq $column.GoType "string"}}""{{else}}*{{$column.GoType}}{{end}} {
+        whereSql += " AND {{$column.ColumnName}} <= :{{$column.ColumnName}}"
+    }
+        {{else if eq $column.QueryType "LIKE"}}
+    if {{$className}}DQL.{{$column.GoField}} != {{if eq $column.GoType "string"}}""{{else}}*{{$column.GoType}}{{end}} {
+        whereSql += " AND {{$column.ColumnName}} like concat('%', :{{$column.ColumnName}}, '%')"
+    }
+        {{else if eq $column.QueryType "BETWEEN"}}
+    if {{$className}}DQL.{{$column.GoField}}Begin != {{if eq $column.GoType "string"}}""{{else}}nil{{end}}&&{{$className}}DQL.{{$column.GoField}}End != {{if eq $column.GoType "string"}}""{{else}}nil{{end}}  {
+        whereSql += " and {{$column.ColumnName}} between :{{$column.ColumnName}}_begin and :{{$column.ColumnName}}_end"
+    }{{end}}{{end}}{{end}}
+    if whereSql != "" {
+    		whereSql = " where " + whereSql[4:]
+    }
+	countRow, err := datasource.GetMasterDb().NamedQuery(constants.MysqlCount+{{.table.BusinessName}}Dao.from{{.table.ClassName}}Sql+whereSql, {{.table.BusinessName}}DQL)
+	if err != nil {
+		panic(err)
+	}
+	total = new(int64)
+	if countRow.Next() {
+		countRow.Scan(total)
+	}
+	defer countRow.Close()
+	{{.table.BusinessName}}List = make([]*{{.table.PackageName}}Models.{{.table.ClassName}}Vo, 0, {{.table.BusinessName}}DQL.Size)
+	if *total > {{.table.BusinessName}}DQL.Offset {
+		whereSql += " order by info_id desc"
+		if {{.table.BusinessName}}DQL.Limit != "" {
+			whereSql += {{.table.BusinessName}}DQL.Limit
+		}
+		listRows, err := datasource.GetMasterDb().NamedQuery({{.table.BusinessName}}Dao.select{{.table.ClassName}}Sql+{{.table.BusinessName}}Dao.from{{.table.ClassName}}Sql+whereSql, {{.table.BusinessName}}DQL)
+		if err != nil {
+			panic(err)
+		}
+		for listRows.Next() {
+			data := new({{.table.PackageName}}Models.{{.table.ClassName}}Vo)
+			listRows.StructScan(data)
+			{{.table.BusinessName}}List = append({{.table.BusinessName}}List, data)
+		}
+		defer listRows.Close()
+	}
+	return
+}
+
+
+func ({{.table.BusinessName}}Dao *{{.table.BusinessName}}Dao) Select{{.table.ClassName}}ById({{range $index, $column := .table.Columns}}{{if eq $column.IsPk "1"}}{{$column.HtmlField}} {{$column.GoType}}{{end}}{{end}}) ({{.table.BusinessName}} *{{.table.PackageName}}Models.{{.table.ClassName}}Vo) {
+
+	{{.table.BusinessName}} = new({{.table.PackageName}}Models.{{.table.ClassName}}Vo)
+	err := datasource.GetMasterDb().Get({{.table.BusinessName}}, {{.table.BusinessName}}Dao.select{{.table.ClassName}}Sql+{{.table.BusinessName}}Dao.from{{.table.ClassName}}Sql +" where {{range $index, $column := .table.Columns}}{{if eq $column.IsPk "1"}}{{$column.ColumnName}} = ？", {{$column.HtmlField}}{{end}}{{end}})
+	if err == sql.ErrNoRows {
+		return nil
+	} else if err != nil {
+		panic(err)
+	}
+	return
+}
+
+
+func ({{.table.BusinessName}}Dao *{{.table.BusinessName}}Dao) Insert{{.table.ClassName}}({{.table.BusinessName}}DML *{{.table.PackageName}}Models.{{.table.ClassName}}DML){
+	insertSQL := `insert into {{.table.TableName}} ({{range $index, $column := .table.Columns}}{{if eq "1" $column.IsRequired $column.IsPk}}{{$column.ColumnName}},{{end}}{{end}} %s)
+					values({{range $index, $column := .table.Columns}}{{if eq "1" $column.IsRequired $column.IsPk}}:{{$column.ColumnName}},{{end}}{{end}} %s)`
+    key := ""
+    value := ""
+	{{range $index, $column := .table.Columns}}{{if ne $column.IsPk "1"}}{{if ne $column.IsRequired "1"}}
+     if {{$className}}DML.{{$column.GoField}} != {{if eq $column.GoType "string"}}""{{else}}nil{{end}} {
+        key += ",{{$column.ColumnName}}"
+        value += ",:{{$column.ColumnName}}"
+     }{{end}}{{end}}{{end}}
+    if key != "" {
+        key = key[1:]
+        value = value[1:]
+    }
+    insertStr := fmt.Sprintf(insertSQL, key, value)
+	_, err := datasource.GetMasterDb().NamedExec(insertStr, {{.table.BusinessName}}DML)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func ({{.table.BusinessName}}Dao *{{.table.BusinessName}}Dao) Update{{.table.ClassName}}({{.table.BusinessName}}DML *{{.table.PackageName}}Models.{{.table.ClassName}}DML){
+    tableName := `update {{.table.TableName}} set `
+    updateSQL :=""
+	{{range $index, $column := .table.Columns}}{{if ne $column.IsPk "1"}}
+     if {{$className}}DML.{{$column.GoField}} != {{if eq $column.GoType "string"}}""{{else}}nil{{end}} {
+        updateSQL += ",{{$column.ColumnName}} = :{{$column.ColumnName}}"
+     }{{end}}{{end}}
+     updateSQL = tableName + updateSQL[1:] + "where {{range $index, $column := .table.Columns}}{{if eq $column.IsPk "1"}}{{$column.ColumnName}} = :{{$column.ColumnName}}{{end}}{{end}}"
+     _, err := datasource.GetMasterDb().NamedExec(updateSQL, {{$className}}DML)
+    if err != nil {
+        panic(err)
+    }
+}
+
+func ({{.table.BusinessName}}Dao *{{.table.BusinessName}}Dao) Delete{{.table.ClassName}}ByIds({{range $index, $column := .table.Columns}}{{if eq $column.IsPk "1"}}{{$column.HtmlField}}s []{{$column.GoType}}{{end}}{{end}}){
+	query, i, err := sqlx.In("delete from {{.table.TableName}} where info_id in (?)", {{range $index, $column := .table.Columns}}{{if eq $column.IsPk "1"}}{{$column.HtmlField}}s{{end}}{{end}})
+	if err != nil {
+		panic(err)
+	}
+	_, err = datasource.GetMasterDb().Exec(query, i...)
+	if err != nil {
+		panic(err)
+	}
+}

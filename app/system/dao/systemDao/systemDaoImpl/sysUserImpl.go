@@ -65,20 +65,20 @@ func (userDao *sysUserDao) InsertUser(sysUser *systemModels.SysUserDML, tx ...da
 		value += ",:dept_id"
 	}
 	if sysUser.Email != "" {
-		key += "email"
-		value += ":email"
+		key += ",email"
+		value += ",:email"
 	}
 	if sysUser.Avatar != "" {
-		key += "avatar"
-		value += ":avatar"
+		key += ",avatar"
+		value += ",:avatar"
 	}
 	if sysUser.Phonenumber != "" {
-		key += "phonenumber"
-		value += ":phonenumber"
+		key += ",phonenumber"
+		value += ",:phonenumber"
 	}
 	if sysUser.Remake != "" {
-		key += "remake"
-		value += ":remake"
+		key += ",remake"
+		value += ",:remake"
 	}
 	insertStr := fmt.Sprintf(insertSQL, key, value)
 	var db datasource.Transaction
