@@ -33,25 +33,25 @@ type GenTableColumnDML struct {
 }
 
 type GenTableColumnVo struct {
-	ColumnId      int64   `json:"columnId,string" db:"column_id"`
-	TableId       int64   `json:"tableId,string" db:"table_id"`
-	ColumnName    string  `json:"columnName" db:"column_name"`
-	ColumnComment string  `json:"columnComment" db:"column_comment"`
-	ColumnType    string  `json:"columnType" db:"column_type"`
-	GoType        string  `json:"goType" db:"go_type"`
-	GoField       string  `json:"goField" db:"go_field"`
-	HtmlField     string  `json:"htmlField" db:"html_field"`
-	IsPk          string  `json:"isPk" db:"is_pk"`
-	IsRequired    string  `json:"isRequired" db:"is_required"`
-	IsInsert      string  `json:"isInsert" db:"is_insert"`
-	IsEdit        string  `json:"isEdit" db:"is_edit"`
-	IsList        string  `json:"isList" db:"is_list"`
-	IsQuery       string  `json:"isQuery" db:"is_query"`
+	ColumnId      int64  `json:"columnId,string" db:"column_id"`
+	TableId       int64  `json:"tableId,string" db:"table_id"`
+	ColumnName    string `json:"columnName" db:"column_name"`
+	ColumnComment string `json:"columnComment" db:"column_comment"`
+	ColumnType    string `json:"columnType" db:"column_type"`
+	GoType        string `json:"goType" db:"go_type"`
+	GoField       string `json:"goField" db:"go_field"`
+	HtmlField     string `json:"htmlField" db:"html_field"`
+	IsPk          string `json:"isPk" db:"is_pk"`
+	IsRequired    string `json:"isRequired" db:"is_required"`
+	IsInsert      string `json:"isInsert" db:"is_insert"`
+	IsEdit        string `json:"isEdit" db:"is_edit"`
+	IsList        string `json:"isList" db:"is_list"`
+	IsQuery       string `json:"isQuery" db:"is_query"`
 	IsEntity      string `json:"isEntity" db:"is_entity"`
-	QueryType     string  `json:"queryType" db:"query_type"`
-	HtmlType      string  `json:"htmlType" db:"html_type"`
-	DictType      *string `json:"dictType" db:"dict_type"`
-	Sort          int32   `json:"remark" db:"sort"`
+	QueryType     string `json:"queryType" db:"query_type"`
+	HtmlType      string `json:"htmlType" db:"html_type"`
+	DictType      string `json:"dictType" db:"dict_type"`
+	Sort          int32  `json:"remark" db:"sort"`
 
 	commonModels.BaseEntity
 }
@@ -131,30 +131,30 @@ func GetGenTableColumnDML(column *InformationSchemaColumn, tableId int64, userNa
 	if genUtils.IsBaseEntity(columnName) {
 		genTableColumn.IsRequired = "0"
 		genTableColumn.IsInsert = "0"
-		genTableColumn.IsEntity= "1"
+		genTableColumn.IsEntity = "1"
 	} else {
 		genTableColumn.IsRequired = "0"
 		genTableColumn.IsInsert = "1"
-		genTableColumn.IsEntity= "0"
+		genTableColumn.IsEntity = "0"
 		if strings.Index(columnName, "name") >= 0 || strings.Index(columnName, "status") >= 0 {
 			genTableColumn.IsRequired = "1"
 		}
 	}
 
 	// 编辑字段
-	if genUtils.IsNotEdit(columnName) && column.IsPk!="0"{
-			genTableColumn.IsEdit = "1"
+	if genUtils.IsNotEdit(columnName) && column.IsPk != "0" {
+		genTableColumn.IsEdit = "1"
 	} else {
 		genTableColumn.IsEdit = "0"
 	}
 	// 列表字段
-	if genUtils.IsNotList(columnName) && column.IsPk!="0"{
+	if genUtils.IsNotList(columnName) && column.IsPk != "0" {
 		genTableColumn.IsList = "1"
 	} else {
 		genTableColumn.IsList = "0"
 	}
 	// 查询字段
-	if genUtils.IsNotQuery(columnName)&& column.IsPk!="0"{
+	if genUtils.IsNotQuery(columnName) && column.IsPk != "0" {
 		genTableColumn.IsQuery = "1"
 	} else {
 		genTableColumn.IsQuery = "0"

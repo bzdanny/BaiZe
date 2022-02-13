@@ -1,15 +1,15 @@
 package systemRouter
 
 import (
-	"baize/app/system/controller/ProfileController"
+	"baize/app/system/controller/profileController"
 	"github.com/gin-gonic/gin"
 )
 
 func InitSysProfileRouter(router *gin.RouterGroup) {
 	systemProfile := router.Group("/system/user/profile")
 
-	systemProfile.GET("", ProfileController.Profile)
-	systemProfile.PUT("", ProfileController.ProfileUpdateProfile)
-	systemProfile.PUT("/updatePwd", ProfileController.ProfileUpdatePwd)
-	systemProfile.POST("/avatar", ProfileController.ProfileAvatar)
+	systemProfile.GET("", profileController.Profile)
+	systemProfile.PUT("", profileController.ProfileUpdateProfile)
+	systemProfile.PUT("/updatePwd", profileController.ProfileUpdatePwd)
+	systemProfile.POST("/avatar", profileController.ProfileAvatar)
 }

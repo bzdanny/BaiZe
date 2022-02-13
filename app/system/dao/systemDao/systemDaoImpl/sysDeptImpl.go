@@ -23,7 +23,7 @@ func GetSysDeptDao() *sysDeptDao {
 	return sysDeptDaoImpl
 }
 
-func (deptDao *sysDeptDao) SelectDeptList(dept *systemModels.SysDeptDQL) (sysDeptList []*systemModels.SysDeptVo) {
+func (sysDeptDao *sysDeptDao) SelectDeptList(dept *systemModels.SysDeptDQL) (sysDeptList []*systemModels.SysDeptVo) {
 	fromSql := ` where d.del_flag = '0'`
 	if dept.ParentId != nil {
 		fromSql += " AND parent_id = :parent_id"
@@ -39,7 +39,7 @@ func (deptDao *sysDeptDao) SelectDeptList(dept *systemModels.SysDeptDQL) (sysDep
 	}
 	fromSql += " order by d.parent_id, d.order_num"
 	sysDeptList = make([]*systemModels.SysDeptVo, 0, 2)
-	listRows, err := datasource.GetMasterDb().NamedQuery(deptDao.deptSql+fromSql, dept)
+	listRows, err := datasource.GetMasterDb().NamedQuery(sysDeptDao.deptSql+fromSql, dept)
 	if err != nil {
 		panic(err)
 	}
@@ -53,10 +53,10 @@ func (deptDao *sysDeptDao) SelectDeptList(dept *systemModels.SysDeptDQL) (sysDep
 	}
 	return
 }
-func (deptDao *sysDeptDao) SelectDeptById(deptId int64) (dept *systemModels.SysDeptVo) {
+func (sysDeptDao *sysDeptDao) SelectDeptById(deptId int64) (dept *systemModels.SysDeptVo) {
 	whereSql := ` where d.dept_id = ?`
 	dept = new(systemModels.SysDeptVo)
-	err := datasource.GetMasterDb().Get(dept, deptDao.deptSql+whereSql, deptId)
+	err := datasource.GetMasterDb().Get(dept, sysDeptDao.deptSql+whereSql, deptId)
 	if err == sql.ErrNoRows {
 		return nil
 	} else if err != nil {
@@ -65,7 +65,7 @@ func (deptDao *sysDeptDao) SelectDeptById(deptId int64) (dept *systemModels.SysD
 	return
 }
 
-func (deptDao *sysDeptDao) InsertDept(dept *systemModels.SysDeptDML) {
+func (sysDeptDao *sysDeptDao) InsertDept(dept *systemModels.SysDeptDML) {
 	insertSQL := `insert into sys_dept(dept_id,parent_id,dept_name,create_by,create_time,update_by,update_time %s)
 					values(:dept_id,:parent_id,:dept_name,:create_by,now(),:update_by,now() %s)`
 	key := ""
@@ -103,7 +103,7 @@ func (deptDao *sysDeptDao) InsertDept(dept *systemModels.SysDeptDML) {
 	return
 }
 
-func (deptDao *sysDeptDao) UpdateDept(dept *systemModels.SysDeptDML) {
+func (sysDeptDao *sysDeptDao) UpdateDept(dept *systemModels.SysDeptDML) {
 	updateSQL := `update sys_dept set update_time = now() , update_by = :update_by`
 
 	if dept.ParentId != 0 {
@@ -141,14 +141,14 @@ func (deptDao *sysDeptDao) UpdateDept(dept *systemModels.SysDeptDML) {
 	return
 }
 
-func (deptDao *sysDeptDao) DeleteDeptById(deptId int64) {
+func (sysDeptDao *sysDeptDao) DeleteDeptById(deptId int64) {
 	_, err := datasource.GetMasterDb().Exec("update sys_dept set del_flag = '2' where dept_id =?", deptId)
 	if err != nil {
 		panic(err)
 	}
 	return
 }
-func (deptDao *sysDeptDao) CheckDeptNameUnique(deptName string, parentId int64) int64 {
+func (sysDeptDao *sysDeptDao) CheckDeptNameUnique(deptName string, parentId int64) int64 {
 	var roleId int64 = 0
 	err := datasource.GetMasterDb().Get(&roleId, "select dept_id from sys_dept where dept_name=? and parent_id = ?", deptName, parentId)
 	if err != nil && err != sql.ErrNoRows {
@@ -156,7 +156,7 @@ func (deptDao *sysDeptDao) CheckDeptNameUnique(deptName string, parentId int64) 
 	}
 	return roleId
 }
-func (deptDao *sysDeptDao) HasChildByDeptId(deptId int64) int {
+func (sysDeptDao *sysDeptDao) HasChildByDeptId(deptId int64) int {
 	var count = 0
 	err := datasource.GetMasterDb().Get(&count, "select count(1) from sys_dept where parent_id = ?", deptId)
 	if err != nil && err != sql.ErrNoRows {
@@ -164,7 +164,7 @@ func (deptDao *sysDeptDao) HasChildByDeptId(deptId int64) int {
 	}
 	return count
 }
-func (deptDao *sysDeptDao) CheckDeptExistUser(deptId int64) int {
+func (sysDeptDao *sysDeptDao) CheckDeptExistUser(deptId int64) int {
 	var count = 0
 	err := datasource.GetMasterDb().Get(&count, "select count(1) from sys_user where dept_id = ? and del_flag = '0'", deptId)
 	if err != nil && err != sql.ErrNoRows {
@@ -173,7 +173,7 @@ func (deptDao *sysDeptDao) CheckDeptExistUser(deptId int64) int {
 	return count
 }
 
-func (deptDao *sysDeptDao) SelectDeptListByRoleId(roleId int64, deptCheckStrictly bool) (deptIds []string) {
+func (sysDeptDao *sysDeptDao) SelectDeptListByRoleId(roleId int64, deptCheckStrictly bool) (deptIds []string) {
 	var err error
 	deptIds = make([]string, 0, 2)
 	sqlstr := `select d.dept_id

@@ -1,4 +1,4 @@
-package DeptController
+package deptController
 
 import (
 	"baize/app/common/baize/baizeContext"

@@ -19,22 +19,24 @@ type BaseEntity struct {
 }
 
 type BaseEntityDML struct {
-	CreateBy string `db:"create_by"`
-	CreateTime time.Time `db:"create_time"`
-	UpdateBy string `db:"update_by"`
-	UpdateTime time.Time `db:"update_time"`
+	CreateBy   string     `db:"create_by"`
+	CreateTime *time.Time `db:"create_time"`
+	UpdateBy   string     `db:"update_by"`
+	UpdateTime *time.Time `db:"update_time"`
 }
 
 func (b *BaseEntityDML) SetCreateBy(userName string) {
+	now := time.Now()
 	b.CreateBy = userName
-	b.CreateTime=time.Now()
+	b.CreateTime = &now
 	b.UpdateBy = userName
-	b.UpdateTime=time.Now()
+	b.UpdateTime = &now
 }
 
 func (b *BaseEntityDML) SetUpdateBy(userName string) {
 	b.UpdateBy = userName
-	b.UpdateTime=time.Now()
+	now := time.Now()
+	b.UpdateTime = &now
 }
 
 type BaseEntityDQL struct {

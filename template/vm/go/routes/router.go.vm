@@ -1,0 +1,20 @@
+package {{.table.PackageName}}Router
+
+//   {{.table.PackageName}}Router.Init{{.table.ClassName}}Router(group)
+
+import (
+	"baize/app/common/middlewares"
+	"baize/app/{{.table.PackageName}}/{{.table.PackageName}}Controller/{{.table.BusinessName}}Controller"
+	"github.com/gin-gonic/gin"
+)
+{{$Key:=""}}{{range $index, $column := .table.Columns}}{{if eq $column.IsPk "1"}}{{$Key = $column.HtmlField}}{{if eq $column.GoType "string"}}{{end}}{{end}}{{end}}
+
+func Init{{.table.ClassName}}Router(router *gin.RouterGroup) {
+	{{.table.BusinessName}} := router.Group("/{{.table.BusinessName}}/{{.table.BusinessName}}")
+	{{.table.BusinessName}}.GET("/list", middlewares.HasPermission("{{.table.PackageName}}:{{.table.BusinessName}}:list"), {{.table.BusinessName}}Controller.{{.table.ClassName}}List)
+	{{.table.BusinessName}}.POST("/export", middlewares.HasPermission("{{.table.PackageName}}:{{.table.BusinessName}}:export"), {{.table.BusinessName}}Controller.{{.table.ClassName}}Export)
+	{{.table.BusinessName}}.GET("/:{{$Key}}", middlewares.HasPermission("{{.table.PackageName}}:{{.table.BusinessName}}:query"), {{.table.BusinessName}}Controller.{{.table.ClassName}}GetInfo)
+	{{.table.BusinessName}}.POST("", middlewares.HasPermission("{{.table.PackageName}}:{{.table.BusinessName}}:add"), {{.table.BusinessName}}Controller.{{.table.ClassName}}Add)
+	{{.table.BusinessName}}.PUT("", middlewares.HasPermission("{{.table.PackageName}}:{{.table.BusinessName}}:edit"), {{.table.BusinessName}}Controller.{{.table.ClassName}}Edit)
+	{{.table.BusinessName}}.DELETE("/:{{$Key}}s", middlewares.HasPermission("{{.table.PackageName}}:{{.table.BusinessName}}:remove"), {{.table.BusinessName}}Controller.{{.table.ClassName}}Remove)
+}

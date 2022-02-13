@@ -1,4 +1,4 @@
-package PostController
+package postController
 
 import (
 	"baize/app/common/baize/baizeContext"

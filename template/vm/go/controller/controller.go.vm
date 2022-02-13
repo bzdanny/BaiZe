@@ -1,0 +1,67 @@
+package {{.table.BusinessName}}Controller
+
+import (
+	"baize/app/common/baize/baizeContext"
+	"baize/app/{{.table.PackageName}}/{{.table.PackageName}}Models"
+	"baize/app/{{.table.PackageName}}/{{.table.PackageName}}Service"
+	"baize/app/{{.table.PackageName}}/{{.table.PackageName}}Service/{{.table.PackageName}}ServiceImpl"
+	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
+)
+
+var i{{.table.ClassName}} {{.table.PackageName}}Service.I{{.table.ClassName}}Service = {{.table.PackageName}}ServiceImpl.Get{{.table.ClassName}}Service()
+
+{{$IsPkTypeString:=false}}{{$Key:=""}}{{range $index, $column := .table.Columns}}{{if eq $column.IsPk "1"}}{{$Key = $column.HtmlField}}{{if eq $column.GoType "string"}}{{$IsPkTypeString = true}}{{end}}{{end}}{{end}}
+
+func {{.table.ClassName}}List(c *gin.Context) {
+	bzc := baizeContext.NewBaiZeContext(c)
+	{{.table.BusinessName}} := new({{.table.PackageName}}Models.{{.table.ClassName}}DQL)
+	c.ShouldBind({{.table.BusinessName}})
+	bzc.SuccessListData(i{{.table.ClassName}}.Select{{.table.ClassName}}List({{.table.BusinessName}}))
+}
+
+func {{.table.ClassName}}Export(c *gin.Context) {
+	bzc := baizeContext.NewBaiZeContext(c)
+	{{.table.BusinessName}} := new({{.table.PackageName}}Models.{{.table.ClassName}}DQL)
+	c.ShouldBind({{.table.BusinessName}})
+	bzc.DataPackageExcel(i{{.table.ClassName}}.Export{{.table.ClassName}}({{.table.BusinessName}}))
+}
+
+func {{.table.ClassName}}GetInfo(c *gin.Context) {
+	bzc := baizeContext.NewBaiZeContext(c)
+	{{$Key}}:={{if $IsPkTypeString}}bzc.Param("{{$Key}}"){{else}}bzc.ParamInt64("{{$Key}}"){{end}}
+       if {{$Key}} == 0 {
+          zap.L().Error("参数错误")
+          bzc.ParameterError()
+          return
+       }
+    bzc.SuccessData(i{{.table.ClassName}}.Select{{.table.ClassName}}ById({{$Key}}))
+}
+
+func {{.table.ClassName}}Add(c *gin.Context) {
+	bzc := baizeContext.NewBaiZeContext(c)
+	bzc.SetLog("{{.table.FunctionName}}", "INSERT")
+	{{.table.BusinessName}} := new({{.table.PackageName}}Models.{{.table.ClassName}}DML)
+	c.ShouldBind({{.table.BusinessName}})
+	{{.table.BusinessName}}.SetCreateBy(bzc.GetCurrentUserName())
+	i{{.table.ClassName}}.Insert{{.table.ClassName}}({{.table.BusinessName}})
+	bzc.Success()
+}
+
+func {{.table.ClassName}}Edit(c *gin.Context) {
+	bzc := baizeContext.NewBaiZeContext(c)
+	bzc.SetLog("{{.table.FunctionName}}", "UPDATE")
+	{{.table.BusinessName}} := new({{.table.PackageName}}Models.{{.table.ClassName}}DML)
+	c.ShouldBind({{.table.BusinessName}})
+	{{.table.BusinessName}}.SetUpdateBy(bzc.GetCurrentUserName())
+	i{{.table.ClassName}}.Update{{.table.ClassName}}({{.table.BusinessName}})
+	bzc.Success()
+}
+
+func {{.table.ClassName}}Remove(c *gin.Context) {
+	bzc := baizeContext.NewBaiZeContext(c)
+	bzc.SetLog("{{.table.FunctionName}}", "DELETE")
+	{{$Key}}s :={{if $IsPkTypeString}}bzc.ParamStringArray("{{$Key}}s"){{else}}bzc.ParamInt64Array("{{$Key}}s"){{end}}
+	i{{.table.ClassName}}.Delete{{.table.ClassName}}ByIds({{$Key}}s)
+	bzc.Success()
+}

@@ -38,13 +38,11 @@ func (userService *userService) SelectUserByUserName(userName string) *loginMode
 
 }
 func (userService *userService) SelectUserList(user *systemModels.SysUserDQL) (sysUserList []*systemModels.SysUserVo, count *int64) {
-	sysUserList, count = userService.userDao.SelectUserList(user)
-	return
+	return userService.userDao.SelectUserList(user)
 }
 func (userService *userService) UserExport(user *systemModels.SysUserDQL) (data []byte) {
 	sysUserList, _ := userService.userDao.SelectUserList(user)
-	rows := systemModels.SysUserListToRows(sysUserList)
-	return exceLize.SetRows(rows)
+	return exceLize.SetRows(systemModels.SysUserListToRows(sysUserList))
 }
 func (userService *userService) ImportTemplate() (data []byte) {
 	f := excelize.NewFile()

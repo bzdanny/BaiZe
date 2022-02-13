@@ -1,4 +1,4 @@
-package DictDataController
+package dictDataController
 
 import (
 	"baize/app/common/baize/baizeContext"
@@ -57,14 +57,13 @@ func DictDataEdit(c *gin.Context) {
 	bzc.SetLog("字典数据", "UPDATE")
 	dictData := new(systemModels.SysDictDataDML)
 	c.ShouldBind(dictData)
-	dictData.SetCreateBy(bzc.GetCurrentUserName())
+	dictData.SetUpdateBy(bzc.GetCurrentUserName())
 	iDictData.UpdateDictData(dictData)
 	bzc.Success()
 }
 func DictDataRemove(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	bzc.SetLog("字典数据", "DELETE")
-	array := bzc.ParamInt64Array("dictCodes")
-	iDictData.DeleteDictDataByIds(array)
+	iDictData.DeleteDictDataByIds(bzc.ParamInt64Array("dictCodes"))
 	bzc.Success()
 }

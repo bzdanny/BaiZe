@@ -1,4 +1,4 @@
-package {{.table.PackageName}}Model
+package {{.table.PackageName}}Models
 import (
     "baize/app/common/commonModels"
     "github.com/gogf/gf/util/gconv"
@@ -12,15 +12,17 @@ import (
 // ==========================================================================
 
 type {{.table.ClassName}}Vo struct {
-{{range $index, $column := .table.Columns}}{{if eq $column.IsEntity "0"}}     {{$column.GoField}}    {{if eq $column.GoType "Time"}}*baizeUnix.BaiZeTime{{else}}{{if ne "1" $column.IsRequired}}{{if ne "1" $column.IsPk}}*{{end}}{{end}}{{$column.GoType}}{{end}}    `json:"{{$column.HtmlField}}{{if eq $column.IsPk "1"}}{{if eq $column.GoType "int64"}},string{{end}}{{end}}" db:"{{$column.ColumnName}}"`    // {{$column.ColumnComment}}
-{{end}}{{end}}
+{{range $index, $column := .table.Columns}}{{if eq $column.IsEntity "0"}}     {{$column.GoField}}    {{if eq $column.GoType "Time"}}*baizeUnix.BaiZeTime{{else}}{{if ne "1" $column.IsRequired}}{{if ne "1" $column.IsPk}}*{{end}}{{end}}{{$column.GoType}}{{end}}    `json:"{{$column.HtmlField}}{{if eq $column.IsPk "1"}}{{if eq $column.GoType "int64"}},string{{end}}{{end}}" db:"{{$column.ColumnName}}"`    // {{$column.ColumnComment}}{{end}}
+{{end}}
     commonModels.BaseEntity
 }
 
 type {{.table.ClassName}}DQL struct {
-{{range $index, $column := .table.Columns}}{{if eq $column.IsQuery "1"}}     {{$column.GoField}}    {{if eq $column.GoType "Time"}}*baizeUnix.BaiZeTime{{else}}{{if ne "string" $column.GoType}}*{{end}}{{$column.GoType}}{{end}}    `form:"{{$column.HtmlField}}{{if eq $column.IsPk "1"}}{{if eq $column.GoType "int64"}},string{{end}}{{end}}" db:"{{$column.ColumnName}}"`    // {{$column.ColumnComment}}
-{{end}}{{end}}
-    commonModels.BaseEntityDQL
+{{range $index, $column := .table.Columns}}{{if ne $column.QueryType "BETWEEN"}}{{if eq $column.IsQuery "1"}}
+     {{$column.GoField}}     {{if eq $column.GoType "Time"}}*baizeUnix.BaiZeTime{{else}}{{if ne "string" $column.GoType}}*{{end}}{{$column.GoType}}{{end}}     `form:"{{$column.HtmlField}}{{if eq $column.IsPk "1"}}{{if eq $column.GoType "int64"}},string{{end}}{{end}}" db:"{{$column.ColumnName}}"`     // {{$column.ColumnComment}}{{end}}{{else}}
+     {{$column.GoField}}Begin     {{if eq $column.GoType "Time"}}*baizeUnix.BaiZeTime{{else}}{{if ne "string" $column.GoType}}*{{end}}{{$column.GoType}}{{end}}     `form:"{{$column.HtmlField}}Begin{{if eq $column.IsPk "1"}}{{if eq $column.GoType "int64"}},string{{end}}{{end}}" db:"{{$column.ColumnName}}_begin"`     // {{$column.ColumnComment}}开始
+     {{$column.GoField}}End     {{if eq $column.GoType "Time"}}*baizeUnix.BaiZeTime{{else}}{{if ne "string" $column.GoType}}*{{end}}{{$column.GoType}}{{end}}     `form:"{{$column.HtmlField}}End{{if eq $column.IsPk "1"}}{{if eq $column.GoType "int64"}},string{{end}}{{end}}" db:"{{$column.ColumnName}}_end"`     // {{$column.ColumnComment}}结束{{end}}{{end}}
+     commonModels.BaseEntityDQL
 }
 
 type {{.table.ClassName}}DML struct {
@@ -29,13 +31,13 @@ type {{.table.ClassName}}DML struct {
     commonModels.BaseEntityDML
 }
 
-func {{.table.ClassName}}ListToRows({{.table.PrivateClassName}}s []*{{.table.ClassName}}Vo) (rows [][]string) {
-	rows = make([][]string, 0, len({{.table.PrivateClassName}}s)+1)
+func {{.table.ClassName}}ListToRows({{.table.BusinessName}}s []*{{.table.ClassName}}Vo) (rows [][]string) {
+	rows = make([][]string, 0, len({{.table.BusinessName}}s)+1)
 	row1 := []string{
 	{{range $index, $column := .table.Columns}}{{if eq $column.IsList "1"}}"{{$column.ColumnComment}}",
 	{{end}}{{end}}}
 	rows = append(rows, row1)
-	for _, data := range {{.table.PrivateClassName}}s {
+	for _, data := range {{.table.BusinessName}}s {
 		row := make([]string, 0)
 {{range $index, $column := .table.Columns}}{{if eq $column.IsList "1"}}		row=append(row, gconv.String(data.{{$column.GoField}} ))
 {{end}}{{end}}

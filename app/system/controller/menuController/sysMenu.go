@@ -1,4 +1,4 @@
-package MenuController
+package menuController
 
 import (
 	"baize/app/common/baize/baizeContext"

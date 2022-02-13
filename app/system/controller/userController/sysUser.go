@@ -1,4 +1,4 @@
-package UserController
+package userController
 
 import (
 	"baize/app/common/baize/baizeContext"

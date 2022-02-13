@@ -8,8 +8,8 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"html/template"
 	"io/ioutil"
+	"text/template"
 	"time"
 )
 
