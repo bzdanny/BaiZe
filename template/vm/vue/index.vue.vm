@@ -1,4 +1,6 @@
-{{$Left := "{{" }} {{$Right := "}}" }}
+{{$Left := "{{" }} {{$Right := "}}" }} {{$pkField :=""}}
+{{range $index, $column := .table.Columns}}{{if eq $column.IsPk "1"}}{{$pkField = $column.HtmlField}}{{end}}{{end}}
+
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">
@@ -161,30 +163,30 @@
 
     <!-- 添加或修改{{.table.FunctionName}}对话框 -->
     <el-dialog :title="title" v-model="open" width="500px" append-to-body>
-      <el-form ref="${businessName}Ref" :model="form" :rules="rules" label-width="80px">
+      <el-form ref="{{.table.BusinessName}}Ref" :model="form" :rules="rules" label-width="80px">
 {{range $index, $column := .table.Columns}}
     {{if ne $column.IsQuery "1"}}
     {{if eq "1" $column.IsInsert $column.IsEdit}}
     {{if eq $column.HtmlType "input"}}
-        <el-form-item label="${comment}" prop="${field}">
-          <el-input v-model="form.${field}" placeholder="请输入${comment}" />
+        <el-form-item label="{{$column.ColumnComment}}" prop="{{$column.HtmlField}}">
+          <el-input v-model="form.{{$column.HtmlField}}" placeholder="请输入{{$column.ColumnComment}} />
         </el-form-item>
     {{else if eq $column.HtmlType "imageUpload"}}
-        <el-form-item label="${comment}">
-          <image-upload v-model="form.${field}"/>
+        <el-form-item label="{{$column.ColumnComment}}">
+          <image-upload v-model="form.{{$column.HtmlField}}"/>
         </el-form-item>
     {{else if eq $column.HtmlType "fileUpload"}}
-        <el-form-item label="${comment}">
-          <file-upload v-model="form.${field}"/>
+        <el-form-item label="{{$column.ColumnComment}}">
+          <file-upload v-model="form.{{$column.HtmlField}}"/>
         </el-form-item>
     {{else if eq $column.HtmlType "editor"}}
-        <el-form-item label="${comment}">
-          <editor v-model="form.${field}" :min-height="192"/>
+        <el-form-item label="{{$column.ColumnComment}}">
+          <editor v-model="form.{{$column.HtmlField}}" :min-height="192"/>
         </el-form-item>
     {{else if eq $column.HtmlType "select"}}
         {{if ne $column.DictType ""}}
-        <el-form-item label="${comment}" prop="${field}">
-          <el-select v-model="form.${field}" placeholder="请选择${comment}">
+        <el-form-item label="{{$column.ColumnComment}}" prop="{{$column.HtmlField}}">
+          <el-select v-model="form.{{$column.HtmlField}}" placeholder="请选择{{$column.ColumnComment}}">
             <el-option
               v-for="dict in ${dictType}"
               :key="dict.value"
@@ -194,16 +196,16 @@
           </el-select>
         </el-form-item>
         {{else}}
-        <el-form-item label="${comment}" prop="${field}">
-          <el-select v-model="form.${field}" placeholder="请选择${comment}">
+        <el-form-item label="{{$column.ColumnComment}}" prop="{{$column.HtmlField}}">
+          <el-select v-model="form.{{$column.HtmlField}}" placeholder="请选择{{$column.ColumnComment}}">
             <el-option label="请选择字典生成" value="" />
           </el-select>
         </el-form-item>
         {{end}}
     {{else if eq $column.HtmlType "checkbox"}}
          {{if ne $column.DictType ""}}
-        <el-form-item label="${comment}">
-          <el-checkbox-group v-model="form.${field}">
+        <el-form-item label="{{$column.ColumnComment}}">
+          <el-checkbox-group v-model="form.{{$column.HtmlField}}">
             <el-checkbox
               v-for="dict in ${dictType}"
               :key="dict.value"
@@ -213,17 +215,17 @@
           </el-checkbox-group>
         </el-form-item>
          {{else}}
-        <el-form-item label="${comment}">
-          <el-checkbox-group v-model="form.${field}">
+        <el-form-item label="{{$column.ColumnComment}}">
+          <el-checkbox-group v-model="form.{{$column.HtmlField}}">
             <el-checkbox>请选择字典生成</el-checkbox>
           </el-checkbox-group>
         </el-form-item>
          {{end}}
     {{else if eq $column.HtmlType "radio"}}
          {{if ne $column.DictType ""}}
-        <el-form-item label="${comment}">
-        <el-form-item label="${comment}">
-          <el-radio-group v-model="form.${field}">
+        <el-form-item label="{{$column.ColumnComment}}">
+        <el-form-item label="{{$column.ColumnComment}}">
+          <el-radio-group v-model="form.{{$column.HtmlField}}">
             <el-radio
               v-for="dict in ${dictType}"
               :key="dict.value"
@@ -232,24 +234,24 @@
           </el-radio-group>
         </el-form-item>
          {{else}}
-        <el-form-item label="${comment}">
-          <el-checkbox-group v-model="form.${field}">
+        <el-form-item label="{{$column.ColumnComment}}">
+          <el-checkbox-group v-model="form.{{$column.HtmlField}}">
             <el-checkbox>请选择字典生成</el-checkbox>
           </el-checkbox-group>
         </el-form-item>
          {{end}}
         {{else if eq $column.HtmlType "datetime"}}
-        <el-form-item label="${comment}" prop="${field}">
+        <el-form-item label="{{$column.ColumnComment}}" prop="{{$column.HtmlField}}">
           <el-date-picker clearable
-            v-model="form.${field}"
+            v-model="form.{{$column.HtmlField}}"
             type="date"
             value-format="YYYY-MM-DD"
-            placeholder="选择${comment}">
+            placeholder="选择{{$column.ColumnComment}}">
           </el-date-picker>
         </el-form-item>
         {{else if eq $column.HtmlType "textarea"}}
-        <el-form-item label="${comment}" prop="${field}">
-          <el-input v-model="form.${field}" type="textarea" placeholder="请输入内容" />
+        <el-form-item label="{{$column.ColumnComment}}" prop="{{$column.HtmlField}}">
+          <el-input v-model="form.{{$column.HtmlField}}" type="textarea" placeholder="请输入内容" />
         </el-form-item>
 {{end}}{{end}}{{end}}{{end}}
       </el-form>
@@ -264,11 +266,11 @@
 </template>
 
 <script setup name="{{.table.BusinessName}}" >
-import { list${BusinessName}, get${BusinessName}, del${BusinessName}, add${BusinessName}, update${BusinessName} } from "@/api/${moduleName}/${businessName}";
+import { list{{.table.ClassName}}, get{{.table.ClassName}}, del{{.table.ClassName}}, add{{.table.ClassName}}, update{{.table.ClassName}} } from "@/api/{{.table.ModuleName}}/{{.table.BusinessName}}";
 
 const { proxy } = getCurrentInstance();
 
-const ${businessName}List = ref([]);
+const {{.table.BusinessName}}List = ref([]);
 
 const open = ref(false);
 const loading = ref(true);
@@ -305,7 +307,7 @@ const data = reactive({
 
 const { queryParams, form, rules } = toRefs(data);
 
-/** 查询${functionName}列表 */
+/** 查询{{.table.FunctionName}}列表 */
 function getList() {
   loading.value = true;
   {{range $index, $column := .table.Columns}}{{if eq $column.HtmlType "datetime"}}{{if eq $column.QueryType "BETWEEN"}}
@@ -337,7 +339,7 @@ function reset() {
   {{else}}
         {{$column.HtmlField}}:null
   {{end}}{{end}}
-  proxy.resetForm("${businessName}Ref");
+  proxy.resetForm("{{.table.BusinessName}}Ref");
 }
 
 /** 搜索按钮操作 */
@@ -357,7 +359,7 @@ function resetQuery() {
 
 // 多选框选中数据
 function handleSelectionChange(selection) {
-  ids.value = selection.map(item => item.${pkColumn.javaField});
+  ids.value = selection.map(item => item.{{$pkField}});
   single.value = selection.length != 1;
   multiple.value = !selection.length;
 }
@@ -366,41 +368,33 @@ function handleSelectionChange(selection) {
 function handleAdd() {
   reset();
   open.value = true;
-  title.value = "添加${functionName}";
+  title.value = "添加{{.table.FunctionName}}";
 }
 
 /** 修改按钮操作 */
 function handleUpdate(row) {
   reset();
-  const ${pkColumn.javaField} = row.${pkColumn.javaField} || ids.value
-    get${BusinessName}(${pkColumn.javaField}).then(response => {
-      form.value = response.data;
-  {{range $index, $column := .table.Columns}}
-  {{if eq $column.HtmlType  "checkbox"}}
-    form.value.$column.javaField = form.value.${column.javaField}.split(",");
-  {{end}}{{end}}
+  const {{$pkField}} = row.{{$pkField}} || ids.value
+    get{{.table.BusinessName}}{{$pkField}}.then(response => {
+     form.value = response.data;
     open.value = true;
-    title.value = "修改${functionName}";
+    title.value = "修改{{.table.FunctionName}}";
   });
 }
 
 /** 提交按钮 */
 function submitForm() {
-  proxy.#[[$]]#refs["${businessName}Ref"].validate(valid => {
+  proxy.$refs["{{.table.BusinessName}}Ref"].validate(valid => {
     if (valid) {
-  {{range $index, $column := .table.Columns}}
-    {{if eq $column.HtmlType  "checkbox"}}
-      form.value.$column.javaField = form.value.${column.javaField}.join(",");
-    {{end}}{{end}}
- if (form.value.${pkColumn.javaField} != null) {
-        update${BusinessName}(form.value).then(response => {
-          proxy.#[[$modal]]#.msgSuccess("修改成功");
+ if (form.value.{{$pkField}} != null) {
+        update{{.table.BusinessName}}(form.value).then(response => {
+          proxy.$modal.msgSuccess("修改成功");
           open.value = false;
           getList();
         });
       } else {
-        add${BusinessName}(form.value).then(response => {
-          proxy.#[[$modal]]#.msgSuccess("新增成功");
+        add{{.table.BusinessName}}(form.value).then(response => {
+          proxy.$modal.msgSuccess("新增成功");
           open.value = false;
           getList();
         });
@@ -411,20 +405,20 @@ function submitForm() {
 
 /** 删除按钮操作 */
 function handleDelete(row) {
-  const ${pkColumn.javaField}s = row.${pkColumn.javaField} || ids.value;
-  proxy.#[[$modal]]#.confirm('是否确认删除${functionName}编号为"' + ${pkColumn.javaField}s + '"的数据项？').then(function() {
-    return del${BusinessName}(${pkColumn.javaField}s);
+  const {{$pkField}}s = row.{{$pkField}} || ids.value;
+  proxy.$modal.confirm('是否确认删除{{.table.FunctionName}}编号为"' + {{$pkField}}s + '"的数据项？').then(function() {
+    return del{{.table.BusinessName}}({{$pkField}}s);
   }).then(() => {
     getList();
-    proxy.#[[$modal]]#.msgSuccess("删除成功");
+    proxy.$modal.msgSuccess("删除成功");
   }).catch(() => {});
 }
 
 /** 导出按钮操作 */
 function handleExport() {
-  proxy.download('${moduleName}/${businessName}/export', {
+  proxy.download('{{.table.ModuleName}}/{{.table.BusinessName}}/export', {
     ...queryParams.value
-  }, `${businessName}_#[[${new Date().getTime()}]]#.xlsx`)
+  }, `{{.table.BusinessName}}_${new Date().getTime()}.xlsx`)
 }
 
 getList();
