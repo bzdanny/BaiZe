@@ -73,8 +73,8 @@ func GenTableRemove(c *gin.Context) {
 }
 func Preview(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	iGenTableService.PreviewCode(bzc.ParamInt64("tableId"))
-	bzc.Success()
+	code := iGenTableService.PreviewCode(bzc.ParamInt64("tableId"))
+	bzc.SuccessData(code)
 }
 func Download(c *gin.Context) {
 

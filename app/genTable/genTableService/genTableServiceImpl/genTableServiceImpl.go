@@ -1,12 +1,13 @@
 package genTableServiceImpl
 
 import (
+	"baize/app/genTable/genConstant"
 	"baize/app/genTable/genTableDao"
 	"baize/app/genTable/genTableDao/genTableDaoImpl"
 	"baize/app/genTable/genTableModels"
+	genUtils "baize/app/genTable/utils"
 	"baize/app/utils/snowflake"
 	"bytes"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"text/template"
@@ -65,16 +66,17 @@ func (genTabletService *genTabletService) DeleteGenTableByIds(ids []int64) (err 
 	genTabletService.genTabletColumnDao.DeleteGenTableColumnByIds(ids)
 	return nil
 }
-func (genTabletService *genTabletService) PreviewCode(tableId int64) (genTable *genTableModels.GenTableVo, err error) {
-	genTable = genTabletService.genTabletDao.SelectGenTableById(tableId)
-	genTable.Columns = genTabletService.genTabletColumnDao.SelectGenTableColumnListByTableId(tableId)
+func (genTabletService *genTabletService) PreviewCode(tableId int64) (dataMap map[string]string) {
 
+	genTable := genTabletService.genTabletDao.SelectGenTableById(tableId)
+	genTable.Columns = genTabletService.genTabletColumnDao.SelectGenTableColumnListByTableId(tableId)
 	genTable.GenerateTime = time.Now()
-	//jsons, _ := json.Marshal(genTable)
-	//fmt.Println(string(jsons))
-	s := genTabletService.loadTemplate("./template/vm/go/model/model.go.vm", genTable)
-	fmt.Println(s)
-	return genTable, nil
+	list := genUtils.GetTemplateList()
+	dataMap = make(map[string]string)
+	for _, template := range list {
+		dataMap[template] = genTabletService.loadTemplate(genConstant.TEMPLATE_PREFIX+template, genTable)
+	}
+	return dataMap
 }
 
 func (genTabletService *genTabletService) loadTemplate(templateName string, data interface{}) string {

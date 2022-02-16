@@ -174,7 +174,7 @@
           :name="key.substring(key.lastIndexOf('/')+1,key.indexOf('.vm'))"
           :key="key"
         >
-        <pre><code class="hljs" v-html="value"></code></pre>
+        <pre><code class="hljs" v-html="highlightedCode(value,key)"></code></pre>
         </el-tab-pane>
       </el-tabs>
     </el-dialog>
@@ -270,7 +270,7 @@ function handlePreview(row) {
   previewTable(row.tableId).then(response => {
     preview.value.data = response.data;
     preview.value.open = true;
-    preview.value.activeName = "domain.java";
+    preview.value.activeName = "controller.go";
   });
 }
 // 多选框选中数据
@@ -296,5 +296,12 @@ function handleDelete(row) {
   }).catch(() => {});
 }
 
+
+function highlightedCode(code, key) {
+  const vmName = key.substring(key.lastIndexOf("/") + 1, key.indexOf(".vm"));
+  var language = vmName.substring(vmName.indexOf(".") + 1, vmName.length);
+  const result = hljs.highlight(language, code || "", true);
+  return result.value || '&nbsp;';
+}
 getList();
 </script>

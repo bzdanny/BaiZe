@@ -12,5 +12,5 @@ type IGenTableService interface {
 	ImportTableSave(table []string, userName string)
 	UpdateGenTable(genTable *genTableModels.GenTableDML) (err error)
 	DeleteGenTableByIds(ids []int64) (err error)
-	PreviewCode(tableId int64) (genTable *genTableModels.GenTableVo, err error)
+	PreviewCode(tableId int64) (dataMap map[string]string)
 }
