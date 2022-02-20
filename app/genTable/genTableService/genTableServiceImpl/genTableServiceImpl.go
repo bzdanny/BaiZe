@@ -1,6 +1,7 @@
 package genTableServiceImpl
 
 import (
+	"archive/zip"
 	"baize/app/genTable/genConstant"
 	"baize/app/genTable/genTableDao"
 	"baize/app/genTable/genTableDao/genTableDaoImpl"
@@ -97,4 +98,29 @@ func (genTabletService *genTabletService) loadTemplate(templateName string, data
 		print(err)
 	}
 	return buffer.String()
+}
+
+func (genTabletService genTabletService) DownloadCode(tableNames []string) []byte {
+	var zipBuffer = new(bytes.Buffer)
+	var zipWriter = zip.NewWriter(zipBuffer)
+	for _, tableName := range tableNames {
+		genTabletService.generatorCode(tableName, zipWriter)
+	}
+
+	return zipBuffer.Bytes()
+}
+
+func (genTabletService genTabletService) generatorCode(tableName string, zipWriter *zip.Writer) {
+	genTable := genTabletService.genTabletDao.SelectGenTableByName(tableName)
+	genTable.Columns = genTabletService.genTabletColumnDao.SelectGenTableColumnListByTableId(genTable.TableId)
+	genTable.GenerateTime = time.Now()
+	list := genUtils.GetTemplateList()
+	for _, template := range list {
+		create, err := zipWriter.Create(genUtils.GetFileName(tableName, genTable))
+		if err != nil {
+			panic(err)
+		}
+		create.Write([]byte(genTabletService.loadTemplate(template, genTable)))
+	}
+
 }

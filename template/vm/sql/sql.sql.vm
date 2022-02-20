@@ -1,10 +1,3 @@
-/*
-==========================================================================
-生成日期：{{.table.GenerateTime.Format "2006-01-02 15:04:05" }}
-生成人：{{.table.FunctionAuthor}}
-==========================================================================
-*/
-
 {{$plugin:= .table.FunctionName}}
 -- 菜单 SQL
 insert into sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
@@ -16,16 +9,16 @@ SELECT @parentId := LAST_INSERT_ID();
 
 -- 按钮 SQL
 insert into sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
-values('{{.table.FunctionName}}查询', @parentId, '1',  '#', '', 1, 0, 'F', '0', '0', '{{.table.PackageName}}:{{.table.BusinessName}}:query',        '#', '{{.table.FunctionAuthor}}', sysdate(), '', null, '');
+values('{{$plugin}}查询', @parentId, '1',  '#', '', 1, 0, 'F', '0', '0', '{{.table.PackageName}}:{{.table.BusinessName}}:query',        '#', '{{.table.FunctionAuthor}}', sysdate(), '', null, '');
 
 insert into sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
-values('{{.table.FunctionName}}新增', @parentId, '2',  '#', '', 1, 0, 'F', '0', '0', '{{.table.PackageName}}:{{.table.BusinessName}}:add',          '#', '{{.table.FunctionAuthor}}', sysdate(), '', null, '');
+values('{{$plugin}}新增', @parentId, '2',  '#', '', 1, 0, 'F', '0', '0', '{{.table.PackageName}}:{{.table.BusinessName}}:add',          '#', '{{.table.FunctionAuthor}}', sysdate(), '', null, '');
 
 insert into sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
-values('{{.table.FunctionName}}修改', @parentId, '3',  '#', '', 1, 0, 'F', '0', '0', '{{.table.PackageName}}:{{.table.BusinessName}}:edit',         '#', '{{.table.FunctionAuthor}}', sysdate(), '', null, '');
+values('{{$plugin}}修改', @parentId, '3',  '#', '', 1, 0, 'F', '0', '0', '{{.table.PackageName}}:{{.table.BusinessName}}:edit',         '#', '{{.table.FunctionAuthor}}', sysdate(), '', null, '');
 
 insert into sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
-values('{{.table.FunctionName}}删除', @parentId, '4',  '#', '', 1, 0, 'F', '0', '0', '{{.table.PackageName}}:{{.table.BusinessName}}:remove',       '#', '{{.table.FunctionAuthor}}', sysdate(), '', null, '');
+values('{{$plugin}}删除', @parentId, '4',  '#', '', 1, 0, 'F', '0', '0', '{{.table.PackageName}}:{{.table.BusinessName}}:remove',       '#', '{{.table.FunctionAuthor}}', sysdate(), '', null, '');
 
 insert into sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
-values('{{.table.FunctionName}}导出', @parentId, '5',  '#', '', 1, 0, 'F', '0', '0', '{{.table.PackageName}}:{{.table.BusinessName}}:export',       '#', '{{.table.FunctionAuthor}}', sysdate(), '', null, '');
+values('{{$plugin}}导出', @parentId, '5',  '#', '', 1, 0, 'F', '0', '0', '{{.table.PackageName}}:{{.table.BusinessName}}:export',       '#', '{{.table.FunctionAuthor}}', sysdate(), '', null, '');

@@ -76,9 +76,6 @@ func Preview(c *gin.Context) {
 	code := iGenTableService.PreviewCode(bzc.ParamInt64("tableId"))
 	bzc.SuccessData(code)
 }
-func Download(c *gin.Context) {
-
-}
 
 func GenCode(c *gin.Context) {
 
@@ -89,5 +86,6 @@ func SynchDb(c *gin.Context) {
 }
 
 func BatchGenCode(c *gin.Context) {
-
+	bzc := baizeContext.NewBaiZeContext(c)
+	bzc.ParamStringArray("tables")
 }

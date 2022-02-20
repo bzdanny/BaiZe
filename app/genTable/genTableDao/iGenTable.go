@@ -9,6 +9,7 @@ type IGenTable interface {
 	SelectDbTableList(GenTable *genTableModels.GenTableDQL) (list []*genTableModels.DBTableVo, total *int64)
 	SelectDbTableListByNames(tableNames []string) (list []*genTableModels.DBTableVo)
 	SelectGenTableById(id int64) (genTable *genTableModels.GenTableVo)
+	SelectGenTableByName(name string) (genTable *genTableModels.GenTableVo)
 	SelectGenTableAll() (list []*genTableModels.GenTableVo)
 	BatchInsertGenTable(genTables []*genTableModels.GenTableDML)
 	InsertGenTable(genTable *genTableModels.GenTableDML)
