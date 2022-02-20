@@ -141,13 +141,13 @@
             @click="handleDelete(scope.row)"
             v-hasPermi="['tool:gen:remove']"
           >删除</el-button>
-          <el-button
-            type="text"
-            size="small"
-            icon="Refresh"
-            @click="handleSynchDb(scope.row)"
-            v-hasPermi="['tool:gen:edit']"
-          >同步</el-button>
+<!--          <el-button-->
+<!--            type="text"-->
+<!--            size="small"-->
+<!--            icon="Refresh"-->
+<!--            @click="handleSynchDb(scope.row)"-->
+<!--            v-hasPermi="['tool:gen:edit']"-->
+<!--          >同步</el-button>-->
           <el-button
             type="text"
             size="small"
@@ -174,7 +174,8 @@
           :name="key.substring(key.lastIndexOf('/')+1,key.indexOf('.vm'))"
           :key="key"
         >
-        <pre><code class="hljs" v-html="highlightedCode(value,key)"></code></pre>
+<!--        <pre><code class="hljs" v-html="highlightedCode(value,key)"></code></pre>-->
+          <pre>{{value}}</pre>
         </el-tab-pane>
       </el-tabs>
     </el-dialog>
@@ -243,7 +244,7 @@ function handleGenTable(row) {
       proxy.$modal.msgSuccess("成功生成到自定义路径：" + row.genPath);
     });
   } else {
-    proxy.$download.zip("/tool/gen/batchGenCode?tables=" + tbNames, "ruoyi");
+    proxy.$download.zip("/tool/gen/batchGenCode?tables=" + tbNames, "baize");
   }
 }
 /** 同步数据库操作 */
