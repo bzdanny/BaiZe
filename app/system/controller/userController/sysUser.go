@@ -202,8 +202,7 @@ func UserExport(c *gin.Context) {
 	user := new(systemModels.SysUserDQL)
 	c.ShouldBind(user)
 	user.SetDataScope(bzc.GetCurrentUser(), "d", "u")
-	data := iUser.UserExport(user)
-	bzc.DataPackageExcel(data)
+	bzc.DataPackageExcel(iUser.UserExport(user))
 	return
 }
 

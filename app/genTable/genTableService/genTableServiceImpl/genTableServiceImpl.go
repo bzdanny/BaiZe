@@ -7,10 +7,12 @@ import (
 	"baize/app/genTable/genTableDao/genTableDaoImpl"
 	"baize/app/genTable/genTableModels"
 	genUtils "baize/app/genTable/utils"
+	"baize/app/utils/pathUtils"
 	"baize/app/utils/snowflake"
 	"bytes"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
+	"path/filepath"
 	"text/template"
 	"time"
 )
@@ -123,4 +125,24 @@ func (genTabletService genTabletService) generatorCode(tableName string, zipWrit
 		create.Write([]byte(genTabletService.loadTemplate(template, genTable)))
 	}
 
+}
+
+func (genTabletService *genTabletService) GeneratorCode(tableNames []string) {
+	for _, tableName := range tableNames {
+		genTabletService.generatorCodeLocal(tableName)
+	}
+
+}
+func (genTabletService genTabletService) generatorCodeLocal(tableName string) {
+	genTable := genTabletService.genTabletDao.SelectGenTableByName(tableName)
+	genTable.Columns = genTabletService.genTabletColumnDao.SelectGenTableColumnListByTableId(genTable.TableId)
+	genTable.GenerateTime = time.Now()
+	list := genUtils.GetTemplateList()
+	GenPath := genUtils.GetGenPath(genTable.GenPath)
+	for _, template := range list {
+		path := GenPath + genTable.GetFileName(tableName)
+		dir := filepath.Dir(path)
+		pathUtils.CreateMutiDir(dir)
+		ioutil.WriteFile(path, []byte(genTabletService.loadTemplate(template, genTable)), 0666)
+	}
 }
