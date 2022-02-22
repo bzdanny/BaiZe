@@ -14,4 +14,5 @@ type IGenTableService interface {
 	DeleteGenTableByIds(ids []int64) (err error)
 	PreviewCode(tableId int64) (dataMap map[string]string)
 	DownloadCode(tableNames []string) []byte
+	GeneratorCode(tableNames []string)
 }

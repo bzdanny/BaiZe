@@ -78,7 +78,8 @@ func Preview(c *gin.Context) {
 }
 
 func GenCode(c *gin.Context) {
-
+	bzc := baizeContext.NewBaiZeContext(c)
+	bzc.ParamStringArray("tableName")
 }
 
 func SynchDb(c *gin.Context) {
@@ -87,5 +88,5 @@ func SynchDb(c *gin.Context) {
 
 func BatchGenCode(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	bzc.ParamStringArray("tables")
+	bzc.DataPackageZip(iGenTableService.DownloadCode(bzc.QueryArray("tables")))
 }

@@ -48,3 +48,10 @@ func (bzc *BaiZeContext) DataPackageExcel(data []byte) {
 	bzc.Header("Content-Length", strconv.Itoa(len(data)))
 	bzc.Data(http.StatusOK, "application/vnd.ms-excel", data)
 }
+func (bzc *BaiZeContext) DataPackageZip(data []byte) {
+	bzc.Header("Access-Control-Allow-Origin", "*")
+	bzc.Header("Access-Control-Expose-Headers", "Content-Disposition")
+	bzc.Header("Content-Disposition", "attachment; filename=\"baize.zip\"")
+	bzc.Header("Content-Length", strconv.Itoa(len(data)))
+	bzc.Data(http.StatusOK, "application/octet-stream; charset=UTF-8", data)
+}
