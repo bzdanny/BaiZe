@@ -5,6 +5,7 @@ import (
 	"baize/app/common/commonModels"
 	genUtils "baize/app/genTable/utils"
 	"baize/app/utils/stringUtils"
+	"fmt"
 	"strings"
 	"time"
 )
@@ -82,4 +83,38 @@ type DBTableVo struct {
 	TableComment string               `json:"tableComment" db:"TABLE_COMMENT"`
 	CreateTime   *baizeUnix.BaiZeTime `json:"createTime" db:"CREATE_TIME"`
 	UpdateTime   *baizeUnix.BaiZeTime `json:"updateTime" db:"UPDATE_TIME"`
+}
+
+func (genTable *GenTableVo) GetFileName(template string) string {
+	if strings.HasSuffix(template, "model.go.vm") {
+		return fmt.Sprintf("/go/%s/%sModels/%s.go", genTable.ModuleName, genTable.PackageName, genTable.BusinessName)
+	}
+	if strings.HasSuffix(template, "controller.go.vm") {
+		return fmt.Sprintf("/go/%s/%sController/%s.go", genTable.ModuleName, genTable.PackageName, genTable.BusinessName)
+	}
+	if strings.HasSuffix(template, "iService.go.vm") {
+		return fmt.Sprintf("/go/%s/%sService/i%s.go", genTable.ModuleName, genTable.PackageName, stringUtils.Capitalize(genTable.BusinessName))
+	}
+	if strings.HasSuffix(template, "serviceImpl.go.vm") {
+		return fmt.Sprintf("/go/%s/%sService/%sServiceImpl/%sImpl.go", genTable.ModuleName, genTable.PackageName, genTable.PackageName, genTable.BusinessName)
+	}
+	if strings.HasSuffix(template, "iDao.go.vm") {
+		return fmt.Sprintf("/go/%s/%sDao/i%s.go", genTable.ModuleName, genTable.PackageName, stringUtils.Capitalize(genTable.BusinessName))
+	}
+	if strings.HasSuffix(template, "daoImpl.go.vm") {
+		return fmt.Sprintf("/go/%s/%sDao/%sDaoImpl/%sImpl.go", genTable.ModuleName, genTable.PackageName, genTable.PackageName, genTable.BusinessName)
+	}
+	if strings.HasSuffix(template, "router.go.vm") {
+		return fmt.Sprintf("/go/routes/%sRoutes/%sRouter.go", genTable.ModuleName, genTable.BusinessName)
+	}
+	if strings.HasSuffix(template, "sql.sql.vm") {
+		return fmt.Sprintf("/go/%s.sql", genTable.BusinessName)
+	}
+	if strings.HasSuffix(template, "api.js.vm") {
+		return fmt.Sprintf("/vue/api/%s/%s.js", genTable.ModuleName, genTable.BusinessName)
+	}
+	if strings.HasSuffix(template, "index.vue.vm") {
+		return fmt.Sprintf("/vue/views/%s/%s/index.vue", genTable.ModuleName, genTable.BusinessName)
+	}
+	return ""
 }
