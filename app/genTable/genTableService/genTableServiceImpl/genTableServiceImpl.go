@@ -103,12 +103,15 @@ func (genTabletService *genTabletService) loadTemplate(templateName string, data
 }
 
 func (genTabletService *genTabletService) DownloadCode(tableNames []string) []byte {
-	var zipBuffer = new(bytes.Buffer)
-	var zipWriter = zip.NewWriter(zipBuffer)
+	zipBuffer := new(bytes.Buffer)
+	zipWriter := zip.NewWriter(zipBuffer)
 	for _, tableName := range tableNames {
 		genTabletService.generatorCode(tableName, zipWriter)
 	}
-
+	err := zipWriter.Close()
+	if err != nil {
+		panic(err)
+	}
 	return zipBuffer.Bytes()
 }
 
@@ -118,11 +121,14 @@ func (genTabletService genTabletService) generatorCode(tableName string, zipWrit
 	genTable.GenerateTime = time.Now()
 	list := genUtils.GetTemplateList()
 	for _, template := range list {
-		create, err := zipWriter.Create(genTable.GetFileName(tableName))
+		create, err := zipWriter.Create(genTable.GetFileName(template))
 		if err != nil {
 			panic(err)
 		}
-		create.Write([]byte(genTabletService.loadTemplate(template, genTable)))
+		_, err = create.Write([]byte(genTabletService.loadTemplate(genConstant.TEMPLATE_PREFIX+template, genTable)))
+		if err != nil {
+			panic(err)
+		}
 	}
 
 }
