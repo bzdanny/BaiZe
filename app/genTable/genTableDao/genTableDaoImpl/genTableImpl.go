@@ -152,7 +152,7 @@ func (genTableDao *genTableDao) SelectGenTableById(id int64) (genTable *genTable
 }
 func (genTableDao *genTableDao) SelectGenTableByName(name string) (genTable *genTableModels.GenTableVo) {
 	genTable = new(genTableModels.GenTableVo)
-	err := datasource.GetMasterDb().Get(genTable, genTableDao.selectSql+genTableDao.fromSql+`where t.table_name = ? `, name)
+	err := datasource.GetMasterDb().Get(genTable, genTableDao.selectSql+genTableDao.fromSql+` where table_name = ? `, name)
 	if err != nil {
 		panic(err)
 	}

@@ -108,7 +108,7 @@ func (genTable *GenTableVo) GetFileName(template string) string {
 		return fmt.Sprintf("/go/routes/%sRoutes/%sRouter.go", genTable.ModuleName, genTable.BusinessName)
 	}
 	if strings.HasSuffix(template, "sql.sql.vm") {
-		return fmt.Sprintf("/go/%s.sql", genTable.BusinessName)
+		return fmt.Sprintf("/%s.sql", genTable.BusinessName)
 	}
 	if strings.HasSuffix(template, "api.js.vm") {
 		return fmt.Sprintf("/vue/api/%s/%s.js", genTable.ModuleName, genTable.BusinessName)
