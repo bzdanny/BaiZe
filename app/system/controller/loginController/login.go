@@ -65,6 +65,7 @@ func Login(c *gin.Context) {
 	}
 	bzc.SuccessData(iLogin.Login(user, logininfor))
 }
+
 func GetInfo(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	loginUser := bzc.GetCurrentLoginUser()
