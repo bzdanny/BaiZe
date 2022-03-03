@@ -9,6 +9,7 @@ import (
 	genUtils "baize/app/genTable/utils"
 	"baize/app/utils/pathUtils"
 	"baize/app/utils/snowflake"
+	"baize/app/utils/stringUtils"
 	"bytes"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
@@ -59,6 +60,8 @@ func (genTabletService *genTabletService) ImportTableSave(table []string, userNa
 func (genTabletService *genTabletService) UpdateGenTable(genTable *genTableModels.GenTableDML) (err error) {
 	genTabletService.genTabletDao.UpdateGenTable(genTable)
 	for _, cenTableColumn := range genTable.Columns {
+		cenTableColumn.GoField = stringUtils.ToUpperFirstLetter(cenTableColumn.GoField)
+		cenTableColumn.HtmlField = stringUtils.ToLowerFirstLetter(cenTableColumn.GoField)
 		genTabletService.genTabletColumnDao.UpdateGenTableColumn(cenTableColumn)
 	}
 	return

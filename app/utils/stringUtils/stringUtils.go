@@ -2,21 +2,18 @@ package stringUtils
 
 import "strings"
 
-// Capitalize 字符首字母大写
-func Capitalize(str string) string {
+// ToUpperFirstLetter 字符首字母大写
+func ToUpperFirstLetter(str string) string {
 	if str == "" {
 		return str
 	}
-	var upperStr string
-	b := []byte(str[:1])[0]
-	if b >= 97 && b <= 122 {
-		b -= 32 // string的码表相差32位
-		upperStr += string(b)
-	} else {
+	return strings.ToUpper(str[0:1]) + str[1:len(str)]
+} // ToUpperFirstLetter 字符首字母大写
+func ToLowerFirstLetter(str string) string {
+	if str == "" {
 		return str
 	}
-	upperStr += str[1:]
-	return upperStr
+	return strings.ToLower(str[0:1]) + str[1:len(str)]
 }
 
 // ToUnderScoreCase 将驼峰命名转下划线命名

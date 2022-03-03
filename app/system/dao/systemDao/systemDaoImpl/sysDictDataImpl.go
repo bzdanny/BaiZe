@@ -166,7 +166,7 @@ func (sysDictDataDao *sysDictDataDao) UpdateDictData(dictData *systemModels.SysD
 	if dictData.Status != "" {
 		updateSQL += ",status = :status"
 	}
-	if dictData.Status != "" {
+	if dictData.Remark != "" {
 		updateSQL += ",remark = :remark"
 	}
 

@@ -60,7 +60,9 @@ v5.6.7<br>
 <br>
 gitee地址：https://gitee.com/smell2/BaiZe
 <br>
-github地址:https://github.com/bzdanny/BaiZe.git(因网络环境原因更新并不一定及时)
+github地址:https://github.com/bzdanny/BaiZe.git
+<br>
+(因网络环境原因更新并不一定及时)
 
 ## 演示图
 

@@ -61,7 +61,11 @@ func ImportTable(c *gin.Context) {
 func EditSave(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	genTable := new(genTableModels.GenTableDML)
-	c.ShouldBindJSON(genTable)
+	genTable.Columns = make([]*genTableModels.GenTableColumnDML, 0)
+	err := c.ShouldBindJSON(genTable)
+	if err != nil {
+		bzc.ParameterError()
+	}
 	genTable.SetUpdateBy(bzc.GetCurrentUserName())
 	iGenTableService.UpdateGenTable(genTable)
 	bzc.Success()
