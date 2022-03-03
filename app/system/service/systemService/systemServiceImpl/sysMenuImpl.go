@@ -87,7 +87,7 @@ func (menuService *menuService) BuildMenus(sysMenus []*systemModels.SysMenuVo) [
 			children := new(systemModels.RouterVo)
 			children.Path = m.Path
 			children.Component = *m.Component
-			children.Name = stringUtils.Capitalize(m.Path)
+			children.Name = stringUtils.ToUpperFirstLetter(m.Path)
 			children.Meta.Title = m.MenuType
 			r.Meta.Icon = m.Icon
 			r.Meta.NoCache = m.IsCache == "1"

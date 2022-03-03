@@ -53,6 +53,7 @@ func GetGenTableDML(table *DBTableVo, tableId int64, operName string) *GenTableD
 	gen.CreateBy = operName
 	gen.TplCategory = "crud"
 	gen.ParentMenuId = 3
+	gen.GenType = "0"
 	return gen
 }
 
@@ -93,13 +94,13 @@ func (genTable *GenTableVo) GetFileName(template string) string {
 		return fmt.Sprintf("/go/%s/%sController/%s.go", genTable.ModuleName, genTable.PackageName, genTable.BusinessName)
 	}
 	if strings.HasSuffix(template, "iService.go.vm") {
-		return fmt.Sprintf("/go/%s/%sService/i%s.go", genTable.ModuleName, genTable.PackageName, stringUtils.Capitalize(genTable.BusinessName))
+		return fmt.Sprintf("/go/%s/%sService/i%s.go", genTable.ModuleName, genTable.PackageName, stringUtils.ToUpperFirstLetter(genTable.BusinessName))
 	}
 	if strings.HasSuffix(template, "serviceImpl.go.vm") {
 		return fmt.Sprintf("/go/%s/%sService/%sServiceImpl/%sImpl.go", genTable.ModuleName, genTable.PackageName, genTable.PackageName, genTable.BusinessName)
 	}
 	if strings.HasSuffix(template, "iDao.go.vm") {
-		return fmt.Sprintf("/go/%s/%sDao/i%s.go", genTable.ModuleName, genTable.PackageName, stringUtils.Capitalize(genTable.BusinessName))
+		return fmt.Sprintf("/go/%s/%sDao/i%s.go", genTable.ModuleName, genTable.PackageName, stringUtils.ToUpperFirstLetter(genTable.BusinessName))
 	}
 	if strings.HasSuffix(template, "daoImpl.go.vm") {
 		return fmt.Sprintf("/go/%s/%sDao/%sDaoImpl/%sImpl.go", genTable.ModuleName, genTable.PackageName, genTable.PackageName, genTable.BusinessName)

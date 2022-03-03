@@ -100,7 +100,7 @@ func (m SysMenuVo) GetRouteName() (routerName string) {
 	if m.IsMenuFrame() {
 		routerName = ""
 	} else {
-		routerName = stringUtils.Capitalize(m.Path)
+		routerName = stringUtils.ToUpperFirstLetter(m.Path)
 	}
 	return
 }
