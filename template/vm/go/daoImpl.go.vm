@@ -145,7 +145,7 @@ func ({{.table.BusinessName}}Dao *{{.table.BusinessName}}Dao) Update{{$className
         updateSQL += ",{{$column.ColumnName}} = :{{$column.ColumnName}}"
      }{{end}}{{end}}
      updateSQL = tableName + updateSQL[1:] + "where {{range $index, $column := .table.Columns}}{{if eq $column.IsPk "1"}}{{$column.ColumnName}} = :{{$column.ColumnName}}{{end}}{{end}}"
-     _, err := datasource.GetMasterDb().NamedExec(updateSQL, {{tenantUser}DML)
+     _, err := datasource.GetMasterDb().NamedExec(updateSQL, {{$businessName}}DML)
     if err != nil {
         panic(err)
     }
