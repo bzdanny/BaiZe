@@ -155,9 +155,9 @@ func GetGenTableColumnDML(column *InformationSchemaColumn, tableId int64, userNa
 	}
 	// 查询字段
 	if genUtils.IsNotQuery(columnName) && column.IsPk != "0" {
-		genTableColumn.IsQuery = "1"
-	} else {
 		genTableColumn.IsQuery = "0"
+	} else {
+		genTableColumn.IsQuery = "1"
 
 	}
 
