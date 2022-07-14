@@ -2,21 +2,23 @@
 
 BINARY="baize"
 
-all: gotoll build
+
+init:
+	go get github.com/google/wire/cmd/wire@latest
+	go install github.com/swaggo/swag/cmd/swag@latest
+	go get -u github.com/nicksnyder/go-i18n/v2/goi18n
+
+wire:
+	cd app/cmd/ && wire
+
+swag:
+	cd app/cmd/ && swag init
 
 build:
-	swag init
-	set CGO_ENABLED=0  GOOS=linux  GOARCH=amd64 go build -o ${BINARY}
+	make wire;
+	make swag;
+	cd app/cmd/ && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ${BINARY}
 
-run:
-	@go run ./main.go
-
-gotool:
-	go fmt ./
-	go vet ./
-
-clean:
-	@if [ -f ${BINARY} ] ; then rm $${BINARY} ; fi
 
 help:
 	@echo "make - 格式化 Go 代码,并编译成二进制文件"
