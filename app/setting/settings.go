@@ -2,7 +2,6 @@ package setting
 
 import (
 	"fmt"
-
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
 )
@@ -14,19 +13,41 @@ type AppConfig struct {
 	Mode      string `mapstructure:"mode"`
 	Version   string `mapstructure:"version"`
 	StartTime string `mapstructure:"start_time"`
-	Profile   string `mapstructure:"profile"`
-	MachineID int64  `mapstructure:"machine_id"`
 	Port      int    `mapstructure:"port"`
 
-	*LogConfig   `mapstructure:"log"`
-	*Datasource  `mapstructure:"datasource"`
-	*RedisConfig `mapstructure:"redis"`
-	*TokenConfig `mapstructure:"token"`
+	*LogConfig  `mapstructure:"log"`
+	*Datasource `mapstructure:"datasource"`
+}
+
+type TokenConfig struct {
+	ExpireTime int64  `mapstructure:"expire_time"`
+	Secret     string `mapstructure:"secret"`
+	Issuer     string `mapstructure:"issuer"`
+}
+
+type LogConfig struct {
+	Level      string `mapstructure:"level"`
+	Filename   string `mapstructure:"filename"`
+	MaxSize    int    `mapstructure:"max_size"`
+	MaxAge     int    `mapstructure:"max_age"`
+	MaxBackups int    `mapstructure:"max_backups"`
+}
+type BerbixConfig struct {
+	SecretId    string `mapstructure:"secret_id"`
+	TemplateKey string `mapstructure:"template_key"`
+}
+
+type PlaidConfig struct {
+	PlaidClientId string `mapstructure:"plaid_client_id"`
+	PlaidSecret   string `mapstructure:"plaid_secret"`
+	PlaidEnv      string `mapstructure:"plaid_env"`
 }
 
 type Datasource struct {
-	*Master `mapstructure:"master"`
-	*Slave  `mapstructure:"slave"`
+	*Master   `mapstructure:"master"`
+	*Slave    `mapstructure:"slave"`
+	*Redis    `mapstructure:"redis"`
+	*RabbitMQ `mapstructure:"rabbit_mq"`
 }
 type Master struct {
 	DriverName   string `mapstructure:"driver_name"`
@@ -40,18 +61,18 @@ type Master struct {
 }
 
 type Slave struct {
-	Count         int      `mapstructure:"count"`
-	DriverName    string   `mapstructure:"driver_name"`
-	Hosts         []string `mapstructure:"hosts"`
-	Users         []string `mapstructure:"users"`
-	Passwords     []string `mapstructure:"passwords"`
-	DBs           []string `mapstructure:"dbnames"`
-	Ports         []int    `mapstructure:"ports"`
-	MaxOpenConnss []int    `mapstructure:"max_open_connss"`
-	MaxIdleConnss []int    `mapstructure:"max_idle_connss"`
+	Count        int      `mapstructure:"count"`
+	DriverName   string   `mapstructure:"driver_name"`
+	Hosts        []string `mapstructure:"hosts"`
+	Users        []string `mapstructure:"users"`
+	Passwords    []string `mapstructure:"passwords"`
+	DBs          []string `mapstructure:"dbnames"`
+	Ports        []int    `mapstructure:"ports"`
+	MaxOpenConns int      `mapstructure:"max_open_conns"`
+	MaxIdleConns int      `mapstructure:"max_idle_conns"`
 }
 
-type RedisConfig struct {
+type Redis struct {
 	Host         string `mapstructure:"host"`
 	Password     string `mapstructure:"password"`
 	Port         int    `mapstructure:"port"`
@@ -60,17 +81,11 @@ type RedisConfig struct {
 	MinIdleConns int    `mapstructure:"min_idle_conns"`
 }
 
-type LogConfig struct {
-	Level      string `mapstructure:"level"`
-	Filename   string `mapstructure:"filename"`
-	MaxSize    int    `mapstructure:"max_size"`
-	MaxAge     int    `mapstructure:"max_age"`
-	MaxBackups int    `mapstructure:"max_backups"`
-}
-type TokenConfig struct {
-	ExpireTime int64  `mapstructure:"expireTime`
-	Secret     string `mapstructure:"secret"`
-	Issuer     string `mapstructure:"issuer"`
+type RabbitMQ struct {
+	Host     string `mapstructure:"host"`
+	Port     int    `mapstructure:"port"`
+	User     string `mapstructure:"user"`
+	Password string `mapstructure:"password"`
 }
 
 func Init(filePath string) {
@@ -78,7 +93,7 @@ func Init(filePath string) {
 	// 相对路径：相对执行的可执行文件的相对路径
 	//viper.SetConfigFile("./conf/config.yaml")
 	// 绝对路径：系统中实际的文件路径
-	//viper.SetConfigFile("/Users/liwenzhou/Desktop/bluebell/conf/config.yaml")
+	//viper.SetConfigFile("/Users/xxx/Desktop/bluebell/conf/config.yaml")
 
 	// 方式2：指定配置文件名和配置文件的位置，viper自行查找可用的配置文件
 	// 配置文件名不需要带后缀

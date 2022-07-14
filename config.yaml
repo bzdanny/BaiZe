@@ -1,10 +1,8 @@
 name: "白泽"
 mode: "dev" #dev 开发模式，日志打印到控制台，prod  生产模式，日志不打印控制台
 port: 8080
-version: "v1.1.2"
-start_time: "2021-10-01"
-machine_id: 1
-profile: "/Volumes/disk01/uploadPath"
+version: "v2.0.0"
+start_time: "2022-07-01"
 log:
   level: "info"
   filename: "/Volumes/disk01/baizelog/baizelog.log"
@@ -14,30 +12,35 @@ log:
 datasource:
   master:
     driver_name: "mysql"
-    host: "127.0.0.1"
+    host: "116.63.188.235"
     user: "root"
-    password: "123456"
-    dbname: "baize"
+    password: "1q2w3e4r5t@"
+    dbname: "knit_credit_card"
     port: 3306
     max_open_conns: 200
     max_idle_conns: 50
   slave:
-    count: 0
+    count: 1
     driver_name: "mysql"
-    hosts: "127.0.0.1,127.0.0.1"
-    users: "root,root"
-    passwords: "123456,123456"
-    dbnames: "baize,baize"
-    ports: 3306,3306
-    max_open_connss: 200,200
-    max_idle_connss: 50,50
+    hosts: "116.63.188.235"
+    users: "root"
+    passwords: "1q2w3e4r5t@"
+    dbnames: "knit_credit_card"
+    ports: 3306
+    max_open_conns: 200
+    max_idle_conns: 50
+  redis:
+    host: 116.63.188.235
+    port: 6379
+    password: 1q2w3e4r5t~
+    db: 10
+    pool_size: 100
+  rabbit_mq:
+    host: "122.9.137.57"
+    port: 5672
+    user: "root"
+    password: "1q2w3e4r5t~"
 
-redis:
-  host: 127.0.0.1
-  port: 6379
-  password: ""
-  db: 1
-  pool_size: 100
 token:
   expireTime: 30
   secret: abcdefghijklmnopqrstuvwxyz
