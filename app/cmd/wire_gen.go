@@ -7,14 +7,21 @@
 package main
 
 import (
+	"baize/app/routes"
+	"baize/app/setting"
+	"baize/baize/datasource"
 	"github.com/gin-gonic/gin"
 )
 
 // Injectors from wire.go:
 
-func wireApp() (*gin.Engine, func(), error) {
-
-	engine := newApp()
+func wireApp(settingDatasource *setting.Datasource) (*gin.Engine, func(), error) {
+	data, cleanup, err := datasource.NewData(settingDatasource)
+	if err != nil {
+		return nil, nil, err
+	}
+	router := routes.NewRouter(data)
+	engine := newApp(router)
 	return engine, func() {
 		cleanup()
 	}, nil
