@@ -44,10 +44,10 @@ type PlaidConfig struct {
 }
 
 type Datasource struct {
-	*Master   `mapstructure:"master"`
-	*Slave    `mapstructure:"slave"`
-	*Redis    `mapstructure:"redis"`
-	*RabbitMQ `mapstructure:"rabbit_mq"`
+	Master   *Master   `mapstructure:"master"`
+	Slave    *Slave    `mapstructure:"slave"`
+	Redis    *Redis    `mapstructure:"redis"`
+	RabbitMQ *RabbitMQ `mapstructure:"rabbit_mq"`
 }
 type Master struct {
 	DriverName   string `mapstructure:"driver_name"`

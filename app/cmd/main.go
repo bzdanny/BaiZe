@@ -1,9 +1,9 @@
 package main
 
 import (
-	"baize/app/routes"
-	"baize/app/setting"
 	"fmt"
+	"github.com/bzdanny/BaiZe/app/routes"
+	"github.com/bzdanny/BaiZe/app/setting"
 	"github.com/gin-gonic/gin"
 	"os"
 )
@@ -17,9 +17,9 @@ func init() {
 
 }
 
-func newApp() *gin.Engine {
+func newApp(r *routes.Router) *gin.Engine {
 
-	return routes.RegisterServer()
+	return routes.RegisterServer(r)
 }
 
 // staging.knithq.com/knit
@@ -41,7 +41,7 @@ func newApp() *gin.Engine {
 // @name Authorization
 
 func main() {
-	app, cleanup, err := wireApp()
+	app, cleanup, err := wireApp(setting.Conf.Datasource)
 	if err != nil {
 		panic(err)
 	}

@@ -1,8 +1,8 @@
 package datasource
 
 import (
-	"KnitServer/app/setting"
 	"fmt"
+	"github.com/bzdanny/BaiZe/app/setting"
 	"github.com/go-redis/redis"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/google/wire"
@@ -12,12 +12,13 @@ import (
 )
 
 // ProviderSet is datasource providers.
-var ProviderSet = wire.NewSet(NewData, NewMasterDB, NewSlaveDB, NewRedis)
+var ProviderSet = wire.NewSet(NewData)
 
 var redisDb *redis.Client
 
 func GetRedisClient() *redis.Client {
 	return redisDb
+
 }
 
 // Data .
@@ -27,20 +28,22 @@ type Data struct {
 }
 
 // NewData .
-func NewData(masterDb *sqlx.DB, slaveDb []*sqlx.DB, rdb *redis.Client) (*Data, func(), error) {
+func NewData(data *setting.Datasource) (*Data, func(), error) {
+	masterDb := newMasterDB(data.Master)
+	slaveDb := newSlaveDB(data.Slave)
+	client := newRedis(data.Redis)
 	cleanup := func() {
 		masterDb.Close()
 		for _, db := range slaveDb {
 			db.Close()
 		}
-		rdb.Close()
+		client.Close()
 	}
-	redisDb = rdb
+	redisDb = client
 	return &Data{masterDb: masterDb, slaveDb: slaveDb}, cleanup, nil
 }
 
-func NewMasterDB(c *setting.Datasource) *sqlx.DB {
-	master := c.Master
+func newMasterDB(master *setting.Master) *sqlx.DB {
 	var err error
 	// "user:password@tcp(host:port)/dbname"
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true&loc=Local", master.User, master.Password, master.Host, master.Port, master.DB)
@@ -52,8 +55,7 @@ func NewMasterDB(c *setting.Datasource) *sqlx.DB {
 	masterDb.SetMaxIdleConns(master.MaxIdleConns)
 	return masterDb
 }
-func NewSlaveDB(c *setting.Datasource) []*sqlx.DB {
-	slave := c.Slave
+func newSlaveDB(slave *setting.Slave) []*sqlx.DB {
 	count := slave.Count
 	var slaveDb []*sqlx.DB
 	if count > 0 {
@@ -72,11 +74,11 @@ func NewSlaveDB(c *setting.Datasource) []*sqlx.DB {
 	return slaveDb
 }
 
-func NewRedis(c *setting.RedisConfig) *redis.Client {
+func newRedis(r *setting.Redis) *redis.Client {
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     fmt.Sprintf("%s:%d", c.Host, c.Port),
-		Password: c.Password,
-		DB:       c.DB,
+		Addr:     fmt.Sprintf("%s:%d", r.Host, r.Port),
+		Password: r.Password,
+		DB:       r.DB,
 	})
 	return rdb
 }

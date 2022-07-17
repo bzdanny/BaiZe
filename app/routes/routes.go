@@ -1,14 +1,15 @@
 package routes
 
 import (
-	"baize/app/setting"
+	"github.com/bzdanny/BaiZe/app/setting"
+	"github.com/bzdanny/BaiZe/baize/datasource"
 	"github.com/google/wire"
 
 	"fmt"
 	"net/http"
 	"strings"
 
-	_ "baize/docs"
+	_ "github.com/bzdanny/BaiZe/docs"
 	gs "github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
 
@@ -20,7 +21,7 @@ var ProviderSet = wire.NewSet(NewRouter)
 type Router struct {
 }
 
-func NewRouter() *Router {
+func NewRouter(data *datasource.Data) *Router {
 	return &Router{}
 }
 
