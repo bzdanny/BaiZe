@@ -7,13 +7,16 @@ import (
 	"baize/app/routes"
 	"baize/app/setting"
 	"baize/baize/datasource"
+	"github.com/bzdanny/BaiZe/app/system/dao/systemDao/systemDaoImpl"
+	"github.com/bzdanny/BaiZe/app/system/dao/systemService/systemServiceImpl"
 	"github.com/gin-gonic/gin"
-	"github.com/google/wire"
 )
 
 func wireApp(*setting.Datasource) (*gin.Engine, func(), error) {
 	panic(wire.Build(
 		datasource.ProviderSet,
+		systemDaoImpl.ProviderSet,
+		systemServiceImpl.ProviderSet,
 		routes.ProviderSet,
 		newApp))
 }
