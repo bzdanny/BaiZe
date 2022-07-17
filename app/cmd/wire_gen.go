@@ -7,9 +7,9 @@
 package main
 
 import (
-	"baize/app/routes"
-	"baize/app/setting"
-	"baize/baize/datasource"
+	"github.com/bzdanny/BaiZe/app/routes"
+	"github.com/bzdanny/BaiZe/app/setting"
+	"github.com/bzdanny/BaiZe/baize/datasource"
 	"github.com/gin-gonic/gin"
 )
 
