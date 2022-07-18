@@ -7,8 +7,8 @@ import (
 	"baize/app/routes"
 	"baize/app/setting"
 	"baize/baize/datasource"
-	"github.com/bzdanny/BaiZe/app/system/dao/systemDao/systemDaoImpl"
 	"github.com/bzdanny/BaiZe/app/system/dao/systemService/systemServiceImpl"
+	"github.com/bzdanny/BaiZe/app/system/systemDao/systemDaoImpl"
 	"github.com/gin-gonic/gin"
 )
 

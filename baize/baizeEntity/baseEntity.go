@@ -3,7 +3,7 @@ package baizeEntity
 import (
 	"fmt"
 	"github.com/bzdanny/BaiZe/app/constant/dataScopeAspect"
-	"github.com/bzdanny/BaiZe/app/system/models/loginModels"
+	"github.com/bzdanny/BaiZe/app/system/systemModels"
 	"github.com/bzdanny/BaiZe/baize/utils/stringUtils"
 	"strconv"
 )
@@ -83,7 +83,7 @@ func (b *BaseEntityDQL) GetOffset() int64 {
 	return (b.Page - 1) * b.Size
 }
 
-func (b *BaseEntityDQL) SetDataScope(user *loginModels.User, deptAlias string, userAlias string) {
+func (b *BaseEntityDQL) SetDataScope(user *systemModels.User, deptAlias string, userAlias string) {
 	var sqlString string
 	for _, role := range user.Roles {
 
