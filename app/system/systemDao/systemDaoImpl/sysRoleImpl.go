@@ -3,7 +3,7 @@ package systemDaoImpl
 import (
 	"database/sql"
 	"fmt"
-	systemModels2 "github.com/bzdanny/BaiZe/app/system/systemModels"
+	"github.com/bzdanny/BaiZe/app/system/systemModels"
 	"github.com/bzdanny/BaiZe/baize/datasource/dataUtil"
 	"github.com/jmoiron/sqlx"
 )
@@ -21,7 +21,7 @@ type SysRoleDao struct {
 	selectSql string
 }
 
-func (rd *SysRoleDao) SelectRoleList(db dataUtil.DB, role *systemModels2.SysRoleDQL) (list []*systemModels2.SysRoleVo, total *int64) {
+func (rd *SysRoleDao) SelectRoleList(db dataUtil.DB, role *systemModels.SysRoleDQL) (list []*systemModels.SysRoleVo, total *int64) {
 	whereSql := " where r.del_flag = '0'"
 	if role.RoleName != "" {
 		whereSql += " AND r.role_name like concat('%', :role_name, '%')"
@@ -45,9 +45,9 @@ func (rd *SysRoleDao) SelectRoleList(db dataUtil.DB, role *systemModels2.SysRole
 
 	return dataUtil.NamedQueryListAndTotal(db, list, role, rd.selectSql+whereSql, "", "")
 }
-func (rd *SysRoleDao) SelectRoleById(db dataUtil.DB, roleId int64) (role *systemModels2.SysRoleVo) {
+func (rd *SysRoleDao) SelectRoleById(db dataUtil.DB, roleId int64) (role *systemModels.SysRoleVo) {
 	whereSql := ` where r.role_id = ?`
-	role = new(systemModels2.SysRoleVo)
+	role = new(systemModels.SysRoleVo)
 	err := db.Get(role, rd.selectSql+whereSql, roleId)
 	if err == sql.ErrNoRows {
 		return nil
@@ -57,12 +57,12 @@ func (rd *SysRoleDao) SelectRoleById(db dataUtil.DB, roleId int64) (role *system
 	return
 }
 
-func (rd *SysRoleDao) SelectBasicRolesByUserId(db dataUtil.DB, userId int64) (roles []*systemModels2.SysRole) {
+func (rd *SysRoleDao) SelectBasicRolesByUserId(db dataUtil.DB, userId int64) (roles []*systemModels.SysRole) {
 	sqlStr := `select  r.role_id, r.role_name, r.role_key,r.data_scope
 				from sys_role r
 				left join sys_user_role ur  on r.role_id = ur.role_id
 				where  ur.user_id = ?`
-	roles = make([]*systemModels2.SysRole, 0, 2)
+	roles = make([]*systemModels.SysRole, 0, 2)
 	err := db.Select(&roles, sqlStr, userId)
 	if err != nil && err != sql.ErrNoRows {
 		panic(err)
@@ -82,12 +82,12 @@ func (rd *SysRoleDao) SelectRolePermissionByUserId(db dataUtil.DB, userId int64)
 	}
 	return
 }
-func (rd *SysRoleDao) SelectRoleIdAndDataScopeByUserId(db dataUtil.DB, userId int64) (roles []*systemModels2.Role) {
+func (rd *SysRoleDao) SelectRoleIdAndDataScopeByUserId(db dataUtil.DB, userId int64) (roles []*systemModels.Role) {
 	sqlStr := `select  r.role_id, r.data_scope
 				from sys_role r
 				left join sys_user_role ur  on r.role_id = ur.role_id
 				where  ur.user_id = ?`
-	roles = make([]*systemModels2.Role, 0, 2)
+	roles = make([]*systemModels.Role, 0, 2)
 	err := db.Select(&roles, sqlStr, userId)
 	if err != nil && err != sql.ErrNoRows {
 		panic(err)
@@ -109,7 +109,7 @@ func (rd *SysRoleDao) SelectRoleListByUserId(db dataUtil.DB, userId int64) (list
 	return
 }
 
-func (rd *SysRoleDao) InsertRole(db dataUtil.DB, sysRole *systemModels2.SysRoleAdd) {
+func (rd *SysRoleDao) InsertRole(db dataUtil.DB, sysRole *systemModels.SysRoleAdd) {
 	insertSQL := `insert into sys_role(role_id,role_name,role_key,role_sort,create_by,create_time,update_by,update_time %s)
 					values(:role_id,:role_name,:role_key,:role_sort,:create_by,now(),:update_by,now() %s)`
 	key := ""
@@ -143,7 +143,7 @@ func (rd *SysRoleDao) InsertRole(db dataUtil.DB, sysRole *systemModels2.SysRoleA
 	return
 }
 
-func (rd *SysRoleDao) UpdateRole(db dataUtil.DB, sysRole *systemModels2.SysRoleEdit) {
+func (rd *SysRoleDao) UpdateRole(db dataUtil.DB, sysRole *systemModels.SysRoleEdit) {
 	updateSQL := `update sys_role set update_time = now() , update_by = :update_by`
 
 	if sysRole.RoleName != "" {
@@ -206,7 +206,7 @@ func (rd *SysRoleDao) CheckRoleKeyUnique(db dataUtil.DB, roleKey string) int64 {
 	}
 	return roleId
 }
-func (rd *SysRoleDao) SelectAllocatedList(db dataUtil.DB, user *systemModels2.SysRoleAndUserDQL) (list []*systemModels2.SysUserVo, total *int64) {
+func (rd *SysRoleDao) SelectAllocatedList(db dataUtil.DB, user *systemModels.SysRoleAndUserDQL) (list []*systemModels.SysUserVo, total *int64) {
 	selectStr := ` select distinct u.user_id, u.dept_id, u.user_name, u.nick_name, u.email, u.phonenumber, u.status, u.create_time`
 
 	whereSql := ` from sys_user u
@@ -227,7 +227,7 @@ func (rd *SysRoleDao) SelectAllocatedList(db dataUtil.DB, user *systemModels2.Sy
 
 }
 
-func (rd *SysRoleDao) SelectUnallocatedList(db dataUtil.DB, user *systemModels2.SysRoleAndUserDQL) (list []*systemModels2.SysUserVo, total *int64) {
+func (rd *SysRoleDao) SelectUnallocatedList(db dataUtil.DB, user *systemModels.SysRoleAndUserDQL) (list []*systemModels.SysUserVo, total *int64) {
 	selectStr := ` select distinct u.user_id, u.dept_id, u.user_name, u.nick_name, u.email, u.phonenumber, u.status, u.create_time`
 
 	whereSql := `  from sys_user u

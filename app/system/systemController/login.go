@@ -1,6 +1,12 @@
 package systemController
 
 import (
+	"github.com/bzdanny/BaiZe/app/constant/userStatus"
+	"github.com/bzdanny/BaiZe/app/system/systemService"
+	loginServiceImpl "github.com/bzdanny/BaiZe/app/system/systemService/systemServiceImpl"
+	"github.com/bzdanny/BaiZe/baize/baizeContext"
+	"github.com/bzdanny/BaiZe/baize/utils/bCryptPasswordEncoder"
+	"github.com/bzdanny/BaiZe/monitor/monitorModels"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 )
@@ -78,4 +84,10 @@ func Logout(c *gin.Context) {
 		iUserOnline.ForceLogout(loginUser.Token)
 	}
 	bzc.Success()
+}
+func GetCode(c *gin.Context) {
+	bzc := baizeContext.NewBaiZeContext(c)
+	code := loginServiceImpl.GenerateCode()
+	bzc.SuccessData(code)
+
 }
