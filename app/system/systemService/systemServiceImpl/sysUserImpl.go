@@ -2,9 +2,9 @@ package systemServiceImpl
 
 import (
 	"github.com/360EntSecGroup-Skylar/excelize"
-	systemDao2 "github.com/bzdanny/BaiZe/app/system/systemDao"
-	systemDaoImpl2 "github.com/bzdanny/BaiZe/app/system/systemDao/systemDaoImpl"
-	systemModels2 "github.com/bzdanny/BaiZe/app/system/systemModels"
+	"github.com/bzdanny/BaiZe/app/system/systemDao"
+	"github.com/bzdanny/BaiZe/app/system/systemDao/systemDaoImpl"
+	"github.com/bzdanny/BaiZe/app/system/systemModels"
 	"github.com/bzdanny/BaiZe/baize/datasource"
 	"github.com/bzdanny/BaiZe/baize/datasource/dataUtil"
 	"github.com/bzdanny/BaiZe/baize/utils/bCryptPasswordEncoder"
@@ -15,12 +15,12 @@ import (
 
 type UserService struct {
 	data        *datasource.Data
-	userDao     systemDao2.IUserDao
-	userPostDao systemDao2.IUserPostDao
-	userRoleDao systemDao2.IUserRoleDao
+	userDao     systemDao.IUserDao
+	userPostDao systemDao.IUserPostDao
+	userRoleDao systemDao.IUserRoleDao
 }
 
-func NewUserService(data *datasource.Data, ud *systemDaoImpl2.SysUserDao, upd *systemDaoImpl2.SysUserPostDao, urd *systemDaoImpl2.SysUserRoleDao) *UserService {
+func NewUserService(data *datasource.Data, ud *systemDaoImpl.SysUserDao, upd *systemDaoImpl.SysUserPostDao, urd *systemDaoImpl.SysUserRoleDao) *UserService {
 	return &UserService{
 		data:        data,
 		userDao:     ud,
@@ -29,32 +29,32 @@ func NewUserService(data *datasource.Data, ud *systemDaoImpl2.SysUserDao, upd *s
 	}
 }
 
-func (userService *UserService) SelectUserByUserName(userName string) *systemModels2.User {
+func (userService *UserService) SelectUserByUserName(userName string) *systemModels.User {
 	return userService.userDao.SelectUserByUserName(userService.data.GetSlaveDb(), userName)
 
 }
-func (userService *UserService) SelectUserList(user *systemModels2.SysUserDQL) (sysUserList []*systemModels2.SysUserVo, count *int64) {
+func (userService *UserService) SelectUserList(user *systemModels.SysUserDQL) (sysUserList []*systemModels.SysUserVo, count *int64) {
 	return userService.userDao.SelectUserList(userService.data.GetSlaveDb(), user)
 }
-func (userService *UserService) UserExport(user *systemModels2.SysUserDQL) (data []byte) {
+func (userService *UserService) UserExport(user *systemModels.SysUserDQL) (data []byte) {
 	sysUserList, _ := userService.userDao.SelectUserList(userService.data.GetSlaveDb(), user)
-	return exceLize.SetRows(systemModels2.SysUserListToRows(sysUserList))
+	return exceLize.SetRows(systemModels.SysUserListToRows(sysUserList))
 }
 func (userService *UserService) ImportTemplate() (data []byte) {
 	f := excelize.NewFile()
-	template := systemModels2.SysUserImportTemplate()
+	template := systemModels.SysUserImportTemplate()
 	f.SetSheetRow("Sheet1", "A1", &template)
 	buffer, _ := f.WriteToBuffer()
 	return buffer.Bytes()
 
 }
 
-func (userService *UserService) SelectUserById(userId int64) (sysUser *systemModels2.SysUserVo) {
+func (userService *UserService) SelectUserById(userId int64) (sysUser *systemModels.SysUserVo) {
 	return userService.userDao.SelectUserById(userService.data.GetSlaveDb(), userId)
 
 }
 
-func (userService *UserService) InsertUser(sysUser *systemModels2.SysUserDML) {
+func (userService *UserService) InsertUser(sysUser *systemModels.SysUserDML) {
 	sysUser.UserId = snowflake.GenID()
 	sysUser.Password = bCryptPasswordEncoder.HashPassword(sysUser.Password)
 	tx, err := userService.data.GetMasterDb().Beginx()
@@ -75,7 +75,7 @@ func (userService *UserService) InsertUser(sysUser *systemModels2.SysUserDML) {
 
 }
 
-func (userService *UserService) UpdateUser(sysUser *systemModels2.SysUserDML) {
+func (userService *UserService) UpdateUser(sysUser *systemModels.SysUserDML) {
 	userId := sysUser.UserId
 	tx, err := userService.data.GetMasterDb().Beginx()
 	if err != nil {
@@ -97,23 +97,23 @@ func (userService *UserService) UpdateUser(sysUser *systemModels2.SysUserDML) {
 
 }
 
-func (userService *UserService) UpdateuserStatus(sysUser *systemModels2.SysUserDML) {
+func (userService *UserService) UpdateuserStatus(sysUser *systemModels.SysUserDML) {
 	userService.userDao.UpdateUser(userService.data.GetMasterDb(), sysUser)
 
 }
-func (userService *UserService) ResetPwd(sysUser *systemModels2.SysUserDML) {
+func (userService *UserService) ResetPwd(sysUser *systemModels.SysUserDML) {
 	sysUser.Password = bCryptPasswordEncoder.HashPassword(sysUser.Password)
 	userService.userDao.UpdateUser(userService.data.GetMasterDb(), sysUser)
 
 }
 
-func (userService *UserService) insertUserPost(db dataUtil.DB, user *systemModels2.SysUserDML) {
+func (userService *UserService) insertUserPost(db dataUtil.DB, user *systemModels.SysUserDML) {
 	posts := user.PostIds
 	if len(posts) != 0 {
-		list := make([]*systemModels2.SysUserPost, 0, len(posts))
+		list := make([]*systemModels.SysUserPost, 0, len(posts))
 		for _, postId := range posts {
 			parseInt, _ := strconv.ParseInt(postId, 10, 64)
-			post := systemModels2.NewSysUserPost(user.UserId, parseInt)
+			post := systemModels.NewSysUserPost(user.UserId, parseInt)
 			list = append(list, post)
 		}
 		userService.userPostDao.BatchUserPost(db, list)
@@ -121,13 +121,13 @@ func (userService *UserService) insertUserPost(db dataUtil.DB, user *systemModel
 
 }
 
-func (userService *UserService) insertUserRole(db dataUtil.DB, user *systemModels2.SysUserDML) {
+func (userService *UserService) insertUserRole(db dataUtil.DB, user *systemModels.SysUserDML) {
 	roles := user.RoleIds
 	if len(roles) != 0 {
-		list := make([]*systemModels2.SysUserRole, 0, len(roles))
+		list := make([]*systemModels.SysUserRole, 0, len(roles))
 		for _, roleId := range roles {
 			parseInt, _ := strconv.ParseInt(roleId, 10, 64)
-			role := systemModels2.NewSysUserRole(user.UserId, parseInt)
+			role := systemModels.NewSysUserRole(user.UserId, parseInt)
 			list = append(list, role)
 		}
 		userService.userRoleDao.BatchUserRole(db, list)
@@ -140,7 +140,7 @@ func (userService *UserService) CheckUserNameUnique(userName string) bool {
 
 }
 
-func (userService *UserService) CheckPhoneUnique(user *systemModels2.SysUserDML) bool {
+func (userService *UserService) CheckPhoneUnique(user *systemModels.SysUserDML) bool {
 	if user.Phonenumber == "" {
 		return false
 	}
@@ -151,7 +151,7 @@ func (userService *UserService) CheckPhoneUnique(user *systemModels2.SysUserDML)
 	return true
 }
 
-func (userService *UserService) CheckEmailUnique(user *systemModels2.SysUserDML) bool {
+func (userService *UserService) CheckEmailUnique(user *systemModels.SysUserDML) bool {
 	if user.Email == "" {
 		return false
 	}
@@ -183,7 +183,7 @@ func (userService *UserService) DeleteUserByIds(ids []int64) {
 
 func (userService *UserService) UserImportData(rows [][]string, operName string, deptId *int64) (msg string, failureNum int) {
 	successNum := 0
-	list, failureMsg, failureNum := systemModels2.RowsToSysUserDMLList(rows)
+	list, failureMsg, failureNum := systemModels.RowsToSysUserDMLList(rows)
 	password := bCryptPasswordEncoder.HashPassword("123456")
 	tx, err := userService.data.GetMasterDb().Beginx()
 	if err != nil {
@@ -227,7 +227,7 @@ func (userService *UserService) UpdateUserAvatar(userId int64, avatar string) {
 func (userService *UserService) ResetUserPwd(userId int64, password string) {
 	userService.userDao.ResetUserPwd(userService.data.GetMasterDb(), userId, bCryptPasswordEncoder.HashPassword(password))
 }
-func (userService *UserService) UpdateUserProfile(sysUser *systemModels2.SysUserDML) {
+func (userService *UserService) UpdateUserProfile(sysUser *systemModels.SysUserDML) {
 	userService.userDao.UpdateUser(userService.data.GetMasterDb(), sysUser)
 
 }
@@ -238,9 +238,9 @@ func (userService *UserService) MatchesPassword(rawPassword string, userId int64
 func (userService *UserService) InsertUserAuth(userId int64, roleIds []int64) {
 	userService.userRoleDao.DeleteUserRoleByUserId(userService.data.GetMasterDb(), userId)
 	if len(roleIds) != 0 {
-		list := make([]*systemModels2.SysUserRole, 0, len(roleIds))
+		list := make([]*systemModels.SysUserRole, 0, len(roleIds))
 		for _, roleId := range roleIds {
-			role := systemModels2.NewSysUserRole(userId, roleId)
+			role := systemModels.NewSysUserRole(userId, roleId)
 			list = append(list, role)
 		}
 		userService.userRoleDao.BatchUserRole(userService.data.GetMasterDb(), list)

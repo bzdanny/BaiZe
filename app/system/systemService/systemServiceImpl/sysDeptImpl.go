@@ -1,8 +1,8 @@
 package systemServiceImpl
 
 import (
-	systemDao2 "github.com/bzdanny/BaiZe/app/system/systemDao"
-	systemDaoImpl2 "github.com/bzdanny/BaiZe/app/system/systemDao/systemDaoImpl"
+	systemDao "github.com/bzdanny/BaiZe/app/system/systemDao"
+	"github.com/bzdanny/BaiZe/app/system/systemDao/systemDaoImpl"
 	"github.com/bzdanny/BaiZe/app/system/systemModels"
 	"github.com/bzdanny/BaiZe/baize/datasource"
 	"github.com/bzdanny/BaiZe/pkg/snowflake"
@@ -10,11 +10,11 @@ import (
 
 type DeptService struct {
 	data    *datasource.Data
-	deptDao systemDao2.IDeptDao
-	roleDao systemDao2.IRoleDao
+	deptDao systemDao.IDeptDao
+	roleDao systemDao.IRoleDao
 }
 
-func NewDeptService(data *datasource.Data, dd *systemDaoImpl2.SysDeptDao, rd *systemDaoImpl2.SysRoleDao) *DeptService {
+func NewDeptService(data *datasource.Data, dd *systemDaoImpl.SysDeptDao, rd *systemDaoImpl.SysRoleDao) *DeptService {
 	return &DeptService{data: data, deptDao: dd, roleDao: rd}
 }
 
