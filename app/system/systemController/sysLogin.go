@@ -2,8 +2,9 @@ package systemController
 
 import (
 	"github.com/bzdanny/BaiZe/app/constant/userStatus"
+	"github.com/bzdanny/BaiZe/app/system/systemModels"
 	"github.com/bzdanny/BaiZe/app/system/systemService"
-	loginServiceImpl "github.com/bzdanny/BaiZe/app/system/systemService/systemServiceImpl"
+	"github.com/bzdanny/BaiZe/app/system/systemService/systemServiceImpl"
 	"github.com/bzdanny/BaiZe/baize/baizeContext"
 	"github.com/bzdanny/BaiZe/baize/utils/bCryptPasswordEncoder"
 	"github.com/bzdanny/BaiZe/monitor/monitorModels"
@@ -11,15 +12,17 @@ import (
 	"go.uber.org/zap"
 )
 
-var iUserOnline monitorService.ItUserOnlineService = monitorServiceImpl.GetUserOnlineService()
-var iLogin loginService.ILoginService = loginServiceImpl.GetLoginService()
-var iMenu systemService.IMenuService = systemServiceImpl.GetMenuService()
-var iLogininfor monitorService.ILogininforService = monitorServiceImpl.GetLogininforService()
-var iUser systemService.IUserService = systemServiceImpl.GetUserService()
+type LoginController struct {
+	ls systemService.ILoginService
+}
 
-func Login(c *gin.Context) {
+func NewLoginController(ls *systemServiceImpl.LoginService) *LoginController {
+	return &LoginController{ls: ls}
+}
+
+func (lc *LoginController) Login(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	var login loginModels.LoginBody
+	var login systemModels.LoginBody
 	if err := c.ShouldBindJSON(&login); err != nil {
 		zap.L().Error("参数错误", zap.Error(err))
 		bzc.ParameterError()
@@ -27,9 +30,9 @@ func Login(c *gin.Context) {
 	}
 	logininfor := new(monitorModels.Logininfor)
 	logininfor.UserName = login.Username
-	defer iLogin.RecordLoginInfo(logininfor)
+	defer lc.ls.RecordLoginInfo(logininfor)
 	bzc.SetUserAgent(logininfor)
-	captcha := loginServiceImpl.VerityCaptcha(login.Uuid, login.Code)
+	captcha := lc.ls.VerityCaptcha(login.Uuid, login.Code)
 	if !captcha {
 		logininfor.Status = 1
 		logininfor.Msg = "验证码错误"
@@ -58,9 +61,9 @@ func Login(c *gin.Context) {
 		bzc.Waring("用户不存在/密码错误")
 		return
 	}
-	bzc.SuccessData(iLogin.Login(user, logininfor))
+	bzc.SuccessData(lc.ls.Login(user, logininfor))
 }
-func GetInfo(c *gin.Context) {
+func (lc *LoginController) GetInfo(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	loginUser := bzc.GetCurrentLoginUser()
 	data := make(map[string]interface{})
@@ -70,24 +73,24 @@ func GetInfo(c *gin.Context) {
 	bzc.SuccessData(data)
 
 }
-func GetRouters(c *gin.Context) {
+func (lc *LoginController) GetRouters(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	menus := iMenu.SelectMenuTreeByUserId(bzc.GetCurrentUserId())
 	buildMenus := iMenu.BuildMenus(menus)
 	bzc.SuccessData(buildMenus)
 
 }
-func Logout(c *gin.Context) {
+func (lc *LoginController) Logout(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	loginUser := bzc.GetCurrentLoginUser()
 	if loginUser != nil {
-		iUserOnline.ForceLogout(loginUser.Token)
+		//iUserOnline.ForceLogout(loginUser.Token)
 	}
 	bzc.Success()
 }
-func GetCode(c *gin.Context) {
+func (lc *LoginController) GetCode(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	code := loginServiceImpl.GenerateCode()
+	code := lc.ls.GenerateCode()
 	bzc.SuccessData(code)
 
 }

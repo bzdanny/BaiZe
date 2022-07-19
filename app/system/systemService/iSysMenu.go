@@ -1,8 +1,6 @@
 package systemService
 
-import (
-	"baize/app/system/models/systemModels"
-)
+import "github.com/bzdanny/BaiZe/app/system/systemModels"
 
 type IMenuService interface {
 	SelectMenuList(menu *systemModels.SysMenuDQL, userId int64) (list []*systemModels.SysMenuVo)
