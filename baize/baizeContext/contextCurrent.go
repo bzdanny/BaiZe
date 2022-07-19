@@ -5,30 +5,30 @@ import (
 	"github.com/bzdanny/BaiZe/app/system/systemModels"
 )
 
-func (bzc *BaiZeContext) GetCurrentLoginUser() (loginUser *systemModels.LoginUser) {
+func (bzc *BaiZeContext) GetCurrentUser() (loginUser *systemModels.LoginUser) {
 	loginUserKey, _ := bzc.Get(constants.LoginUserKey)
 	if loginUserKey != nil {
 		loginUser = loginUserKey.(*systemModels.LoginUser)
 	}
 	return
 }
-func (bzc *BaiZeContext) GetCurrentUser() (user *systemModels.User) {
-	user = bzc.GetCurrentLoginUser().User
+func (bzc *BaiZeContext) GetUser() (user *systemModels.User) {
+	user = bzc.GetCurrentUser().User
 	if user == nil {
 		return nil
 	}
 	return
 
 }
-func (bzc *BaiZeContext) GetCurrentUserName() string {
-	user := bzc.GetCurrentUser()
+func (bzc *BaiZeContext) GetUserName() string {
+	user := bzc.GetUser()
 	if user == nil {
 		return ""
 	}
 	return user.UserName
 }
-func (bzc *BaiZeContext) GetCurrentUserId() int64 {
-	user := bzc.GetCurrentUser()
+func (bzc *BaiZeContext) GetUserId() int64 {
+	user := bzc.GetUser()
 	if user == nil {
 		return 0
 	}

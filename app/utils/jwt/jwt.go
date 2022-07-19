@@ -4,7 +4,7 @@ import (
 	"github.com/bzdanny/BaiZe/app/constant/constants"
 	"github.com/bzdanny/BaiZe/app/setting"
 	"github.com/bzdanny/BaiZe/app/system/systemModels"
-	"github.com/bzdanny/BaiZe/app/utils/redisUtils"
+	"github.com/bzdanny/BaiZe/baize/utils/redisUtils"
 	"github.com/dgrijalva/jwt-go"
 )
 

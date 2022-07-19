@@ -1,31 +1,39 @@
 package systemController
 
 import (
+	"github.com/bzdanny/BaiZe/app/system/systemModels"
+	"github.com/bzdanny/BaiZe/app/system/systemService"
+	"github.com/bzdanny/BaiZe/app/system/systemService/systemServiceImpl"
+	"github.com/bzdanny/BaiZe/baize/baizeContext"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 )
 
-var iDictType systemService.IDictTypeService = systemServiceImpl.GetDictTypeService()
-var iDictData systemService.IDictDataService = systemServiceImpl.GetDictDataService()
+type DictTypeController struct {
+	dts systemService.IDictTypeService
+}
 
-func DictTypeList(c *gin.Context) {
+func NewDictTypeController(dts *systemServiceImpl.DictTypeService) *DictTypeController {
+	return &DictTypeController{dts: dts}
+}
+
+func (dtc *DictTypeController) DictTypeList(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	dictType := new(systemModels.SysDictTypeDQL)
-	c.ShouldBind(dictType)
-	dictType.SetLimit(c)
-	list, count := iDictType.SelectDictTypeList(dictType)
+	_ = c.ShouldBind(dictType)
+	list, count := dtc.dts.SelectDictTypeList(dictType)
 	bzc.SuccessListData(list, count)
 
 }
 
-func DictTypeExport(c *gin.Context) {
+func (dtc *DictTypeController) DictTypeExport(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	dictType := new(systemModels.SysDictTypeDQL)
 	c.ShouldBind(dictType)
-	bzc.DataPackageExcel(iDictType.ExportDictType(dictType))
+	bzc.DataPackageExcel(dtc.dts.ExportDictType(dictType))
 }
 
-func DictTypeGetInfo(c *gin.Context) {
+func (dtc *DictTypeController) DictTypeGetInfo(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	dictId := bzc.ParamInt64("dictId")
 	if dictId == 0 {
@@ -33,60 +41,67 @@ func DictTypeGetInfo(c *gin.Context) {
 		bzc.ParameterError()
 		return
 	}
-	dictData := iDictType.SelectDictTypeById(dictId)
+	dictData := dtc.dts.SelectDictTypeById(dictId)
 
 	bzc.SuccessData(dictData)
 }
 
-func DictTypeAdd(c *gin.Context) {
+func (dtc *DictTypeController) DictTypeAdd(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	bzc.SetLog("字典类型", "INSERT")
-	dictType := new(systemModels.SysDictTypeDML)
-	c.ShouldBind(dictType)
-	if iDictType.CheckDictTypeUnique(dictType) {
+	dictType := new(systemModels.SysDictTypeAdd)
+	if err := c.ShouldBindJSON(dictType); err != nil {
+		bzc.ParameterError()
+		return
+	}
+	if dtc.dts.CheckDictTypeUnique(dictType.DictId, dictType.DictType) {
 		bzc.Waring("新增字典'" + dictType.DictName + "'失败，字典类型已存在")
 		return
 	}
-	dictType.SetCreateBy(bzc.GetCurrentUserName())
-	iDictType.InsertDictType(dictType)
+	dictType.SetCreateBy(bzc.GetUserId())
+	dtc.dts.InsertDictType(dictType)
 	bzc.Success()
 }
 
-func DictTypeEdit(c *gin.Context) {
+func (dtc *DictTypeController) DictTypeEdit(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	bzc.SetLog("字典类型", "UPDATE")
-	dictType := new(systemModels.SysDictTypeDML)
-	if iDictType.CheckDictTypeUnique(dictType) {
+	dictType := new(systemModels.SysDictTypeEdit)
+	if err := c.ShouldBindJSON(dictType); err != nil {
+		bzc.ParameterError()
+		return
+	}
+	if dtc.dts.CheckDictTypeUnique(dictType.DictId, dictType.DictType) {
 		bzc.Waring("修改字典'" + dictType.DictName + "'失败，字典类型已存在")
 		return
 	}
-	c.ShouldBind(dictType)
-	dictType.SetCreateBy(bzc.GetCurrentUserName())
-	iDictType.UpdateDictType(dictType)
+
+	dictType.SetUpdateBy(bzc.GetUserId())
+	dtc.dts.UpdateDictType(dictType)
 	bzc.Success()
 }
 
-func DictTypeRemove(c *gin.Context) {
+func (dtc *DictTypeController) DictTypeRemove(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	bzc.SetLog("字典类型", "DELETE")
 	dictIds := bzc.ParamInt64Array("dictIds")
-	dictTypes := iDictType.SelectDictTypeByIds(dictIds)
-	if iDictData.CheckDictDataByTypes(dictTypes) {
-		bzc.Waring("有已分配的字典,不能删除")
-		return
-	}
-	iDictType.DeleteDictTypeByIds(dictIds)
+	//dictTypes := dtc.dts.SelectDictTypeByIds(dictIds)
+	//if dtc.dts.CheckDictDataByTypes(dictTypes) {
+	//	bzc.Waring("有已分配的字典,不能删除")
+	//	return
+	//}
+	dtc.dts.DeleteDictTypeByIds(dictIds)
 	bzc.Success()
 }
 
-func DictTypeClearCache(c *gin.Context) {
+func (dtc *DictTypeController) DictTypeClearCache(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	bzc.SetLog("字典类型", "CLEAN")
-	iDictType.DictTypeClearCache()
+	dtc.dts.DictTypeClearCache()
 	bzc.Success()
 }
 
-func DictTypeOptionselect(c *gin.Context) {
+func (dtc *DictTypeController) DictTypeOptionselect(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	bzc.SuccessData(iDictType.SelectDictTypeAll())
+	bzc.SuccessData(dtc.dts.SelectDictTypeAll())
 }

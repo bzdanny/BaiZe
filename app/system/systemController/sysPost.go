@@ -1,71 +1,78 @@
 package systemController
 
 import (
+	"github.com/bzdanny/BaiZe/app/system/systemModels"
+	"github.com/bzdanny/BaiZe/app/system/systemService"
+	"github.com/bzdanny/BaiZe/app/system/systemService/systemServiceImpl"
+	"github.com/bzdanny/BaiZe/baize/baizeContext"
 	"github.com/gin-gonic/gin"
-	"go.uber.org/zap"
-	"strings"
 )
 
-var iPost systemService.IPostService = systemServiceImpl.GetPostService()
+type PostController struct {
+	ps systemService.IPostService
+}
 
-func PostList(c *gin.Context) {
+func NewPostController(ps *systemServiceImpl.PostService) *PostController {
+	return &PostController{ps: ps}
+}
+
+func (pc *PostController) PostList(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	post := new(systemModels.SysPostDQL)
-	c.ShouldBind(post)
-	post.SetLimit(c)
-	list, count := iPost.SelectPostList(post)
+	_ = c.ShouldBind(post)
+	list, count := pc.ps.SelectPostList(post)
 	bzc.SuccessListData(list, count)
 
 }
 
-func PostExport(c *gin.Context) {
+func (pc *PostController) PostExport(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	post := new(systemModels.SysPostDQL)
-	c.ShouldBind(post)
-	data := iPost.PostExport(post)
+	_ = c.ShouldBind(post)
+	data := pc.ps.PostExport(post)
 	bzc.DataPackageExcel(data)
 }
 
-func PostGetInfo(c *gin.Context) {
+func (pc *PostController) PostGetInfo(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	postId := bzc.ParamInt64("postId")
 	if postId == 0 {
-		zap.L().Error("参数错误")
 		bzc.ParameterError()
 		return
 	}
-	bzc.SuccessData(iPost.SelectPostById(postId))
+	bzc.SuccessData(pc.ps.SelectPostById(postId))
 }
 
-func PostAdd(c *gin.Context) {
+func (pc *PostController) PostAdd(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	bzc.SetLog("岗位管理", "INSERT")
-	sysPost := new(systemModels.SysPostDML)
+	sysPost := new(systemModels.SysPostAdd)
 	if err := c.ShouldBindJSON(sysPost); err != nil {
-		zap.L().Error("参数错误", zap.Error(err))
 		bzc.ParameterError()
 		return
 	}
-	sysPost.SetCreateBy(bzc.GetCurrentUserName())
-	iPost.InsertPost(sysPost)
+	sysPost.SetCreateBy(bzc.GetUserId())
+	pc.ps.InsertPost(sysPost)
 	bzc.Success()
 }
 
-func PostEdit(c *gin.Context) {
+func (pc *PostController) PostEdit(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	bzc.SetLog("岗位管理", "UPDATE")
-	post := new(systemModels.SysPostDML)
-	c.ShouldBindJSON(post)
-	post.SetUpdateBy(bzc.GetCurrentUserName())
-	iPost.UpdatePost(post)
+	post := new(systemModels.SysPostEdit)
+	if err := c.ShouldBindJSON(post); err != nil {
+		bzc.ParameterError()
+		return
+	}
+	post.SetUpdateBy(bzc.GetUserId())
+	pc.ps.UpdatePost(post)
 	bzc.Success()
 
 }
 
-func PostRemove(c *gin.Context) {
+func (pc *PostController) PostRemove(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	bzc.SetLog("岗位管理", "DELETE")
-	var s slicesUtils.Slices = strings.Split(c.Param("postIds"), ",")
-	iPost.DeletePostByIds(s.StrSlicesToInt())
+	pc.ps.DeletePostByIds(bzc.ParamInt64Array("postIds"))
 	bzc.Success()
 }

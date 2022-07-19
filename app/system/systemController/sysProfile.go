@@ -3,13 +3,10 @@ package systemController
 import (
 	"github.com/bzdanny/BaiZe/app/constant/constants"
 	"github.com/bzdanny/BaiZe/app/system/systemModels"
-	"github.com/bzdanny/BaiZe/app/system/systemService"
+	"github.com/bzdanny/BaiZe/baize/baizeContext"
+	"github.com/bzdanny/BaiZe/baize/utils/token"
 	"github.com/gin-gonic/gin"
 )
-
-var iPost systemService.IPostService = systemServiceImpl.GetPostService()
-var iRole systemService.IRoleService = systemServiceImpl.GetRoleService()
-var iUser systemService.IUserService = systemServiceImpl.GetUserService()
 
 func Profile(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)

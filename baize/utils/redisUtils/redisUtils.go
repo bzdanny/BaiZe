@@ -36,13 +36,6 @@ func SetStruct(key string, value interface{}, expiration time.Duration) {
 	}
 }
 
-func IncrRetentionBy30Minutes(key string) {
-	i := gconv.Int64(GetString(key))
-	go func() {
-		SetStruct(key, i+1, time.Duration(30)*time.Minute)
-	}()
-}
-
 func Keys(pattern string) []string {
 	cmd := datasource.GetRedisClient().Keys(pattern)
 	return cmd.Val()

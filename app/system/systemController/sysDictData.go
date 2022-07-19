@@ -3,65 +3,76 @@ package systemController
 import (
 	"github.com/bzdanny/BaiZe/app/system/systemModels"
 	"github.com/bzdanny/BaiZe/app/system/systemService"
+	"github.com/bzdanny/BaiZe/app/system/systemService/systemServiceImpl"
+	"github.com/bzdanny/BaiZe/baize/baizeContext"
 	"github.com/gin-gonic/gin"
-	"go.uber.org/zap"
 )
 
-var iDictData systemService.IDictDataService = systemServiceImpl.GetDictDataService()
+type DictDataController struct {
+	dds systemService.IDictDataService
+}
 
-func DictDataList(c *gin.Context) {
+func NewDictDataController(dds *systemServiceImpl.DictDataService) *DictDataController {
+	return &DictDataController{dds: dds}
+}
+
+func (ddc *DictDataController) DictDataList(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	dictData := new(systemModels.SysDictDataDQL)
-	c.ShouldBind(dictData)
-	dictData.SetLimit(c)
-	list, count := iDictData.SelectDictDataList(dictData)
+	_ = c.ShouldBind(dictData)
+	list, count := ddc.dds.SelectDictDataList(dictData)
 	bzc.SuccessListData(list, count)
 
 }
-func DictDataExport(c *gin.Context) {
+func (ddc *DictDataController) DictDataExport(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	dictData := new(systemModels.SysDictDataDQL)
-	c.ShouldBind(dictData)
-	bzc.DataPackageExcel(iDictData.ExportDictData(dictData))
+	_ = c.ShouldBind(dictData)
+	bzc.DataPackageExcel(ddc.dds.ExportDictData(dictData))
 }
-func DictDataGetInfo(c *gin.Context) {
+func (ddc *DictDataController) DictDataGetInfo(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	dictCode := bzc.ParamInt64("dictCode")
 	if dictCode == 0 {
-		zap.L().Error("参数错误")
 		bzc.ParameterError()
 		return
 	}
-	dictData := iDictData.SelectDictDataById(dictCode)
+	dictData := ddc.dds.SelectDictDataById(dictCode)
 	bzc.SuccessData(dictData)
 }
-func DictDataType(c *gin.Context) {
+func (ddc *DictDataController) DictDataType(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	sysDictDataList := iDictData.SelectDictDataByType(c.Param("dictType"))
+	sysDictDataList := ddc.dds.SelectDictDataByType(c.Param("dictType"))
 	bzc.SuccessData(sysDictDataList)
 }
 
-func DictDataAdd(c *gin.Context) {
+func (ddc *DictDataController) DictDataAdd(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	bzc.SetLog("字典数据", "INSERT")
-	dictData := new(systemModels.SysDictDataDML)
-	c.ShouldBind(dictData)
-	dictData.SetCreateBy(bzc.GetCurrentUserName())
-	iDictData.InsertDictData(dictData)
+	dictData := new(systemModels.SysDictDataAdd)
+	if err := c.ShouldBindJSON(dictData); err != nil {
+		bzc.ParameterError()
+		return
+	}
+	dictData.SetCreateBy(bzc.GetUserId())
+	ddc.dds.InsertDictData(dictData)
 	bzc.Success()
 }
-func DictDataEdit(c *gin.Context) {
+func (ddc *DictDataController) DictDataEdit(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	bzc.SetLog("字典数据", "UPDATE")
-	dictData := new(systemModels.SysDictDataDML)
-	c.ShouldBind(dictData)
-	dictData.SetUpdateBy(bzc.GetCurrentUserName())
-	iDictData.UpdateDictData(dictData)
+	dictData := new(systemModels.SysDictDataEdit)
+	if err := c.ShouldBindJSON(dictData); err != nil {
+		bzc.ParameterError()
+		return
+	}
+	dictData.SetUpdateBy(bzc.GetUserId())
+	ddc.dds.UpdateDictData(dictData)
 	bzc.Success()
 }
-func DictDataRemove(c *gin.Context) {
+func (ddc *DictDataController) DictDataRemove(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	bzc.SetLog("字典数据", "DELETE")
-	iDictData.DeleteDictDataByIds(bzc.ParamInt64Array("dictCodes"))
+	ddc.dds(bzc.ParamInt64Array("dictCodes"))
 	bzc.Success()
 }
