@@ -2,7 +2,8 @@ package routes
 
 import (
 	"github.com/bzdanny/BaiZe/app/setting"
-	"github.com/bzdanny/BaiZe/baize/datasource"
+	"github.com/bzdanny/BaiZe/app/system/systemController"
+	"github.com/bzdanny/BaiZe/baize/utils/logger"
 	"github.com/google/wire"
 
 	"fmt"
@@ -19,10 +20,13 @@ import (
 var ProviderSet = wire.NewSet(NewRouter)
 
 type Router struct {
+	Sys *systemController.SystemController
 }
 
-func NewRouter(data *datasource.Data) *Router {
-	return &Router{}
+func NewRouter(sys *systemController.SystemController) *Router {
+	return &Router{
+		Sys: sys,
+	}
 }
 
 func RegisterServer(router *Router) *gin.Engine {
@@ -31,7 +35,7 @@ func RegisterServer(router *Router) *gin.Engine {
 		gin.SetMode(gin.ReleaseMode) // gin设置成发布模式
 	}
 	r := gin.New()
-	//r.Use(logger.GinLogger(), logger.GinRecovery(true))
+	r.Use(logger.GinLogger(), logger.GinRecovery(true))
 	r.Use(Cors())
 	group := r.Group("")
 	group.GET("/swagger/*any", gs.WrapHandler(swaggerFiles.Handler))

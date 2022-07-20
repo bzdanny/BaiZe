@@ -25,6 +25,7 @@ require (
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/mojocn/base64Captcha v1.3.5
 	github.com/mssola/user_agent v0.5.3
+	github.com/natefinch/lumberjack v2.0.0+incompatible
 	github.com/satori/go.uuid v1.2.0
 	github.com/shirou/gopsutil/v3 v3.22.6
 	github.com/swaggo/gin-swagger v1.3.3
@@ -79,5 +80,6 @@ require (
 	golang.org/x/tools v0.1.8 // indirect
 	google.golang.org/protobuf v1.26.0 // indirect
 	gopkg.in/ini.v1 v1.51.0 // indirect
+	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )

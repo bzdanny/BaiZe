@@ -22,19 +22,16 @@ func newApp(r *routes.Router) *gin.Engine {
 	return routes.RegisterServer(r)
 }
 
-// staging.knithq.com/knit
-// dev-knit.ibaize.vip/knit
 // localhost:9000/knit
 
-// @title knit
-// @version 1.0.x
-// @description knit接口文档
+// @title baize
+// @version 2.0.x
+// @description baize接口文档
 
 // @contact.name danny
-// @contact.email zdyang@knitpeople.com
+// @contact.email zhao_402295440@126.com
 
-// @host localhost:9000/knit
-//// @host dev-knit.ibaize.vip/knit
+// @host localhost:9000
 
 // @securityDefinitions.apikey BearerAuth
 // @in header

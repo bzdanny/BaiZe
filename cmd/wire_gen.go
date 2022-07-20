@@ -9,6 +9,9 @@ package main
 import (
 	"github.com/bzdanny/BaiZe/app/routes"
 	"github.com/bzdanny/BaiZe/app/setting"
+	"github.com/bzdanny/BaiZe/app/system/systemController"
+	"github.com/bzdanny/BaiZe/app/system/systemDao/systemDaoImpl"
+	"github.com/bzdanny/BaiZe/app/system/systemService/systemServiceImpl"
 	"github.com/bzdanny/BaiZe/baize/datasource"
 	"github.com/gin-gonic/gin"
 )
@@ -20,7 +23,36 @@ func wireApp(settingDatasource *setting.Datasource) (*gin.Engine, func(), error)
 	if err != nil {
 		return nil, nil, err
 	}
-	router := routes.NewRouter(data)
+	sysDictDataDao := systemDaoImpl.NewSysDictDataDao()
+	dictDataService := systemServiceImpl.NewDictDataService(data, sysDictDataDao)
+	dictDataController := systemController.NewDictDataController(dictDataService)
+	sysDictTypeDao := systemDaoImpl.NewSysDictTypeDao()
+	dictTypeService := systemServiceImpl.NewDictTypeService(data, sysDictTypeDao)
+	dictTypeController := systemController.NewDictTypeController(dictTypeService)
+	loginService := systemServiceImpl.NewLoginService()
+	sysUserDao := systemDaoImpl.GetSysUserDao()
+	sysUserPostDao := systemDaoImpl.NewSysUserPostDao()
+	sysUserRoleDao := systemDaoImpl.NewSysUserRoleDao()
+	userService := systemServiceImpl.NewUserService(data, sysUserDao, sysUserPostDao, sysUserRoleDao)
+	loginController := systemController.NewLoginController(loginService, userService)
+	userController := systemController.NewUserController(userService)
+	sysDeptDao := systemDaoImpl.NewSysDeptDao()
+	sysRoleDao := systemDaoImpl.NewSysRoleDao()
+	deptService := systemServiceImpl.NewDeptService(data, sysDeptDao, sysRoleDao)
+	deptController := systemController.NewDeptController(deptService)
+	sysRoleMenuDao := systemDaoImpl.NewSysRoleMenuDao()
+	sysRoleDeptDao := systemDaoImpl.NewSysRoleDeptDao()
+	roleService := systemServiceImpl.NewRoleService(data, sysRoleDao, sysRoleMenuDao, sysRoleDeptDao, sysUserRoleDao)
+	roleController := systemController.NewRoleController(roleService)
+	sysPostDao := systemDaoImpl.NewSysPostDao()
+	postService := systemServiceImpl.NewPostService(data, sysPostDao)
+	postController := systemController.NewPostController(postService)
+	sysMenuDao := systemDaoImpl.NewSysMenuDao()
+	menuService := systemServiceImpl.NewMenuService(data, sysMenuDao, sysRoleMenuDao, sysRoleDao)
+	menuController := systemController.NewMenuController(menuService)
+	profileController := systemController.NewProfileController(roleService, postService, userService)
+	systemControllerSystemController := systemController.NewTenantController(dictDataController, dictTypeController, loginController, userController, deptController, roleController, postController, menuController, profileController)
+	router := routes.NewRouter(systemControllerSystemController)
 	engine := newApp(router)
 	return engine, func() {
 		cleanup()

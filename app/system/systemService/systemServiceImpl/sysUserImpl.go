@@ -10,6 +10,7 @@ import (
 	"github.com/bzdanny/BaiZe/baize/utils/bCryptPasswordEncoder"
 	"github.com/bzdanny/BaiZe/baize/utils/exceLize"
 	"github.com/bzdanny/BaiZe/pkg/snowflake"
+	"github.com/gogf/gf/v2/util/gconv"
 	"strconv"
 )
 
@@ -54,7 +55,7 @@ func (userService *UserService) SelectUserById(userId int64) (sysUser *systemMod
 
 }
 
-func (userService *UserService) InsertUser(sysUser *systemModels.SysUserDML) {
+func (userService *UserService) InsertUser(sysUser *systemModels.SysUserAdd) {
 	sysUser.UserId = snowflake.GenID()
 	sysUser.Password = bCryptPasswordEncoder.HashPassword(sysUser.Password)
 	tx, err := userService.data.GetMasterDb().Beginx()
@@ -70,12 +71,12 @@ func (userService *UserService) InsertUser(sysUser *systemModels.SysUserDML) {
 		}
 	}()
 	userService.userDao.InsertUser(tx, sysUser)
-	userService.insertUserPost(tx, sysUser)
-	userService.insertUserRole(tx, sysUser)
+	userService.insertUserPost(tx, sysUser.UserId, sysUser.PostIds)
+	userService.insertUserRole(tx, sysUser.UserId, sysUser.RoleIds)
 
 }
 
-func (userService *UserService) UpdateUser(sysUser *systemModels.SysUserDML) {
+func (userService *UserService) UpdateUser(sysUser *systemModels.SysUserEdit) {
 	userId := sysUser.UserId
 	tx, err := userService.data.GetMasterDb().Beginx()
 	if err != nil {
@@ -90,30 +91,28 @@ func (userService *UserService) UpdateUser(sysUser *systemModels.SysUserDML) {
 		}
 	}()
 	userService.userPostDao.DeleteUserPostByUserId(tx, userId)
-	userService.insertUserPost(tx, sysUser)
+	userService.insertUserPost(tx, sysUser.UserId, sysUser.PostIds)
 	userService.userRoleDao.DeleteUserRoleByUserId(tx, userId)
-	userService.insertUserRole(tx, sysUser)
+	userService.insertUserRole(tx, sysUser.UserId, sysUser.RoleIds)
 	userService.userDao.UpdateUser(tx, sysUser)
 
 }
 
-func (userService *UserService) UpdateuserStatus(sysUser *systemModels.SysUserDML) {
+func (userService *UserService) UpdateuserStatus(sysUser *systemModels.SysUserEdit) {
 	userService.userDao.UpdateUser(userService.data.GetMasterDb(), sysUser)
 
 }
-func (userService *UserService) ResetPwd(sysUser *systemModels.SysUserDML) {
+func (userService *UserService) ResetPwd(sysUser *systemModels.SysUserEdit) {
 	sysUser.Password = bCryptPasswordEncoder.HashPassword(sysUser.Password)
 	userService.userDao.UpdateUser(userService.data.GetMasterDb(), sysUser)
 
 }
 
-func (userService *UserService) insertUserPost(db dataUtil.DB, user *systemModels.SysUserDML) {
-	posts := user.PostIds
+func (userService *UserService) insertUserPost(db dataUtil.DB, userId int64, posts []string) {
 	if len(posts) != 0 {
 		list := make([]*systemModels.SysUserPost, 0, len(posts))
 		for _, postId := range posts {
-			parseInt, _ := strconv.ParseInt(postId, 10, 64)
-			post := systemModels.NewSysUserPost(user.UserId, parseInt)
+			post := systemModels.NewSysUserPost(userId, gconv.Int64(postId))
 			list = append(list, post)
 		}
 		userService.userPostDao.BatchUserPost(db, list)
@@ -121,13 +120,11 @@ func (userService *UserService) insertUserPost(db dataUtil.DB, user *systemModel
 
 }
 
-func (userService *UserService) insertUserRole(db dataUtil.DB, user *systemModels.SysUserDML) {
-	roles := user.RoleIds
+func (userService *UserService) insertUserRole(db dataUtil.DB, userId int64, roles []string) {
 	if len(roles) != 0 {
 		list := make([]*systemModels.SysUserRole, 0, len(roles))
 		for _, roleId := range roles {
-			parseInt, _ := strconv.ParseInt(roleId, 10, 64)
-			role := systemModels.NewSysUserRole(user.UserId, parseInt)
+			role := systemModels.NewSysUserRole(userId, gconv.Int64(roleId))
 			list = append(list, role)
 		}
 		userService.userRoleDao.BatchUserRole(db, list)
@@ -140,23 +137,23 @@ func (userService *UserService) CheckUserNameUnique(userName string) bool {
 
 }
 
-func (userService *UserService) CheckPhoneUnique(user *systemModels.SysUserDML) bool {
-	if user.Phonenumber == "" {
+func (userService *UserService) CheckPhoneUnique(id int64, phonenumber string) bool {
+	if phonenumber == "" {
 		return false
 	}
-	userId := userService.userDao.CheckPhoneUnique(userService.data.GetSlaveDb(), user.Phonenumber)
-	if userId == user.UserId || userId == 0 {
+	userId := userService.userDao.CheckPhoneUnique(userService.data.GetSlaveDb(), phonenumber)
+	if userId == id || userId == 0 {
 		return false
 	}
 	return true
 }
 
-func (userService *UserService) CheckEmailUnique(user *systemModels.SysUserDML) bool {
-	if user.Email == "" {
+func (userService *UserService) CheckEmailUnique(id int64, email string) bool {
+	if email == "" {
 		return false
 	}
-	userId := userService.userDao.CheckEmailUnique(userService.data.GetSlaveDb(), user.Email)
-	if userId == user.UserId || userId == 0 {
+	userId := userService.userDao.CheckEmailUnique(userService.data.GetSlaveDb(), email)
+	if userId == id || userId == 0 {
 		return false
 	}
 	return true
@@ -227,7 +224,7 @@ func (userService *UserService) UpdateUserAvatar(userId int64, avatar string) {
 func (userService *UserService) ResetUserPwd(userId int64, password string) {
 	userService.userDao.ResetUserPwd(userService.data.GetMasterDb(), userId, bCryptPasswordEncoder.HashPassword(password))
 }
-func (userService *UserService) UpdateUserProfile(sysUser *systemModels.SysUserDML) {
+func (userService *UserService) UpdateUserProfile(sysUser *systemModels.SysUserEdit) {
 	userService.userDao.UpdateUser(userService.data.GetMasterDb(), sysUser)
 
 }

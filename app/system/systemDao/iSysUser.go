@@ -9,8 +9,8 @@ type IUserDao interface {
 	CheckUserNameUnique(db dataUtil.DB, userName string) int
 	CheckPhoneUnique(db dataUtil.DB, phonenumber string) int64
 	CheckEmailUnique(db dataUtil.DB, email string) int64
-	InsertUser(db dataUtil.DB, sysUser *systemModels.SysUserDML)
-	UpdateUser(db dataUtil.DB, sysUser *systemModels.SysUserDML)
+	InsertUser(db dataUtil.DB, sysUser *systemModels.SysUserAdd)
+	UpdateUser(db dataUtil.DB, sysUser *systemModels.SysUserEdit)
 	SelectUserByUserName(db dataUtil.DB, userName string) (loginUser *systemModels.User)
 	SelectUserById(db dataUtil.DB, userId int64) (sysUser *systemModels.SysUserVo)
 	SelectUserList(db dataUtil.DB, user *systemModels.SysUserDQL) (sysUserList []*systemModels.SysUserVo, total *int64)

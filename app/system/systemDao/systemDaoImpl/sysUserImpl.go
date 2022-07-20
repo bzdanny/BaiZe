@@ -47,7 +47,7 @@ func (userDao *SysUserDao) CheckEmailUnique(db dataUtil.DB, email string) int64 
 	return userId
 }
 
-func (userDao *SysUserDao) InsertUser(db dataUtil.DB, sysUser *systemModels.SysUserDML) {
+func (userDao *SysUserDao) InsertUser(db dataUtil.DB, sysUser *systemModels.SysUserAdd) {
 	insertSQL := `insert into sys_user(user_id,user_name,nick_name,sex,password,status,create_by,create_time,update_by,update_time %s)
 					values(:user_id,:user_name,:nick_name,:sex,:password,:status,:create_by,now(),:update_by,now() %s)`
 	key := ""
@@ -81,7 +81,7 @@ func (userDao *SysUserDao) InsertUser(db dataUtil.DB, sysUser *systemModels.SysU
 	}
 }
 
-func (userDao *SysUserDao) UpdateUser(db dataUtil.DB, sysUser *systemModels.SysUserDML) {
+func (userDao *SysUserDao) UpdateUser(db dataUtil.DB, sysUser *systemModels.SysUserEdit) {
 	updateSQL := `update sys_user set update_time = now() , update_by = :update_by`
 
 	if sysUser.DeptId != nil {

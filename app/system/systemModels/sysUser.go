@@ -16,7 +16,7 @@ type SysUserDQL struct {
 	baizeEntity.BaseEntityDQL
 }
 
-type SysUserDML struct {
+type SysUserAdd struct {
 	UserId      int64    `json:"userId,string" db:"user_id"`
 	DeptId      *int64   `json:"deptId,string" db:"dept_id"`
 	UserName    string   `json:"userName" db:"user_name"`
@@ -32,9 +32,25 @@ type SysUserDML struct {
 	RoleIds     []string `json:"roleIds"`
 	baizeEntity.BaseEntityAdd
 }
+type SysUserEdit struct {
+	UserId      int64    `json:"userId,string" db:"user_id"`
+	DeptId      *int64   `json:"deptId,string" db:"dept_id"`
+	UserName    string   `json:"userName" db:"user_name"`
+	NickName    string   `json:"nickName" db:"nick_name"`
+	Email       string   `json:"email" db:"email"`
+	Avatar      string   `json:"avatar" db:"avatar"`
+	Phonenumber string   `json:"phonenumber" db:"phonenumber"`
+	Sex         string   `json:"sex" db:"sex"  binding:"required"`
+	Password    string   `json:"password" db:"password"`
+	Status      string   `json:"status" db:"status"`
+	Remake      string   `json:"remake" db:"remake "`
+	PostIds     []string `json:"postIds"`
+	RoleIds     []string `json:"roleIds"`
+	baizeEntity.BaseEntityEdit
+}
 
-func RowsToSysUserDMLList(rows [][]string) (list []*SysUserDML, str string, failureNum int) {
-	list = make([]*SysUserDML, 0, len(rows)-1)
+func RowsToSysUserDMLList(rows [][]string) (list []*SysUserAdd, str string, failureNum int) {
+	list = make([]*SysUserAdd, 0, len(rows)-1)
 	for i, row := range rows {
 		if i == 0 {
 			continue
@@ -44,7 +60,7 @@ func RowsToSysUserDMLList(rows [][]string) (list []*SysUserDML, str string, fail
 			failureNum++
 			continue
 		}
-		sysUser := new(SysUserDML)
+		sysUser := new(SysUserAdd)
 		sysUser.UserName = row[0]
 		sysUser.NickName = row[1]
 		sysUser.Email = row[2]
