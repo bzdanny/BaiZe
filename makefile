@@ -9,15 +9,15 @@ init:
 	go get -u github.com/nicksnyder/go-i18n/v2/goi18n
 
 wire:
-	cd app/cmd/ && wire
+	cd cmd/ && wire
 
 swag:
-	cd app/cmd/ && swag init
+	cd cmd/ && swag init
 
 build:
 	make wire;
 	make swag;
-	cd app/cmd/ && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ${BINARY}
+	cd cmd/ && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ${BINARY}
 
 
 help:

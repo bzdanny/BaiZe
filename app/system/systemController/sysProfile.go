@@ -1,42 +1,56 @@
 package systemController
 
 import (
-	"github.com/bzdanny/BaiZe/app/constant/constants"
 	"github.com/bzdanny/BaiZe/app/system/systemModels"
+	"github.com/bzdanny/BaiZe/app/system/systemService"
+	"github.com/bzdanny/BaiZe/app/system/systemService/systemServiceImpl"
 	"github.com/bzdanny/BaiZe/baize/baizeContext"
 	"github.com/bzdanny/BaiZe/baize/utils/token"
 	"github.com/gin-gonic/gin"
 )
 
-func Profile(c *gin.Context) {
+type ProfileController struct {
+	rs systemService.IRoleService
+	ps systemService.IPostService
+	us systemService.IUserService
+}
+
+func NewProfileController(rs *systemServiceImpl.RoleService, ps *systemServiceImpl.PostService, us *systemServiceImpl.UserService) *ProfileController {
+	return &ProfileController{rs: rs, ps: ps, us: us}
+}
+
+func (pc *ProfileController) Profile(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	User := bzc.GetCurrentUser()
+	User := bzc.GetUser()
 	m := make(map[string]interface{})
 	m["user"] = User
-	m["roleGroup"] = iRole.SelectUserRoleGroupByUserId(User.UserId)
-	m["postGroup"] = iPost.SelectUserPostGroupByUserId(User.UserId)
+	m["roleGroup"] = pc.rs.SelectUserRoleGroupByUserId(User.UserId)
+	m["postGroup"] = pc.ps.SelectUserPostGroupByUserId(User.UserId)
 	bzc.SuccessData(m)
 }
 
-func ProfileUpdateProfile(c *gin.Context) {
+func (pc *ProfileController) ProfileUpdateProfile(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	bzc.SetLog("个人信息", "UPDATE")
-	sysUser := new(systemModels.SysUserDML)
-	c.ShouldBindJSON(sysUser)
-	if iUser.CheckPhoneUnique(sysUser) {
-		bzc.Waring("新增用户'" + sysUser.UserName + "'失败，手机号码已存在")
+	sysUser := new(systemModels.SysUserEdit)
+	if err := c.ShouldBindJSON(sysUser); err != nil {
+		bzc.ParameterError()
+		return
+	}
+	if pc.us.CheckPhoneUnique(sysUser.UserId, sysUser.Phonenumber) {
+		bzc.Waring("修改失败'" + sysUser.Phonenumber + "'失败，手机号码已存在")
 		return
 	}
 
-	if iUser.CheckEmailUnique(sysUser) {
-		bzc.Waring("新增用户'" + sysUser.UserName + "'失败，邮箱账号已存在")
+	if pc.us.CheckEmailUnique(sysUser.UserId, sysUser.Email) {
+		bzc.Waring("修改失败'" + sysUser.Email + "'失败，邮箱账号已存在")
 		return
 	}
-	loginUser := bzc.GetCurrentLoginUser()
+	loginUser := bzc.GetCurrentUser()
 	user := loginUser.User
 	sysUser.UserId = user.UserId
-	sysUser.SetUpdateBy(user.UserName)
-	iUser.UpdateUserProfile(sysUser)
+	sysUser.SetUpdateBy(user.UserId)
+	pc.us.UpdateUserProfile(sysUser)
 	user.NickName = sysUser.NickName
 	user.Phonenumber = &sysUser.Phonenumber
 	user.Email = &sysUser.Email
@@ -45,7 +59,7 @@ func ProfileUpdateProfile(c *gin.Context) {
 	bzc.Success()
 }
 
-func ProfileUpdatePwd(c *gin.Context) {
+func (pc *ProfileController) ProfileUpdatePwd(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	bzc.SetLog("个人信息", "UPDATE")
 	oldPassword := c.Query("oldPassword")
@@ -54,29 +68,29 @@ func ProfileUpdatePwd(c *gin.Context) {
 		bzc.Waring("新密码不能与旧密码相同")
 		return
 	}
-	userId := bzc.GetCurrentUserId()
-	if !iUser.MatchesPassword(oldPassword, userId) {
+	userId := bzc.GetUserId()
+	if !pc.us.MatchesPassword(oldPassword, userId) {
 		bzc.Waring("修改密码失败，旧密码错误")
 		return
 	}
-	iUser.ResetUserPwd(userId, password)
+	pc.us.ResetUserPwd(userId, password)
 	bzc.Success()
 
 }
 
-func ProfileAvatar(c *gin.Context) {
-	bzc := baizeContext.NewBaiZeContext(c)
-	bzc.SetLog("个人信息", "UPDATE")
-	file, err := c.FormFile("avatarfile")
-	if err != nil {
-		bzc.ParameterError()
-		return
-	}
-	filename := fileUploadUtils.Upload(constants.AvatarPath, file)
-	loginUser := bzc.GetCurrentLoginUser()
-	avatar := constants.ResourcePrefix + filename
-	iUser.UpdateUserAvatar(loginUser.User.UserId, avatar)
-	loginUser.User.Avatar = &avatar
-	go token.RefreshToken(loginUser)
-	bzc.SuccessData(avatar)
+func (pc *ProfileController) ProfileAvatar(c *gin.Context) {
+	//bzc := baizeContext.NewBaiZeContext(c)
+	//bzc.SetLog("个人信息", "UPDATE")
+	//file, err := c.FormFile("avatarfile")
+	//if err != nil {
+	//	bzc.ParameterError()
+	//	return
+	//}
+	//filename := fileUploadUtils.Upload(constants.AvatarPath, file)
+	//loginUser := bzc.GetCurrentLoginUser()
+	//avatar := constants.ResourcePrefix + filename
+	//iUser.UpdateUserAvatar(loginUser.User.UserId, avatar)
+	//loginUser.User.Avatar = &avatar
+	//go token.RefreshToken(loginUser)
+	//bzc.SuccessData(avatar)
 }

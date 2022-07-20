@@ -24,12 +24,6 @@ func (bzc *BaiZeContext) SuccessListData(rows interface{}, total *int64) {
 func (bzc *BaiZeContext) Waring(msg string) {
 	bzc.JSON(http.StatusOK, commonModels.ResponseData{Code: httpStatus.Waring, Msg: msg})
 }
-func (bzc *BaiZeContext) BzError() {
-	bzc.JSON(http.StatusInternalServerError, commonModels.ResponseData{Code: httpStatus.Error, Msg: httpStatus.Error.Msg()})
-}
-func (bzc *BaiZeContext) ErrorMsg(msg string) {
-	bzc.JSON(http.StatusInternalServerError, commonModels.ResponseData{Code: httpStatus.Error, Msg: msg})
-}
 
 func (bzc *BaiZeContext) ParameterError() {
 	bzc.JSON(http.StatusOK, commonModels.ResponseData{Code: httpStatus.Parameter, Msg: httpStatus.Parameter.Msg()})
