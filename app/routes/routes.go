@@ -1,8 +1,10 @@
 package routes
 
 import (
+	"github.com/bzdanny/BaiZe/app/routes/systemRouter"
 	"github.com/bzdanny/BaiZe/app/setting"
 	"github.com/bzdanny/BaiZe/app/system/systemController"
+	"github.com/bzdanny/BaiZe/baize/middlewares"
 	"github.com/bzdanny/BaiZe/baize/utils/logger"
 	"github.com/google/wire"
 
@@ -39,6 +41,33 @@ func RegisterServer(router *Router) *gin.Engine {
 	r.Use(Cors())
 	group := r.Group("")
 	group.GET("/swagger/*any", gs.WrapHandler(swaggerFiles.Handler))
+
+	//不做鉴权的
+	{
+		systemRouter.InitLoginRouter(group, router.Sys.Login) //获取登录信息
+
+	}
+	//做鉴权的
+	group.Use(middlewares.JWTAuthMiddleware())
+	{
+
+		systemRouter.InitGetUser(group, router.Sys.Login)              //获取登录信息
+		systemRouter.InitSysProfileRouter(group, router.Sys.Profile)   //个人信息
+		systemRouter.InitSysUserRouter(group, router.Sys.User)         //用户相关
+		systemRouter.InitSysDeptRouter(group, router.Sys.Dept)         //部门相关
+		systemRouter.InitSysDictDataRouter(group, router.Sys.DictData) //数据字典信息
+		systemRouter.InitSysRoleRouter(group, router.Sys.Role)         //角色相关
+		systemRouter.InitSysMenuRouter(group, router.Sys.Menu)         //菜单相关
+		//systemRouter.InitSysConfigRouter(group)      //参数配置
+		systemRouter.InitSysDictTypeRouter(group, router.Sys.DictType) //数据字典属性
+		systemRouter.InitSysPostRouter(group, router.Sys.Post)         //岗位属性
+		//monitorRoutes.InitSysUserOnlineRouter(group) //在线用户监控
+		//monitorRoutes.InitSysLogininforRouter(group) //登录用户日志
+		//monitorRoutes.InitSysOperLogRouter(group)    //操作日志
+		//monitorRoutes.InitServerRouter(group)        //服务监控
+		//genTableRoutes.InitGenTableRouter(group)     //代码生成
+		//quartzRoutes.InitJobRouter(group)            //定时任务
+	}
 
 	r.NoRoute(func(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{
