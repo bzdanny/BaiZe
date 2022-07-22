@@ -1,8 +1,8 @@
 package systemService
 
 import (
+	"github.com/bzdanny/BaiZe/app/monitor/monitorModels"
 	"github.com/bzdanny/BaiZe/app/system/systemModels"
-	"github.com/bzdanny/BaiZe/monitor/monitorModels"
 )
 
 type ILoginService interface {

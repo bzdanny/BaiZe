@@ -4,6 +4,7 @@ import (
 	systemDao "github.com/bzdanny/BaiZe/app/system/systemDao"
 	"github.com/bzdanny/BaiZe/app/system/systemDao/systemDaoImpl"
 	"github.com/bzdanny/BaiZe/app/system/systemModels"
+	"github.com/bzdanny/BaiZe/baize/baizeEntity"
 	"github.com/bzdanny/BaiZe/baize/datasource"
 	"github.com/bzdanny/BaiZe/baize/datasource/dataUtil"
 	"github.com/bzdanny/BaiZe/baize/utils/exceLize"
@@ -137,12 +138,12 @@ func (roleService *RoleService) SelectRoleAll(role *systemModels.SysRoleDQL) (li
 	return
 }
 
-func (roleService *RoleService) RolePermissionByRoles(roles []*systemModels.SysRole) (rolePerms []string, loginRoles []*systemModels.Role) {
-	loginRoles = make([]*systemModels.Role, 0, len(roles))
+func (roleService *RoleService) RolePermissionByRoles(roles []*systemModels.SysRole) (rolePerms []string, loginRoles []*baizeEntity.Role) {
+	loginRoles = make([]*baizeEntity.Role, 0, len(roles))
 	rolePerms = make([]string, 0, len(roles))
 	for _, role := range roles {
 		rolePerms = append(rolePerms, role.RoleKey)
-		loginRoles = append(loginRoles, &systemModels.Role{RoleId: role.RoleId, DataScope: role.DataScope})
+		loginRoles = append(loginRoles, &baizeEntity.Role{RoleId: role.RoleId, DataScope: role.DataScope})
 	}
 	return
 }
