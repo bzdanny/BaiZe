@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/bzdanny/BaiZe/app/system/systemModels"
+	"github.com/bzdanny/BaiZe/baize/baizeEntity"
 	"github.com/bzdanny/BaiZe/baize/datasource/dataUtil"
 	"github.com/jmoiron/sqlx"
 )
@@ -82,12 +83,12 @@ func (rd *SysRoleDao) SelectRolePermissionByUserId(db dataUtil.DB, userId int64)
 	}
 	return
 }
-func (rd *SysRoleDao) SelectRoleIdAndDataScopeByUserId(db dataUtil.DB, userId int64) (roles []*systemModels.Role) {
+func (rd *SysRoleDao) SelectRoleIdAndDataScopeByUserId(db dataUtil.DB, userId int64) (roles []*baizeEntity.Role) {
 	sqlStr := `select  r.role_id, r.data_scope
 				from sys_role r
 				left join sys_user_role ur  on r.role_id = ur.role_id
 				where  ur.user_id = ?`
-	roles = make([]*systemModels.Role, 0, 2)
+	roles = make([]*baizeEntity.Role, 0, 2)
 	err := db.Select(&roles, sqlStr, userId)
 	if err != nil && err != sql.ErrNoRows {
 		panic(err)

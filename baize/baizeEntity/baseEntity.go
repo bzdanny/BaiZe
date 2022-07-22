@@ -3,7 +3,6 @@ package baizeEntity
 import (
 	"fmt"
 	"github.com/bzdanny/BaiZe/app/constant/dataScopeAspect"
-	"github.com/bzdanny/BaiZe/app/system/systemModels"
 	"github.com/bzdanny/BaiZe/baize/utils/stringUtils"
 	"strconv"
 )
@@ -83,9 +82,19 @@ func (b *BaseEntityDQL) GetOffset() int64 {
 	return (b.Page - 1) * b.Size
 }
 
-func (b *BaseEntityDQL) SetDataScope(user *systemModels.User, deptAlias string, userAlias string) {
+type User interface {
+	GetRoles() []*Role
+	GetDeptId() int64
+}
+type Role struct {
+	RoleId    int64  `db:"role_id"`
+	DataScope string `db:"data_scope"`
+}
+
+func (b *BaseEntityDQL) SetDataScope(user User, deptAlias string, userAlias string) {
+	roles := user.GetRoles()
 	var sqlString string
-	for _, role := range user.Roles {
+	for _, role := range roles {
 
 		switch role.DataScope {
 		case dataScopeAspect.DataScopeAll:
@@ -94,12 +103,12 @@ func (b *BaseEntityDQL) SetDataScope(user *systemModels.User, deptAlias string, 
 		case dataScopeAspect.DataScopeCustom:
 			sqlString += fmt.Sprintf(" OR %s.dept_id IN ( SELECT dept_id FROM sys_role_dept WHERE role_id = %d ) ", deptAlias, role.RoleId)
 		case dataScopeAspect.DataScopeDept:
-			sqlString += fmt.Sprintf(" OR %s.dept_id = %d ", deptAlias, user.DeptId)
+			sqlString += fmt.Sprintf(" OR %s.dept_id = %d ", deptAlias, user.GetDeptId())
 		case dataScopeAspect.DataScopeDeptAndChild:
-			sqlString += fmt.Sprintf(" OR %s.dept_id IN ( SELECT dept_id FROM sys_dept WHERE dept_id = %d or find_in_set( %d , ancestors ) ) ", deptAlias, user.DeptId, user.DeptId)
+			sqlString += fmt.Sprintf(" OR %s.dept_id IN ( SELECT dept_id FROM sys_dept WHERE dept_id = %d or find_in_set( %d , ancestors ) ) ", deptAlias, user.GetDeptId(), user.GetDeptId())
 		case dataScopeAspect.DataScopeSelf:
 			if userAlias != "" {
-				sqlString += fmt.Sprintf(" OR %s.user_id = %d ", userAlias, user.UserId)
+				sqlString += fmt.Sprintf(" OR %s.user_id = %d ", userAlias, user.GetDeptId())
 			} else {
 				sqlString += " OR 1=0 "
 			}

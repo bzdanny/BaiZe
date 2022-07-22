@@ -1,13 +1,13 @@
 package systemServiceImpl
 
 import (
+	"github.com/bzdanny/BaiZe/app/monitor/monitorModels"
 	"github.com/bzdanny/BaiZe/app/system/systemDao"
 	"github.com/bzdanny/BaiZe/app/system/systemModels"
 	"github.com/bzdanny/BaiZe/app/utils"
 	"github.com/bzdanny/BaiZe/app/utils/jwt"
 	"github.com/bzdanny/BaiZe/baize/datasource"
 	"github.com/bzdanny/BaiZe/baize/utils/token"
-	"github.com/bzdanny/BaiZe/monitor/monitorModels"
 	"github.com/mojocn/base64Captcha"
 	uuid "github.com/satori/go.uuid"
 	"image/color"

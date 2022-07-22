@@ -2,12 +2,12 @@ package systemController
 
 import (
 	"github.com/bzdanny/BaiZe/app/constant/userStatus"
+	"github.com/bzdanny/BaiZe/app/monitor/monitorModels"
 	"github.com/bzdanny/BaiZe/app/system/systemModels"
 	"github.com/bzdanny/BaiZe/app/system/systemService"
 	"github.com/bzdanny/BaiZe/app/system/systemService/systemServiceImpl"
 	"github.com/bzdanny/BaiZe/baize/baizeContext"
 	"github.com/bzdanny/BaiZe/baize/utils/bCryptPasswordEncoder"
-	"github.com/bzdanny/BaiZe/monitor/monitorModels"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 )

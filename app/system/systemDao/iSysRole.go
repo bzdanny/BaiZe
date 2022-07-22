@@ -2,6 +2,7 @@ package systemDao
 
 import (
 	"github.com/bzdanny/BaiZe/app/system/systemModels"
+	"github.com/bzdanny/BaiZe/baize/baizeEntity"
 	"github.com/bzdanny/BaiZe/baize/datasource/dataUtil"
 )
 
@@ -10,7 +11,7 @@ type IRoleDao interface {
 	SelectRoleById(db dataUtil.DB, roleId int64) (role *systemModels.SysRoleVo)
 	SelectBasicRolesByUserId(db dataUtil.DB, userId int64) (roles []*systemModels.SysRole)
 	SelectRolePermissionByUserId(db dataUtil.DB, userId int64) (roles []string)
-	SelectRoleIdAndDataScopeByUserId(db dataUtil.DB, userId int64) (roles []*systemModels.Role)
+	SelectRoleIdAndDataScopeByUserId(db dataUtil.DB, userId int64) (roles []*baizeEntity.Role)
 	SelectRoleListByUserId(db dataUtil.DB, userId int64) (list []int64)
 	InsertRole(db dataUtil.DB, sysRole *systemModels.SysRoleAdd)
 	UpdateRole(db dataUtil.DB, sysRole *systemModels.SysRoleEdit)

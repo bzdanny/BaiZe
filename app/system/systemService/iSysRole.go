@@ -2,6 +2,7 @@ package systemService
 
 import (
 	"github.com/bzdanny/BaiZe/app/system/systemModels"
+	"github.com/bzdanny/BaiZe/baize/baizeEntity"
 )
 
 type IRoleService interface {
@@ -16,7 +17,7 @@ type IRoleService interface {
 	CountUserRoleByRoleId(ids []int64) bool
 	SelectBasicRolesByUserId(userId int64) (roles []*systemModels.SysRole)
 	SelectRoleAll(role *systemModels.SysRoleDQL) (list []*systemModels.SysRoleVo)
-	RolePermissionByRoles(roles []*systemModels.SysRole) (rolePerms []string, loginRoles []*systemModels.Role)
+	RolePermissionByRoles(roles []*systemModels.SysRole) (rolePerms []string, loginRoles []*baizeEntity.Role)
 	SelectRoleListByUserId(userId int64) (list []int64)
 	CheckRoleNameUnique(id int64, roleName string) bool
 	CheckRoleKeyUnique(id int64, roleKey string) bool

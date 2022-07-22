@@ -73,6 +73,6 @@ func (ddc *DictDataController) DictDataEdit(c *gin.Context) {
 func (ddc *DictDataController) DictDataRemove(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	bzc.SetLog("字典数据", "DELETE")
-	ddc.dds(bzc.ParamInt64Array("dictCodes"))
+	ddc.dds.DeleteDictDataByIds(bzc.ParamInt64Array("dictCodes"))
 	bzc.Success()
 }

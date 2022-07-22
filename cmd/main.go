@@ -10,7 +10,7 @@ import (
 
 func init() {
 	if len(os.Args) <= 1 {
-		setting.Init("../config/config.yaml")
+		setting.Init("./config/config.yaml")
 	} else {
 		setting.Init(os.Args[1])
 	}
@@ -22,7 +22,7 @@ func newApp(r *routes.Router) *gin.Engine {
 	return routes.RegisterServer(r)
 }
 
-// localhost:9000/knit
+// localhost:9000
 
 // @title baize
 // @version 2.0.x
