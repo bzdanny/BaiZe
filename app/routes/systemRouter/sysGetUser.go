@@ -7,7 +7,7 @@ import (
 
 func InitGetUser(router *gin.RouterGroup, loginController *systemController.LoginController) {
 	router.GET("/getInfo", loginController.GetInfo)
-	//router.GET("/getRouters", loginController.GetRouters)
+	router.GET("/getRouters", loginController.GetRouters)
 
 }
 func InitLoginRouter(router *gin.RouterGroup, loginController *systemController.LoginController) {

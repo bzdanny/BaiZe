@@ -3,7 +3,7 @@ package token
 import (
 	"github.com/bzdanny/BaiZe/app/constant/constants"
 	"github.com/bzdanny/BaiZe/app/system/systemModels"
-	"github.com/bzdanny/BaiZe/baize/datasource"
+	"github.com/bzdanny/BaiZe/baize/utils/redisUtils"
 	"time"
 )
 
@@ -16,6 +16,6 @@ func Init(expireTime int64) {
 func RefreshToken(loginUser *systemModels.LoginUser) {
 	loginUser.ExpireTime = time.Now().Add(timeLive).Unix()
 	token := constants.LoginTokenKey + loginUser.Token
-	datasource.GetRedisClient().Set(token, loginUser, timeLive)
+	redisUtils.SetStruct(token, loginUser, timeLive)
 
 }

@@ -3,9 +3,11 @@ package systemServiceImpl
 import (
 	"github.com/bzdanny/BaiZe/app/monitor/monitorModels"
 	"github.com/bzdanny/BaiZe/app/system/systemDao"
+	"github.com/bzdanny/BaiZe/app/system/systemDao/systemDaoImpl"
 	"github.com/bzdanny/BaiZe/app/system/systemModels"
 	"github.com/bzdanny/BaiZe/app/utils"
 	"github.com/bzdanny/BaiZe/app/utils/jwt"
+	"github.com/bzdanny/BaiZe/baize/baizeEntity"
 	"github.com/bzdanny/BaiZe/baize/datasource"
 	"github.com/bzdanny/BaiZe/baize/utils/token"
 	"github.com/mojocn/base64Captcha"
@@ -22,8 +24,8 @@ type LoginService struct {
 	//iLoginforService monitorService.ILogininforService
 }
 
-func NewLoginService() *LoginService {
-	return &LoginService{}
+func NewLoginService(data *datasource.Data, ud *systemDaoImpl.SysUserDao, md *systemDaoImpl.SysMenuDao, rd *systemDaoImpl.SysRoleDao) *LoginService {
+	return &LoginService{data: data, userDao: ud, menuDao: md, roleDao: rd}
 }
 
 func (loginService *LoginService) Login(user *systemModels.User, l *monitorModels.Logininfor) *string {
@@ -31,10 +33,10 @@ func (loginService *LoginService) Login(user *systemModels.User, l *monitorModel
 	l.Msg = "登录成功"
 	loginUser := new(systemModels.LoginUser)
 	loginUser.User = user
-	//roles := loginService.roleDao.SelectBasicRolesByUserId(loginService.data.GetSlaveDb(),user.UserId)
-	//byRoles, loginRoles := loginService.roleDao.RolePermissionByRoles(roles)
-	//loginUser.User.Roles = loginRoles
-	//loginUser.RolePerms = byRoles
+	roles := loginService.roleDao.SelectBasicRolesByUserId(loginService.data.GetSlaveDb(), user.UserId)
+	byRoles, loginRoles := loginService.RolePermissionByRoles(roles)
+	loginUser.User.Roles = loginRoles
+	loginUser.RolePerms = byRoles
 	permission := loginService.getMenuPermission(user.UserId)
 	loginUser.Permissions = permission
 	loginUser.User.LoginIp = l.IpAddr
@@ -89,4 +91,13 @@ func (loginService *LoginService) GenerateCode() (m *systemModels.CaptchaVo) {
 
 func (loginService *LoginService) VerityCaptcha(id, base64 string) bool {
 	return store.Verify(id, base64, true)
+}
+func (loginService *LoginService) RolePermissionByRoles(roles []*systemModels.SysRole) (rolePerms []string, loginRoles []*baizeEntity.Role) {
+	loginRoles = make([]*baizeEntity.Role, 0, len(roles))
+	rolePerms = make([]string, 0, len(roles))
+	for _, role := range roles {
+		rolePerms = append(rolePerms, role.RoleKey)
+		loginRoles = append(loginRoles, &baizeEntity.Role{RoleId: role.RoleId, DataScope: role.DataScope})
+	}
+	return
 }

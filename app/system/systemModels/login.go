@@ -27,23 +27,23 @@ type LoginUser struct {
 }
 
 type User struct {
-	UserId      int64                  `json:"userId,string" db:"user_id" :"user_id"`
-	DeptId      *int64                 `json:"deptId" db:"dept_id" :"dept_id"`
-	UserName    string                 `json:"userName" db:"user_name" :"user_name"`
-	NickName    string                 `json:"nickName" db:"nick_name" :"nick_name"`
-	Email       *string                `json:"email" db:"email" :"email"`
-	Phonenumber *string                `json:"phonenumber"db:"phonenumber" :"phonenumber"`
-	Sex         string                 `json:"sex" db:"sex" :"sex"`
-	Avatar      *string                `json:"avatar" db:"avatar" :"avatar"`
-	Password    string                 `json:"-" db:"password" :"password"`
-	Status      string                 `json:"status" db:"status" :"status"`
-	DelFlag     string                 `json:"delFlag" db:"del_flag" :"del_flag"`
-	LoginIp     string                 `json:"loginIp" db:"login_ip" :"login_ip"`
-	LoginDate   *time.Time             `json:"loginDate" db:"login_date" :"login_date"`
-	Remark      *string                `json:"remark" db:"remark" :"remark"`
-	ParentId    *int64                 `json:"parentId" db:"parent_id" :"parent_id"`
-	DeptName    *string                `json:"deptName" db:"dept_name" :"dept_name"`
-	CreateTime  *baizeEntity.BaiZeTime `json:"createTime" db:"create_time" :"create_time"`
+	UserId      int64                  `json:"userId,string" db:"user_id" db:"user_id"`
+	DeptId      *int64                 `json:"deptId" db:"dept_id" db:"dept_id"`
+	UserName    string                 `json:"userName" db:"user_name" db:"user_name"`
+	NickName    string                 `json:"nickName" db:"nick_name" db:"nick_name"`
+	Email       *string                `json:"email" db:"email" db:"email"`
+	Phonenumber *string                `json:"phonenumber"db:"phonenumber" db:"phonenumber"`
+	Sex         string                 `json:"sex" db:"sex" db:"sex"`
+	Avatar      *string                `json:"avatar" db:"avatar" db:"avatar"`
+	Password    string                 `json:"-" db:"password" db:"password"`
+	Status      string                 `json:"status" db:"status" db:"status"`
+	DelFlag     string                 `json:"delFlag" db:"del_flag" db:"del_flag"`
+	LoginIp     string                 `json:"loginIp" db:"login_ip" db:"login_ip"`
+	LoginDate   *time.Time             `json:"loginDate" db:"login_date" db:"login_date"`
+	Remark      *string                `json:"remark" db:"remark" db:"remark"`
+	ParentId    *int64                 `json:"parentId" db:"parent_id" db:"parent_id"`
+	DeptName    *string                `json:"deptName" db:"dept_name" db:"dept_name"`
+	CreateTime  *baizeEntity.BaiZeTime `json:"createTime" db:"create_time" db:"create_time"`
 	Roles       []*baizeEntity.Role    `json:"roles"`
 }
 
