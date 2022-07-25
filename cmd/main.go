@@ -5,6 +5,7 @@ import (
 	"github.com/bzdanny/BaiZe/app/routes"
 	"github.com/bzdanny/BaiZe/app/setting"
 	"github.com/bzdanny/BaiZe/baize/utils/logger"
+	"github.com/bzdanny/BaiZe/baize/utils/token"
 	"github.com/bzdanny/BaiZe/pkg/snowflake"
 	"github.com/gin-gonic/gin"
 	"os"
@@ -47,6 +48,7 @@ func main() {
 	defer cleanup()
 	snowflake.Init()
 	logger.Init()
+	token.Init()
 	app.Run(fmt.Sprintf(":%d", setting.Conf.Port))
 
 }

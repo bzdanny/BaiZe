@@ -2,6 +2,7 @@ package token
 
 import (
 	"github.com/bzdanny/BaiZe/app/constant/constants"
+	"github.com/bzdanny/BaiZe/app/setting"
 	"github.com/bzdanny/BaiZe/app/system/systemModels"
 	"github.com/bzdanny/BaiZe/baize/utils/redisUtils"
 	"time"
@@ -9,8 +10,8 @@ import (
 
 var timeLive time.Duration
 
-func Init(expireTime int64) {
-	timeLive = time.Duration(expireTime) * time.Minute
+func Init() {
+	timeLive = time.Duration(setting.Conf.TokenConfig.ExpireTime) * time.Minute
 }
 
 func RefreshToken(loginUser *systemModels.LoginUser) {
