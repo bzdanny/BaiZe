@@ -11,6 +11,9 @@ import (
 
 func SetString(key string, str string, expiration time.Duration) {
 	go func() {
+		defer func() {
+			// todo //异常处理
+		}()
 		err := datasource.GetRedisClient().Set(key, str, expiration).Err()
 		if err != nil {
 			zap.L().Error("Redis存储失败", zap.Error(err))
@@ -30,10 +33,15 @@ func SetStruct(key string, value interface{}, expiration time.Duration) {
 	if err != nil {
 		zap.L().Error("Redis存储失败", zap.Error(err))
 	}
-	err = datasource.GetRedisClient().Set(key, marshal, expiration).Err()
-	if err != nil {
-		zap.L().Error("Redis存储失败", zap.Error(err))
-	}
+	go func() {
+		defer func() {
+			// todo //异常处理
+		}()
+		err = datasource.GetRedisClient().Set(key, marshal, expiration).Err()
+		if err != nil {
+			zap.L().Error("Redis存储失败", zap.Error(err))
+		}
+	}()
 }
 
 func Keys(pattern string) []string {

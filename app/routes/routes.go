@@ -70,7 +70,7 @@ func RegisterServer(router *Router) *gin.Engine {
 	}
 
 	r.NoRoute(func(c *gin.Context) {
-		c.JSON(http.StatusNotFound, gin.H{
+		c.JSON(http.StatusOK, gin.H{
 			"msg": "404",
 		})
 	})

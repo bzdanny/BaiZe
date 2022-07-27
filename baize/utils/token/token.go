@@ -18,5 +18,4 @@ func RefreshToken(loginUser *systemModels.LoginUser) {
 	loginUser.ExpireTime = time.Now().Add(timeLive).Unix()
 	token := constants.LoginTokenKey + loginUser.Token
 	redisUtils.SetStruct(token, loginUser, timeLive)
-
 }
