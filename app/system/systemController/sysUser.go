@@ -1,21 +1,26 @@
 package systemController
 
 import (
+	"fmt"
 	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/bzdanny/BaiZe/app/system/systemModels"
 	"github.com/bzdanny/BaiZe/app/system/systemService"
 	"github.com/bzdanny/BaiZe/app/system/systemService/systemServiceImpl"
+	"github.com/bzdanny/BaiZe/app/utils"
 	"github.com/bzdanny/BaiZe/baize/baizeContext"
 	"github.com/gin-gonic/gin"
+	"github.com/gogf/gf/v2/util/gconv"
 	"go.uber.org/zap"
 )
 
 type UserController struct {
 	us systemService.IUserService
+	ps systemService.IPostService
+	rs systemService.IRoleService
 }
 
-func NewUserController(us *systemServiceImpl.UserService) *UserController {
-	return &UserController{us: us}
+func NewUserController(us *systemServiceImpl.UserService, ps *systemServiceImpl.PostService, rs *systemServiceImpl.RoleService) *UserController {
+	return &UserController{us: us, ps: ps, rs: rs}
 }
 
 func (uc *UserController) ChangeStatus(c *gin.Context) {
@@ -49,6 +54,7 @@ func (uc *UserController) UserEdit(c *gin.Context) {
 	bzc.SetLog("用户管理", "UPDATE")
 	sysUser := new(systemModels.SysUserEdit)
 	if err := c.ShouldBindJSON(sysUser); err != nil {
+		fmt.Println(err)
 		bzc.ParameterError()
 		return
 	}
@@ -104,24 +110,24 @@ func (uc *UserController) UserList(c *gin.Context) {
 
 }
 func (uc *UserController) UserGetInfo(c *gin.Context) {
-	//bzc := baizeContext.NewBaiZeContext(c)
-	//m := make(map[string]interface{})
-	//m["posts"] = iPost.SelectPostAll()
-	//user := bzc.GetCurrentUser()
-	//role := new(systemModels.SysRoleDQL)
-	//c.ShouldBind(role)
-	//role.SetDataScope(user, "d", "")
-	//roleList := iRole.SelectRoleAll(role)
-	//if !admin.IsAdmin(user.UserId) {
-	//	for i, role := range roleList {
-	//		if role.RoleId == 1 {
-	//			roleList = append(roleList[:i], roleList[i+1:]...)
-	//			break
-	//		}
-	//	}
-	//}
-	//m["roles"] = roleList
-	//bzc.SuccessData(m)
+	bzc := baizeContext.NewBaiZeContext(c)
+	m := make(map[string]interface{})
+	m["posts"] = uc.ps.SelectPostAll()
+	user := bzc.GetUser()
+	role := new(systemModels.SysRoleDQL)
+	c.ShouldBind(role)
+	role.SetDataScope(user, "d", "")
+	roleList := uc.rs.SelectRoleAll(role)
+	if !utils.IsAdmin(user.UserId) {
+		for i, role := range roleList {
+			if role.RoleId == 1 {
+				roleList = append(roleList[:i], roleList[i+1:]...)
+				break
+			}
+		}
+	}
+	m["roles"] = roleList
+	bzc.SuccessData(m)
 
 }
 func (uc *UserController) UserAuthRole(c *gin.Context) {
@@ -136,17 +142,17 @@ func (uc *UserController) UserAuthRole(c *gin.Context) {
 	role := new(systemModels.SysRoleDQL)
 	user := bzc.GetUser()
 	role.SetDataScope(user, "d", "")
-	//roles := iRole.SelectRoleAll(role)
-	//if !admin.IsAdmin(user.UserId) {
-	//	for i, role := range roles {
-	//		if role.RoleId == 1 {
-	//			roles = append(roles[:i], roles[i+1:]...)
-	//			break
-	//		}
-	//	}
-	//}
-	//m["roles"] = roles
-	//m["roleIds"] = slicesUtils.IntSlicesToString(iRole.SelectRoleListByUserId(userId))
+	roles := uc.rs.SelectRoleAll(role)
+	if !utils.IsAdmin(user.UserId) {
+		for i, role := range roles {
+			if role.RoleId == 1 {
+				roles = append(roles[:i], roles[i+1:]...)
+				break
+			}
+		}
+	}
+	m["roles"] = roles
+	m["roleIds"] = gconv.Strings(uc.rs.SelectRoleListByUserId(userId))
 	bzc.SuccessData(m)
 }
 
@@ -157,24 +163,24 @@ func (uc *UserController) UserGetInfoById(c *gin.Context) {
 		bzc.ParameterError()
 	}
 	m := make(map[string]interface{})
-	//postList := iPost.SelectPostAll()
-	//m["posts"] = postList
+	postList := uc.ps.SelectPostAll()
+	m["posts"] = postList
 	user := bzc.GetUser()
 	role := new(systemModels.SysRoleDQL)
 	role.SetDataScope(user, "d", "")
-	//roleList := iRole.SelectRoleAll(role)
-	//if !admin.IsAdmin(user.UserId) {
-	//	for i, role := range roleList {
-	//		if role.RoleId == 1 {
-	//			roleList = append(roleList[:i], roleList[i+1:]...)
-	//			break
-	//		}
-	//	}
-	//}
-	//m["roles"] = roleList
-	//m["postIds"] = slicesUtils.IntSlicesToString(iPost.SelectPostListByUserId(userId))
-	//m["roleIds"] = slicesUtils.IntSlicesToString(iRole.SelectRoleListByUserId(userId))
-	//m["sysUser"] = iUser.SelectUserById(userId)
+	roleList := uc.rs.SelectRoleAll(role)
+	if !utils.IsAdmin(user.UserId) {
+		for i, role := range roleList {
+			if role.RoleId == 1 {
+				roleList = append(roleList[:i], roleList[i+1:]...)
+				break
+			}
+		}
+	}
+	m["roles"] = roleList
+	m["postIds"] = gconv.Strings(uc.ps.SelectPostListByUserId(userId))
+	m["roleIds"] = gconv.Strings(uc.rs.SelectRoleListByUserId(userId))
+	m["sysUser"] = uc.us.SelectUserById(userId)
 	bzc.SuccessData(m)
 
 }
@@ -208,7 +214,7 @@ func (uc *UserController) UserImportData(c *gin.Context) {
 func (uc *UserController) UserExport(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	user := new(systemModels.SysUserDQL)
-	c.ShouldBind(user)
+	_ = c.ShouldBind(user)
 	user.SetDataScope(bzc.GetUser(), "d", "u")
 	bzc.DataPackageExcel(uc.us.UserExport(user))
 	return

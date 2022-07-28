@@ -21,7 +21,7 @@ func NewDeptController(ds *systemServiceImpl.DeptService) *DeptController {
 func (dc *DeptController) DeptList(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	dept := new(systemModels.SysDeptDQL)
-	c.ShouldBind(dept)
+	_ = c.ShouldBind(dept)
 	dept.SetDataScope(bzc.GetUser(), "d", "")
 	bzc.SuccessData(dc.ds.SelectDeptList(dept))
 

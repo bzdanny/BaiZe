@@ -80,7 +80,7 @@ type SysUserVo struct {
 	Status      string     `json:"status" db:"status"`
 	DelFlag     string     `json:"delFlag" db:"del_flag"`
 	LoginIp     string     `json:"loginIp" db:"login_ip"`
-	DeptId      *int64     `json:"deptId" db:"dept_id"`
+	DeptId      *int64     `json:"deptId,string" db:"dept_id"`
 	LoginDate   *time.Time `json:"loginDate" db:"login_date"`
 	DeptName    *string    `json:"deptName" db:"dept_name"`
 	Leader      *string    `json:"leader" db:"leader"`
