@@ -39,11 +39,14 @@ func (uc *UserController) ChangeStatus(c *gin.Context) {
 func (uc *UserController) ResetPwd(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	bzc.SetLog("用户管理", "UPDATE")
-	sysUser := new(systemModels.SysUserEdit)
-	if err := c.ShouldBindJSON(sysUser); err != nil {
+	resetPwd := new(systemModels.ResetPwd)
+	if err := c.ShouldBindJSON(resetPwd); err != nil {
 		bzc.ParameterError()
 		return
 	}
+	sysUser := new(systemModels.SysUserEdit)
+	sysUser.UserId = resetPwd.UserId
+	sysUser.Password = resetPwd.Password
 	sysUser.SetUpdateBy(bzc.GetUserId())
 	uc.us.ResetPwd(sysUser)
 	bzc.Success()
@@ -230,7 +233,8 @@ func (uc *UserController) ImportTemplate(c *gin.Context) {
 func (uc *UserController) InsertAuthRole(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	bzc.SetLog("用户管理", "GRANT")
-	uc.us.InsertUserAuth(bzc.QueryInt64("userId"), bzc.QueryInt64Array("roleIds"))
+	array := bzc.QueryInt64Array("roleIds")
+	uc.us.InsertUserAuth(bzc.QueryInt64("userId"), array)
 	bzc.Success()
 	return
 }

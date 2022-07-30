@@ -80,9 +80,6 @@ func NamedQueryList[T any](db DB, t []*T, arg NamedQueryEntity, query, defaultSo
 	} else {
 		query += " " + defaultSort
 	}
-	if arg.GetLimit() != "" {
-		query += arg.GetLimit()
-	}
 	listRows, err := db.NamedQuery(query, arg)
 	if err != nil {
 		panic(err)

@@ -220,8 +220,8 @@ const { queryParams, form, rules } = toRefs(data);
 function getList() {
   loading.value = true;
   listType(proxy.addDateRange(queryParams.value, dateRange.value)).then(response => {
-    typeList.value = response.rows;
-    total.value = response.total;
+    typeList.value = response.data.rows;
+    total.value = response.data.total;
     loading.value = false;
   });
 }

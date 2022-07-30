@@ -32,9 +32,15 @@ type SysUserAdd struct {
 	RoleIds     []string `json:"roleIds"`
 	baizeEntity.BaseEntityAdd
 }
+
+type ResetPwd struct {
+	UserId   int64  `json:"userId,string" db:"user_id"binding:"required"`
+	Password string `json:"password" db:"password"binding:"required"`
+}
+
 type SysUserEdit struct {
-	UserId      int64    `json:"userId,string" db:"user_id"`
-	DeptId      *int64   `json:"deptId,string" db:"dept_id"`
+	UserId      int64    `json:"userId,string" db:"user_id"binding:"required"`
+	DeptId      *int64   `json:"deptId,string" db:"dept_id"binding:"required"`
 	UserName    string   `json:"userName" db:"user_name"`
 	NickName    string   `json:"nickName" db:"nick_name"`
 	Email       string   `json:"email" db:"email"`

@@ -95,12 +95,13 @@ function submitForm() {
   if (userId) {
     loading.value = true;
     getAuthRole(userId).then(response => {
-      form.value = response.user;
-      roles.value = response.roles;
+      form.value = response.data.user;
+      roles.value = response.data.roles;
+      let a =response.data.roleIds
       total.value = roles.value.length;
       nextTick(() => {
         roles.value.forEach(row => {
-          if (row.flag) {
+          if (a.indexOf(row.roleId)>-1) {
             proxy.$refs["roleRef"].toggleRowSelection(row);
           }
         });
