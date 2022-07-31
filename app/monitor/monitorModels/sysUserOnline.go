@@ -1,6 +1,8 @@
 package monitorModels
 
-import "github.com/bzdanny/BaiZe/app/system/systemModels"
+import (
+	"github.com/bzdanny/BaiZe/app/system/systemModels"
+)
 
 type SysUserOnline struct {
 	TokenId       string  `json:"tokenId"`

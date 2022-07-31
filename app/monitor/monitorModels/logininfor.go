@@ -1,6 +1,8 @@
 package monitorModels
 
-import "github.com/bzdanny/BaiZe/baize/baizeEntity"
+import (
+	"github.com/bzdanny/BaiZe/baize/baizeEntity"
+)
 
 type LogininforDQL struct {
 	Status   string `form:"status" db:"status"`
@@ -21,22 +23,22 @@ type Logininfor struct {
 	LoginTime     baizeEntity.BaiZeTime `json:"loginTime" db:"login_time"`
 }
 
-func SysLogininforToRows(logininfors []*Logininfor) (rows [][]string) {
-	rows = make([][]string, 0, len(logininfors)+1)
-	row1 := []string{"登录名称", "地址", "登录地点", "操作系统", "浏览器", "登录状态", "描述", "访问时间"}
-	rows = append(rows, row1)
-	for _, logininfor := range logininfors {
-		row := make([]string, 8)
-		row[0] = logininfor.UserName
-		row[1] = logininfor.IpAddr
-		row[2] = logininfor.LoginLocation
-		row[3] = logininfor.Os
-		row[4] = logininfor.Browser
-		//row[5] = excelDictionaries.ValueToLabel("sys_common_status", gconv.String(logininfor.Status))
-		row[4] = logininfor.Msg
-		row[6] = logininfor.LoginTime.ToString()
-		rows = append(rows, row)
-
-	}
-	return
-}
+//func SysLogininforToRows(logininfors []*Logininfor) (rows [][]string) {
+//	rows = make([][]string, 0, len(logininfors)+1)
+//	row1 := []string{"登录名称", "地址", "登录地点", "操作系统", "浏览器", "登录状态", "描述", "访问时间"}
+//	rows = append(rows, row1)
+//	for _, logininfor := range logininfors {
+//		row := make([]string, 8)
+//		row[0] = logininfor.UserName
+//		row[1] = logininfor.IpAddr
+//		row[2] = logininfor.LoginLocation
+//		row[3] = logininfor.Os
+//		row[4] = logininfor.Browser
+//		row[5] = excelDictionaries.ValueToLabel("sys_common_status", gconv.String(logininfor.Status))
+//		row[4] = logininfor.Msg
+//		row[6] = logininfor.LoginTime.ToString()
+//		rows = append(rows, row)
+//
+//	}
+//	return
+//}

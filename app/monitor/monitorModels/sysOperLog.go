@@ -33,20 +33,20 @@ type SysOpenLogDQL struct {
 	baizeEntity.BaseEntityDQL
 }
 
-func SysOperLogListToRows(openLogs []*SysOpenLog) (rows [][]string) {
-	rows = make([][]string, 0, len(openLogs)+1)
-	row1 := []string{"系统模块", "操作类型", "请求方式", "操作人员", "主机", "操作状态", "操作时间"}
-	rows = append(rows, row1)
-	for _, openLog := range openLogs {
-		row := make([]string, 7)
-		row[0] = openLog.Title
-		//row[1] = excelDictionaries.ValueToLabel("sys_oper_type", gconv.String(openLog.BusinessType))
-		row[2] = openLog.RequestMethod
-		row[3] = openLog.OperName
-		row[4] = openLog.OperIp
-		//row[5] = excelDictionaries.ValueToLabel("sys_common_status", gconv.String(openLog.Status))
-		row[6] = openLog.OperTime.ToString()
-		rows = append(rows, row)
-	}
-	return
-}
+//func SysOperLogListToRows(openLogs []*SysOpenLog) (rows [][]string) {
+//	rows = make([][]string, 0, len(openLogs)+1)
+//	row1 := []string{"系统模块", "操作类型", "请求方式", "操作人员", "主机", "操作状态", "操作时间"}
+//	rows = append(rows, row1)
+//	for _, openLog := range openLogs {
+//		row := make([]string, 7)
+//		row[0] = openLog.Title
+//		row[1] = excelDictionaries.ValueToLabel("sys_oper_type", gconv.String(openLog.BusinessType))
+//		row[2] = openLog.RequestMethod
+//		row[3] = openLog.OperName
+//		row[4] = openLog.OperIp
+//		row[5] = excelDictionaries.ValueToLabel("sys_common_status", gconv.String(openLog.Status))
+//		row[6] = openLog.OperTime.ToString()
+//		rows = append(rows, row)
+//	}
+//	return
+//}

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/bzdanny/BaiZe/app/constant/dataScopeAspect"
 	"github.com/bzdanny/BaiZe/baize/utils/stringUtils"
+	"math"
 	"strconv"
 )
 
@@ -51,10 +52,9 @@ func (b *BaseEntityDQL) GetLimit() string {
 		b.Page = 1
 	}
 	if b.Size < 1 {
-		b.Size = 10
-	}
-	if b.Size > 1000 {
-		b.Size = 1000
+		b.Size = math.MaxInt
+	} else if b.Size > math.MaxInt {
+		b.Size = math.MaxInt
 	}
 	return " limit " + strconv.FormatInt((b.Page-1)*b.Size, 10) + "," + strconv.FormatInt(b.Size, 10)
 
