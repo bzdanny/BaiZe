@@ -23,7 +23,7 @@ func (sysRoleMenuDao *SysRoleMenuDao) BatchRoleMenu(db dataUtil.DB, list []*syst
 }
 
 func (sysRoleMenuDao *SysRoleMenuDao) DeleteRoleMenu(db dataUtil.DB, ids []int64) {
-	query, i, err := sqlx.In("delete from sys_role_menu where role_id in", ids)
+	query, i, err := sqlx.In("delete from sys_role_menu where role_id in (?)", ids)
 	if err != nil {
 		panic(err)
 	}

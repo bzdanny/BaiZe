@@ -41,7 +41,7 @@ func (sysUserRoleDao *SysUserRoleDao) DeleteUserRoleByUserId(db dataUtil.DB, use
 }
 func (sysUserRoleDao *SysUserRoleDao) CountUserRoleByRoleId(db dataUtil.DB, ids []int64) int {
 	var count = 0
-	query, i, err := sqlx.In("select count(*) from sys_user_role where user_id in(?)", ids)
+	query, i, err := sqlx.In("select count(*) from sys_user_role where role_id in(?)", ids)
 	if err != nil {
 		panic(err)
 	}

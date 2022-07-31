@@ -1,6 +1,7 @@
 package systemController
 
 import (
+	"fmt"
 	"github.com/bzdanny/BaiZe/app/system/systemModels"
 	"github.com/bzdanny/BaiZe/app/system/systemService"
 	"github.com/bzdanny/BaiZe/app/system/systemService/systemServiceImpl"
@@ -55,6 +56,7 @@ func (dc *DeptController) DeptAdd(c *gin.Context) {
 	bzc.SetLog("部门管理", "INSERT")
 	sysDept := new(systemModels.SysDeptAdd)
 	if err := c.ShouldBindJSON(sysDept); err != nil {
+		fmt.Println(err)
 		bzc.ParameterError()
 		return
 	}

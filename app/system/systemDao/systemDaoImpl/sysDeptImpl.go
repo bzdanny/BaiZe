@@ -57,7 +57,7 @@ func (sysDeptDao *SysDeptDao) InsertDept(db dataUtil.DB, dept *systemModels.SysD
 		key += ",ancestors"
 		value += ",:ancestors"
 	}
-	if dept.OrderNum != "" {
+	if dept.OrderNum != nil {
 		key += ",order_num"
 		value += ",:order_num"
 	}
@@ -99,7 +99,7 @@ func (sysDeptDao *SysDeptDao) UpdateDept(db dataUtil.DB, dept *systemModels.SysD
 	if dept.Ancestors != "" {
 		updateSQL += ",ancestors = :ancestors"
 	}
-	if dept.OrderNum != "" {
+	if dept.OrderNum != nil {
 		updateSQL += ",order_num = :order_num"
 	}
 	if dept.Leader != "" {

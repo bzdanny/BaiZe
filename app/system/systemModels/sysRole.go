@@ -91,7 +91,7 @@ type SysRoleDept struct {
 }
 
 type SysRoleAndUserDQL struct {
-	RoleId      string `form:"roleId" db:"role_id"`
+	RoleId      string `form:"roleId" db:"role_id" binding:"required"`
 	UserName    string `form:"userName" db:"user_name"`
 	Phonenumber string `form:"phonenumber" db:"phonenumber"`
 

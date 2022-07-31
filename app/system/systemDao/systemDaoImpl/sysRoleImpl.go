@@ -180,7 +180,7 @@ func (rd *SysRoleDao) UpdateRole(db dataUtil.DB, sysRole *systemModels.SysRoleEd
 }
 
 func (rd *SysRoleDao) DeleteRoleByIds(db dataUtil.DB, ids []int64) {
-	query, i, err := sqlx.In("update sys_role set del_flag = '2' where user_id in(?)", ids)
+	query, i, err := sqlx.In("update sys_role set del_flag = '2',role_name = concat(role_name,'(delete)')  where role_id in(?)", ids)
 	if err != nil {
 		panic(err)
 	}

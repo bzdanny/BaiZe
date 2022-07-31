@@ -14,7 +14,7 @@ func NewSysRoleDeptDao() *SysRoleDeptDao {
 }
 
 func (sysRoleDeptDao *SysRoleDeptDao) DeleteRoleDept(db dataUtil.DB, ids []int64) {
-	query, i, err := sqlx.In("delete from sys_role_dept where role_id in", ids)
+	query, i, err := sqlx.In("delete from sys_role_dept where role_id in (?)", ids)
 	if err != nil {
 		panic(err)
 	}

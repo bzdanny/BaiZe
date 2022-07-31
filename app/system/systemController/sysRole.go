@@ -125,7 +125,7 @@ func (rc *RoleController) RoleRemove(c *gin.Context) {
 func (rc *RoleController) AllocatedList(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	user := new(systemModels.SysRoleAndUserDQL)
-	if err := c.ShouldBindJSON(user); err != nil {
+	if err := c.ShouldBind(user); err != nil {
 		bzc.ParameterError()
 		return
 	}
@@ -137,7 +137,7 @@ func (rc *RoleController) AllocatedList(c *gin.Context) {
 func (rc *RoleController) UnallocatedList(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	user := new(systemModels.SysRoleAndUserDQL)
-	if err := c.ShouldBindJSON(user); err != nil {
+	if err := c.ShouldBind(user); err != nil {
 		bzc.ParameterError()
 		return
 	}
