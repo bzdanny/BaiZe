@@ -1,4 +1,4 @@
-package monitorConroller
+package monitorController
 
 import (
 	"github.com/bzdanny/BaiZe/app/monitor/monitorModels"
@@ -13,7 +13,7 @@ func NewInfoServerController() *InfoServerController {
 	return &InfoServerController{}
 }
 
-func GetInfoServer(c *gin.Context) {
+func (isc *InfoServerController) GetInfoServer(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	bzc.SuccessData(monitorModels.NewServer())
 }

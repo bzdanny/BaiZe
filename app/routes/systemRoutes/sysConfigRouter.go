@@ -1,4 +1,4 @@
-package systemRouter
+package systemRoutes
 
 //func InitSysConfigRouter(router *gin.RouterGroup,systemServiceImpl.) {
 //	systemConfig := router.Group("/system/config")

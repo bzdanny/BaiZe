@@ -14,24 +14,25 @@ import (
 // ProviderSet is datasource providers.
 var ProviderSet = wire.NewSet(NewData)
 
-var redisDb *redis.Client
-
 func GetRedisClient() *redis.Client {
-	return redisDb
+	return data.redisDb
 
 }
+
+var data *Data
 
 // Data .
 type Data struct {
 	masterDb *sqlx.DB
 	slaveDb  []*sqlx.DB
+	redisDb  *redis.Client
 }
 
 // NewData .
-func NewData(data *setting.Datasource) (*Data, func(), error) {
-	masterDb := newMasterDB(data.Master)
-	slaveDb := newSlaveDB(data.Slave)
-	client := newRedis(data.Redis)
+func NewData(d *setting.Datasource) (*Data, func(), error) {
+	masterDb := newMasterDB(d.Master)
+	slaveDb := newSlaveDB(d.Slave)
+	client := newRedis(d.Redis)
 	cleanup := func() {
 		masterDb.Close()
 		for _, db := range slaveDb {
@@ -39,8 +40,9 @@ func NewData(data *setting.Datasource) (*Data, func(), error) {
 		}
 		client.Close()
 	}
-	redisDb = client
-	return &Data{masterDb: masterDb, slaveDb: slaveDb}, cleanup, nil
+
+	data = &Data{masterDb: masterDb, slaveDb: slaveDb, redisDb: client}
+	return data, cleanup, nil
 }
 
 func newMasterDB(master *setting.Master) *sqlx.DB {

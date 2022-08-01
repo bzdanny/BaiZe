@@ -7,6 +7,9 @@
 package main
 
 import (
+	"github.com/bzdanny/BaiZe/app/monitor/monitorController"
+	"github.com/bzdanny/BaiZe/app/monitor/monitorDao/monitorDaoImpl"
+	"github.com/bzdanny/BaiZe/app/monitor/monitorService/monitorServiceImpl"
 	"github.com/bzdanny/BaiZe/app/routes"
 	"github.com/bzdanny/BaiZe/app/setting"
 	"github.com/bzdanny/BaiZe/app/system/systemController"
@@ -52,7 +55,17 @@ func wireApp(settingDatasource *setting.Datasource) (*gin.Engine, func(), error)
 	menuController := systemController.NewMenuController(menuService)
 	profileController := systemController.NewProfileController(roleService, postService, userService)
 	systemControllerSystemController := systemController.NewTenantController(dictDataController, dictTypeController, loginController, userController, deptController, roleController, postController, menuController, profileController)
-	router := routes.NewRouter(systemControllerSystemController)
+	infoServerController := monitorController.NewInfoServerController()
+	logininforDao := monitorDaoImpl.NewLogininforDao()
+	logininforService := monitorServiceImpl.GetLogininforService(data, logininforDao)
+	logininforController := monitorController.NewLogininforController(logininforService)
+	operLogDao := monitorDaoImpl.NewOperLogDao()
+	operLogService := monitorServiceImpl.NewOperLogServiceService(data, operLogDao)
+	operLogController := monitorController.NewOperLogController(operLogService)
+	userOnlineService := monitorServiceImpl.NewUserOnlineService()
+	userOnlineController := monitorController.NewUserOnlineController(userOnlineService)
+	monitorControllerMonitorController := monitorController.NewMonitorController(infoServerController, logininforController, operLogController, userOnlineController)
+	router := routes.NewRouter(systemControllerSystemController, monitorControllerMonitorController)
 	engine := newApp(router)
 	return engine, func() {
 		cleanup()

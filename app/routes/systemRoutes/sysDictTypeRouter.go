@@ -1,4 +1,4 @@
-package systemRouter
+package systemRoutes
 
 import (
 	"github.com/bzdanny/BaiZe/app/system/systemController"

@@ -1,4 +1,4 @@
-package monitorConroller
+package monitorController
 
 import (
 	"github.com/bzdanny/BaiZe/app/monitor/monitorService"

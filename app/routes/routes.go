@@ -1,7 +1,9 @@
 package routes
 
 import (
-	"github.com/bzdanny/BaiZe/app/routes/systemRouter"
+	"github.com/bzdanny/BaiZe/app/monitor/monitorController"
+	"github.com/bzdanny/BaiZe/app/routes/monitorRoutes"
+	"github.com/bzdanny/BaiZe/app/routes/systemRoutes"
 	"github.com/bzdanny/BaiZe/app/setting"
 	"github.com/bzdanny/BaiZe/app/system/systemController"
 	"github.com/bzdanny/BaiZe/baize/middlewares"
@@ -22,12 +24,15 @@ import (
 var ProviderSet = wire.NewSet(NewRouter)
 
 type Router struct {
-	Sys *systemController.SystemController
+	Sys     *systemController.SystemController
+	Monitor *monitorController.MonitorController
 }
 
-func NewRouter(sys *systemController.SystemController) *Router {
+func NewRouter(sys *systemController.SystemController,
+	monitor *monitorController.MonitorController) *Router {
 	return &Router{
-		Sys: sys,
+		Sys:     sys,
+		Monitor: monitor,
 	}
 }
 
@@ -44,27 +49,27 @@ func RegisterServer(router *Router) *gin.Engine {
 
 	//不做鉴权的
 	{
-		systemRouter.InitLoginRouter(group, router.Sys.Login) //获取登录信息
+		systemRoutes.InitLoginRouter(group, router.Sys.Login) //获取登录信息
 
 	}
 	//做鉴权的
 	group.Use(middlewares.JWTAuthMiddleware())
 	{
 
-		systemRouter.InitGetUser(group, router.Sys.Login)              //获取登录信息
-		systemRouter.InitSysProfileRouter(group, router.Sys.Profile)   //个人信息
-		systemRouter.InitSysUserRouter(group, router.Sys.User)         //用户相关
-		systemRouter.InitSysDeptRouter(group, router.Sys.Dept)         //部门相关
-		systemRouter.InitSysDictDataRouter(group, router.Sys.DictData) //数据字典信息
-		systemRouter.InitSysRoleRouter(group, router.Sys.Role)         //角色相关
-		systemRouter.InitSysMenuRouter(group, router.Sys.Menu)         //菜单相关
-		//systemRouter.InitSysConfigRouter(group)      //参数配置
-		systemRouter.InitSysDictTypeRouter(group, router.Sys.DictType) //数据字典属性
-		systemRouter.InitSysPostRouter(group, router.Sys.Post)         //岗位属性
-		//monitorRoutes.InitSysUserOnlineRouter(group) //在线用户监控
-		//monitorRoutes.InitSysLogininforRouter(group) //登录用户日志
-		//monitorRoutes.InitSysOperLogRouter(group)    //操作日志
-		//monitorRoutes.InitServerRouter(group)        //服务监控
+		systemRoutes.InitGetUser(group, router.Sys.Login)              //获取登录信息
+		systemRoutes.InitSysProfileRouter(group, router.Sys.Profile)   //个人信息
+		systemRoutes.InitSysUserRouter(group, router.Sys.User)         //用户相关
+		systemRoutes.InitSysDeptRouter(group, router.Sys.Dept)         //部门相关
+		systemRoutes.InitSysDictDataRouter(group, router.Sys.DictData) //数据字典信息
+		systemRoutes.InitSysRoleRouter(group, router.Sys.Role)         //角色相关
+		systemRoutes.InitSysMenuRouter(group, router.Sys.Menu)         //菜单相关
+		//systemRoutes.InitSysConfigRouter(group)      //参数配置
+		systemRoutes.InitSysDictTypeRouter(group, router.Sys.DictType)          //数据字典属性
+		systemRoutes.InitSysPostRouter(group, router.Sys.Post)                  //岗位属性
+		monitorRoutes.InitSysUserOnlineRouter(group, router.Monitor.UserOnline) //在线用户监控
+		monitorRoutes.InitSysLogininforRouter(group, router.Monitor.Logininfor) //登录用户日志
+		monitorRoutes.InitSysOperLogRouter(group, router.Monitor.OperLog)       //操作日志
+		monitorRoutes.InitServerRouter(group, router.Monitor.Info)              //服务监控
 		//genTableRoutes.InitGenTableRouter(group)     //代码生成
 		//quartzRoutes.InitJobRouter(group)            //定时任务
 	}
