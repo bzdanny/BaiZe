@@ -1,6 +1,8 @@
 package systemServiceImpl
 
 import (
+	"github.com/bzdanny/BaiZe/app/monitor/monitorDao"
+	"github.com/bzdanny/BaiZe/app/monitor/monitorDao/monitorDaoImpl"
 	"github.com/bzdanny/BaiZe/app/monitor/monitorModels"
 	"github.com/bzdanny/BaiZe/app/system/systemDao"
 	"github.com/bzdanny/BaiZe/app/system/systemDao/systemDaoImpl"
@@ -10,22 +12,24 @@ import (
 	"github.com/bzdanny/BaiZe/baize/baizeEntity"
 	"github.com/bzdanny/BaiZe/baize/datasource"
 	"github.com/bzdanny/BaiZe/baize/utils/token"
+	"github.com/bzdanny/BaiZe/pkg/snowflake"
 	"github.com/mojocn/base64Captcha"
 	uuid "github.com/satori/go.uuid"
+	"go.uber.org/zap"
 	"image/color"
 	"time"
 )
 
 type LoginService struct {
-	data    *datasource.Data
-	userDao systemDao.IUserDao
-	menuDao systemDao.IMenuDao
-	roleDao systemDao.IRoleDao
-	//iLoginforService monitorService.ILogininforService
+	data        *datasource.Data
+	userDao     systemDao.IUserDao
+	menuDao     systemDao.IMenuDao
+	roleDao     systemDao.IRoleDao
+	loginforDao monitorDao.ILogininforDao
 }
 
-func NewLoginService(data *datasource.Data, ud *systemDaoImpl.SysUserDao, md *systemDaoImpl.SysMenuDao, rd *systemDaoImpl.SysRoleDao) *LoginService {
-	return &LoginService{data: data, userDao: ud, menuDao: md, roleDao: rd}
+func NewLoginService(data *datasource.Data, ud *systemDaoImpl.SysUserDao, md *systemDaoImpl.SysMenuDao, rd *systemDaoImpl.SysRoleDao, ld *monitorDaoImpl.LogininforDao) *LoginService {
+	return &LoginService{data: data, userDao: ud, menuDao: md, roleDao: rd, loginforDao: ld}
 }
 
 func (loginService *LoginService) Login(user *systemModels.User, l *monitorModels.Logininfor) *string {
@@ -53,7 +57,16 @@ func (loginService *LoginService) Login(user *systemModels.User, l *monitorModel
 }
 
 func (loginService *LoginService) RecordLoginInfo(loginUser *monitorModels.Logininfor) {
-	//go loginService.iLoginforService.InserLogininfor(loginService.data.GetMasterDb(), loginUser)
+	go func() {
+		defer func() {
+			if err := recover(); err != nil {
+				zap.L().Error("登录日志记录错误", zap.Any("error", err))
+			}
+		}()
+		loginUser.InfoId = snowflake.GenID()
+		loginService.loginforDao.InserLogininfor(loginService.data.GetMasterDb(), loginUser)
+	}()
+
 }
 
 func (loginService *LoginService) getMenuPermission(userId int64) []string {

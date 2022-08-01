@@ -13,6 +13,7 @@ import (
 	"github.com/bzdanny/BaiZe/app/system/systemDao/systemDaoImpl"
 	"github.com/bzdanny/BaiZe/app/system/systemService/systemServiceImpl"
 	"github.com/bzdanny/BaiZe/baize/datasource"
+	"github.com/bzdanny/BaiZe/baize/utils/logger"
 	"github.com/gin-gonic/gin"
 	"github.com/google/wire"
 )
@@ -27,5 +28,6 @@ func wireApp(*setting.Datasource) (*gin.Engine, func(), error) {
 		systemServiceImpl.ProviderSet,
 		systemController.ProviderSet,
 		routes.ProviderSet,
+		logger.ProviderSet,
 		newApp))
 }

@@ -3,7 +3,7 @@ package baizeContext
 import (
 	"github.com/bzdanny/BaiZe/app/constant/business"
 	"github.com/bzdanny/BaiZe/app/constant/constants"
-	monitorModels2 "github.com/bzdanny/BaiZe/app/monitor/monitorModels"
+	"github.com/bzdanny/BaiZe/app/monitor/monitorModels"
 	"github.com/bzdanny/BaiZe/baize/utils/ipUtils"
 	"github.com/bzdanny/BaiZe/pkg/snowflake"
 	"github.com/gin-gonic/gin"
@@ -19,7 +19,7 @@ func NewBaiZeContext(c *gin.Context) *BaiZeContext {
 }
 
 func (bzc *BaiZeContext) SetLog(title string, businessTy business.BusinessType) {
-	ol := new(monitorModels2.SysOpenLog)
+	ol := new(monitorModels.SysOpenLog)
 	ol.Title = title
 	ol.BusinessType = businessTy.Msg()
 	ol.Status = business.Success.Msg()
@@ -32,7 +32,7 @@ func (bzc *BaiZeContext) SetLog(title string, businessTy business.BusinessType) 
 	}
 	bzc.Set(constants.LogKey, ol)
 }
-func (bzc *BaiZeContext) SetUserAgent(login *monitorModels2.Logininfor) {
+func (bzc *BaiZeContext) SetUserAgent(login *monitorModels.Logininfor) {
 	login.InfoId = snowflake.GenID()
 	ua := user_agent.New(bzc.Request.Header.Get("User-Agent"))
 	ip := bzc.ClientIP()

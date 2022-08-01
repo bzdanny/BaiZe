@@ -1,12 +1,12 @@
 package logger
 
 import (
-	"bytes"
 	"fmt"
 	"github.com/bzdanny/BaiZe/app/commonModels"
+	"github.com/bzdanny/BaiZe/app/constant/constants"
 	"github.com/bzdanny/BaiZe/app/constant/httpStatus"
+	"github.com/bzdanny/BaiZe/app/monitor/monitorModels"
 	"github.com/bzdanny/BaiZe/app/setting"
-	"io/ioutil"
 	"net/http"
 
 	"net"
@@ -98,9 +98,23 @@ func GinLogger() gin.HandlerFunc {
 // GinRecovery recover掉项目可能出现的panic，并使用zap记录相关日志
 func GinRecovery(stack bool) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		data, _ := c.GetRawData()
-		c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(data))
 		defer func() {
+
+			var openLog *monitorModels.SysOpenLog
+			logs, _ := c.Get(constants.LogKey)
+			if logs != nil {
+				openLog = logs.(*monitorModels.SysOpenLog)
+				openLog.OperParam = c.Request.URL.RawQuery
+				//openLog.Method=
+				go func() {
+					defer func() {
+						if err := recover(); err != nil {
+							zap.L().Error("日志记录错误", zap.Any("error", err))
+						}
+					}()
+					//oper.InsertOperLog(openLog)
+				}()
+			}
 
 			if err := recover(); err != nil {
 				var brokenPipe bool
@@ -129,7 +143,6 @@ func GinRecovery(stack bool) gin.HandlerFunc {
 						zap.Any("error", err),
 						zap.String("path", c.Request.URL.Path),
 						zap.String("query", c.Request.URL.RawQuery),
-						zap.String("body", string(data)),
 						zap.String("ip", c.ClientIP()),
 						zap.String("user-agent", c.Request.UserAgent()),
 						zap.String("stack", string(debug.Stack())),

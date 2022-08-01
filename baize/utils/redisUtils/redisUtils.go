@@ -12,7 +12,9 @@ import (
 func SetString(key string, str string, expiration time.Duration) {
 	go func() {
 		defer func() {
-			// todo //异常处理
+			if err := recover(); err != nil {
+				zap.L().Error("redisUtils", zap.Any("error", err))
+			}
 		}()
 		err := datasource.GetRedisClient().Set(key, str, expiration).Err()
 		if err != nil {
@@ -35,7 +37,9 @@ func SetStruct(key string, value interface{}, expiration time.Duration) {
 	}
 	go func() {
 		defer func() {
-			// todo //异常处理
+			if err := recover(); err != nil {
+				zap.L().Error("redisUtils", zap.Any("error", err))
+			}
 		}()
 		err = datasource.GetRedisClient().Set(key, marshal, expiration).Err()
 		if err != nil {
