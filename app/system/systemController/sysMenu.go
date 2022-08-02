@@ -41,7 +41,6 @@ func (mc *MenuController) MenuTreeSelect(c *gin.Context) {
 }
 func (mc *MenuController) MenuAdd(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	bzc.SetLog("菜单管理", "INSERT")
 	sysMenu := new(systemModels.SysMenuDML)
 	c.ShouldBind(sysMenu)
 	if mc.ms.CheckMenuNameUnique(sysMenu) {
@@ -54,7 +53,6 @@ func (mc *MenuController) MenuAdd(c *gin.Context) {
 }
 func (mc *MenuController) MenuEdit(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	bzc.SetLog("菜单管理", "UPDATE")
 	sysMenu := new(systemModels.SysMenuDML)
 	if mc.ms.CheckMenuNameUnique(sysMenu) {
 		bzc.Waring("修改菜单'" + sysMenu.MenuName + "'失败，菜单名称已存在")
@@ -67,7 +65,6 @@ func (mc *MenuController) MenuEdit(c *gin.Context) {
 }
 func (mc *MenuController) MenuRemove(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	bzc.SetLog("菜单管理", "DELETE")
 	menuId := bzc.ParamInt64("menuId")
 	if menuId == 0 {
 		zap.L().Error("参数错误")

@@ -45,7 +45,6 @@ func (pc *PostController) PostGetInfo(c *gin.Context) {
 
 func (pc *PostController) PostAdd(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	bzc.SetLog("岗位管理", "INSERT")
 	sysPost := new(systemModels.SysPostAdd)
 	if err := c.ShouldBindJSON(sysPost); err != nil {
 		bzc.ParameterError()
@@ -58,7 +57,6 @@ func (pc *PostController) PostAdd(c *gin.Context) {
 
 func (pc *PostController) PostEdit(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	bzc.SetLog("岗位管理", "UPDATE")
 	post := new(systemModels.SysPostEdit)
 	if err := c.ShouldBindJSON(post); err != nil {
 		bzc.ParameterError()
@@ -72,7 +70,6 @@ func (pc *PostController) PostEdit(c *gin.Context) {
 
 func (pc *PostController) PostRemove(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	bzc.SetLog("岗位管理", "DELETE")
 	pc.ps.DeletePostByIds(bzc.ParamInt64Array("postIds"))
 	bzc.Success()
 }

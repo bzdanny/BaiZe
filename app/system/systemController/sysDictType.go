@@ -48,7 +48,6 @@ func (dtc *DictTypeController) DictTypeGetInfo(c *gin.Context) {
 
 func (dtc *DictTypeController) DictTypeAdd(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	bzc.SetLog("字典类型", "INSERT")
 	dictType := new(systemModels.SysDictTypeAdd)
 	if err := c.ShouldBindJSON(dictType); err != nil {
 		bzc.ParameterError()
@@ -65,7 +64,6 @@ func (dtc *DictTypeController) DictTypeAdd(c *gin.Context) {
 
 func (dtc *DictTypeController) DictTypeEdit(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	bzc.SetLog("字典类型", "UPDATE")
 	dictType := new(systemModels.SysDictTypeEdit)
 	if err := c.ShouldBindJSON(dictType); err != nil {
 		bzc.ParameterError()
@@ -83,7 +81,6 @@ func (dtc *DictTypeController) DictTypeEdit(c *gin.Context) {
 
 func (dtc *DictTypeController) DictTypeRemove(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	bzc.SetLog("字典类型", "DELETE")
 	dictIds := bzc.ParamInt64Array("dictIds")
 	//dictTypes := dtc.dts.SelectDictTypeByIds(dictIds)
 	//if dtc.dts.CheckDictDataByTypes(dictTypes) {
@@ -96,7 +93,6 @@ func (dtc *DictTypeController) DictTypeRemove(c *gin.Context) {
 
 func (dtc *DictTypeController) DictTypeClearCache(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	bzc.SetLog("字典类型", "CLEAN")
 	dtc.dts.DictTypeClearCache()
 	bzc.Success()
 }

@@ -68,7 +68,6 @@ func RegisterServer(router *Router) *gin.Engine {
 		systemRoutes.InitSysPostRouter(group, router.Sys.Post)                  //岗位属性
 		monitorRoutes.InitSysUserOnlineRouter(group, router.Monitor.UserOnline) //在线用户监控
 		monitorRoutes.InitSysLogininforRouter(group, router.Monitor.Logininfor) //登录用户日志
-		monitorRoutes.InitSysOperLogRouter(group, router.Monitor.OperLog)       //操作日志
 		monitorRoutes.InitServerRouter(group, router.Monitor.Info)              //服务监控
 		//genTableRoutes.InitGenTableRouter(group)     //代码生成
 		//quartzRoutes.InitJobRouter(group)            //定时任务

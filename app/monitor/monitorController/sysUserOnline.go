@@ -24,7 +24,6 @@ func (uoc *UserOnlineController) UserOnlineList(c *gin.Context) {
 }
 func (uoc *UserOnlineController) ForceLogout(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	bzc.SetLog("在线用户", "FORCE")
 	uoc.uos.ForceLogout(c.Param("tokenId"))
 	bzc.Success()
 }

@@ -31,14 +31,12 @@ func (lc *LogininforController) LogininforExport(c *gin.Context) {
 
 func (lc *LogininforController) LogininforRemove(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	bzc.SetLog("登录日志", "DELETE")
 	lc.ls.DeleteLogininforByIds(bzc.ParamInt64Array("infoIds"))
 	bzc.Success()
 }
 
 func (lc *LogininforController) LogininforClean(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	bzc.SetLog("登录日志", "CLEAN")
 	lc.ls.CleanLogininfor()
 	bzc.Success()
 

@@ -3,9 +3,7 @@ package logger
 import (
 	"fmt"
 	"github.com/bzdanny/BaiZe/app/commonModels"
-	"github.com/bzdanny/BaiZe/app/constant/constants"
 	"github.com/bzdanny/BaiZe/app/constant/httpStatus"
-	"github.com/bzdanny/BaiZe/app/monitor/monitorModels"
 	"github.com/bzdanny/BaiZe/app/setting"
 	"net/http"
 
@@ -99,22 +97,6 @@ func GinLogger() gin.HandlerFunc {
 func GinRecovery(stack bool) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		defer func() {
-
-			var openLog *monitorModels.SysOpenLog
-			logs, _ := c.Get(constants.LogKey)
-			if logs != nil {
-				openLog = logs.(*monitorModels.SysOpenLog)
-				openLog.OperParam = c.Request.URL.RawQuery
-				//openLog.Method=
-				go func() {
-					defer func() {
-						if err := recover(); err != nil {
-							zap.L().Error("日志记录错误", zap.Any("error", err))
-						}
-					}()
-					//oper.InsertOperLog(openLog)
-				}()
-			}
 
 			if err := recover(); err != nil {
 				var brokenPipe bool

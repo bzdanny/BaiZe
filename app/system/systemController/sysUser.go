@@ -25,7 +25,6 @@ func NewUserController(us *systemServiceImpl.UserService, ps *systemServiceImpl.
 
 func (uc *UserController) ChangeStatus(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	bzc.SetLog("用户管理", "UPDATE")
 
 	sysUser := new(systemModels.SysUserEdit)
 	if err := c.ShouldBindJSON(sysUser); err != nil {
@@ -38,7 +37,7 @@ func (uc *UserController) ChangeStatus(c *gin.Context) {
 }
 func (uc *UserController) ResetPwd(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	bzc.SetLog("用户管理", "UPDATE")
+
 	resetPwd := new(systemModels.ResetPwd)
 	if err := c.ShouldBindJSON(resetPwd); err != nil {
 		bzc.ParameterError()
@@ -54,7 +53,7 @@ func (uc *UserController) ResetPwd(c *gin.Context) {
 }
 func (uc *UserController) UserEdit(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	bzc.SetLog("用户管理", "UPDATE")
+
 	sysUser := new(systemModels.SysUserEdit)
 	if err := c.ShouldBindJSON(sysUser); err != nil {
 		fmt.Println(err)
@@ -76,7 +75,7 @@ func (uc *UserController) UserEdit(c *gin.Context) {
 
 func (uc *UserController) UserAdd(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	bzc.SetLog("用户管理", "INSERT")
+
 	user := bzc.GetUser()
 	sysUser := new(systemModels.SysUserAdd)
 	if err := c.ShouldBindJSON(sysUser); err != nil {
@@ -190,13 +189,13 @@ func (uc *UserController) UserGetInfoById(c *gin.Context) {
 
 func (uc *UserController) UserRemove(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	bzc.SetLog("用户管理", "DELETE")
+
 	uc.us.DeleteUserByIds(bzc.ParamInt64Array("userIds"))
 	bzc.Success()
 }
 func (uc *UserController) UserImportData(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	bzc.SetLog("用户管理", "IMPORT")
+
 	fileHeader, err := c.FormFile("file")
 	if err != nil {
 		panic(err)
@@ -232,7 +231,7 @@ func (uc *UserController) ImportTemplate(c *gin.Context) {
 
 func (uc *UserController) InsertAuthRole(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	bzc.SetLog("用户管理", "GRANT")
+
 	array := bzc.QueryInt64Array("roleIds")
 	uc.us.InsertUserAuth(bzc.QueryInt64("userId"), array)
 	bzc.Success()

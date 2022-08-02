@@ -46,7 +46,6 @@ func (rc *RoleController) RoleGetInfo(c *gin.Context) {
 }
 func (rc *RoleController) RoleAdd(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	bzc.SetLog("角色管理", "INSERT")
 	sysRole := new(systemModels.SysRoleAdd)
 	if err := c.ShouldBindJSON(sysRole); err != nil {
 		bzc.ParameterError()
@@ -67,8 +66,6 @@ func (rc *RoleController) RoleAdd(c *gin.Context) {
 }
 func (rc *RoleController) RoleEdit(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	bzc.SetLog("角色管理", "UPDATE")
-
 	sysRole := new(systemModels.SysRoleEdit)
 	if err := c.ShouldBindJSON(sysRole); err != nil {
 		bzc.ParameterError()
@@ -88,7 +85,6 @@ func (rc *RoleController) RoleEdit(c *gin.Context) {
 }
 func (rc *RoleController) RoleDataScope(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	bzc.SetLog("角色管理", "UPDATE")
 	sysRole := new(systemModels.SysRoleEdit)
 	if err := c.ShouldBindJSON(sysRole); err != nil {
 		bzc.ParameterError()
@@ -101,7 +97,6 @@ func (rc *RoleController) RoleDataScope(c *gin.Context) {
 
 func (rc *RoleController) RoleChangeStatus(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	bzc.SetLog("角色管理", "UPDATE")
 	sysRole := new(systemModels.SysRoleEdit)
 	if err := c.ShouldBindJSON(sysRole); err != nil {
 		bzc.ParameterError()
@@ -113,7 +108,6 @@ func (rc *RoleController) RoleChangeStatus(c *gin.Context) {
 }
 func (rc *RoleController) RoleRemove(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	bzc.SetLog("角色管理", "DELETE")
 	ids := bzc.ParamInt64Array("rolesIds")
 	if rc.rs.CountUserRoleByRoleId(ids) {
 		bzc.Waring("角色已分配，不能删除")
@@ -147,14 +141,12 @@ func (rc *RoleController) UnallocatedList(c *gin.Context) {
 }
 func (rc *RoleController) InsertAuthUser(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	bzc.SetLog("角色管理", "GRANT")
 	rc.rs.InsertAuthUsers(bzc.QueryInt64("roleId"), bzc.QueryInt64Array("userIds"))
 	bzc.Success()
 	return
 }
 func (rc *RoleController) CancelAuthUser(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	bzc.SetLog("角色管理", "GRANT")
 	userRole := new(systemModels.SysUserRole)
 	if err := c.ShouldBindJSON(userRole); err != nil {
 		bzc.ParameterError()
@@ -166,7 +158,6 @@ func (rc *RoleController) CancelAuthUser(c *gin.Context) {
 }
 func (rc *RoleController) CancelAuthUserAll(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	bzc.SetLog("角色管理", "GRANT")
 	rc.rs.DeleteAuthUsers(bzc.QueryInt64("roleId"), bzc.QueryInt64Array("userIds"))
 	bzc.Success()
 	return

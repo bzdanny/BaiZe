@@ -53,7 +53,6 @@ func (dc *DeptController) RoleDeptTreeselect(c *gin.Context) {
 
 func (dc *DeptController) DeptAdd(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	bzc.SetLog("部门管理", "INSERT")
 	sysDept := new(systemModels.SysDeptAdd)
 	if err := c.ShouldBindJSON(sysDept); err != nil {
 		fmt.Println(err)
@@ -70,7 +69,6 @@ func (dc *DeptController) DeptAdd(c *gin.Context) {
 }
 func (dc *DeptController) DeptEdit(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	bzc.SetLog("部门管理", "UPDATE")
 	sysDept := new(systemModels.SysDeptEdit)
 	if err := c.ShouldBindJSON(sysDept); err != nil {
 		bzc.ParameterError()
@@ -86,7 +84,6 @@ func (dc *DeptController) DeptEdit(c *gin.Context) {
 }
 func (dc *DeptController) DeptRemove(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	bzc.SetLog("部门管理", "DELETE")
 	deptId := bzc.ParamInt64("deptId")
 	if deptId == 0 {
 		zap.L().Error("参数错误")

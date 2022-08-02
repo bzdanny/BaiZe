@@ -48,7 +48,6 @@ func (ddc *DictDataController) DictDataType(c *gin.Context) {
 
 func (ddc *DictDataController) DictDataAdd(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	bzc.SetLog("字典数据", "INSERT")
 	dictData := new(systemModels.SysDictDataAdd)
 	if err := c.ShouldBindJSON(dictData); err != nil {
 		bzc.ParameterError()
@@ -60,7 +59,6 @@ func (ddc *DictDataController) DictDataAdd(c *gin.Context) {
 }
 func (ddc *DictDataController) DictDataEdit(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	bzc.SetLog("字典数据", "UPDATE")
 	dictData := new(systemModels.SysDictDataEdit)
 	if err := c.ShouldBindJSON(dictData); err != nil {
 		bzc.ParameterError()
@@ -72,7 +70,6 @@ func (ddc *DictDataController) DictDataEdit(c *gin.Context) {
 }
 func (ddc *DictDataController) DictDataRemove(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	bzc.SetLog("字典数据", "DELETE")
 	ddc.dds.DeleteDictDataByIds(bzc.ParamInt64Array("dictCodes"))
 	bzc.Success()
 }

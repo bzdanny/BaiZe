@@ -31,7 +31,6 @@ func (pc *ProfileController) Profile(c *gin.Context) {
 
 func (pc *ProfileController) ProfileUpdateProfile(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	bzc.SetLog("个人信息", "UPDATE")
 	sysUser := new(systemModels.SysUserEdit)
 	if err := c.ShouldBindJSON(sysUser); err != nil {
 		bzc.ParameterError()
@@ -61,7 +60,6 @@ func (pc *ProfileController) ProfileUpdateProfile(c *gin.Context) {
 
 func (pc *ProfileController) ProfileUpdatePwd(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	bzc.SetLog("个人信息", "UPDATE")
 	oldPassword := c.Query("oldPassword")
 	password := c.Query("newPassword")
 	if oldPassword == password {
