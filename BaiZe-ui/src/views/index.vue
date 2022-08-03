@@ -254,6 +254,13 @@
             <span>更新日志</span>
           </div>
           <el-collapse accordion>
+            <el-collapse-item  title="v2.0.0 - 2022-08-09">
+              <ol>
+
+              </ol>
+            </el-collapse-item>
+          </el-collapse>
+          <el-collapse accordion>
             <el-collapse-item  title="v1.1.1 - 2022-01-09">
               <ol>
                 <li>添加多数据源</li>

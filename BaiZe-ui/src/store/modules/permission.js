@@ -1,5 +1,5 @@
 import auth from '@/plugins/auth'
-import router, { constantRoutes, dynamicRoutes } from '@/router'
+import router, { constantRoutes, dynamicRoutes ,permissionsRoutes} from '@/router'
 import { getRouters } from '@/api/menu'
 import Layout from '@/layout/index'
 import ParentView from '@/components/ParentView'
@@ -36,18 +36,16 @@ const usePermissionStore = defineStore(
         return new Promise(resolve => {
           // 向后端请求路由数据
           getRouters().then(res => {
-            const sdata = JSON.parse(JSON.stringify(res.data))
-            const rdata = JSON.parse(JSON.stringify(res.data))
-            const defaultData = JSON.parse(JSON.stringify(res.data))
+            const sdata =  filterDynamicRoutes(permissionsRoutes)
+            const rdata =  filterDynamicRoutes(JSON.parse(JSON.stringify(permissionsRoutes)))
             const sidebarRoutes = filterAsyncRouter(sdata)
             const rewriteRoutes = filterAsyncRouter(rdata, false, true)
-            const defaultRoutes = filterAsyncRouter(defaultData)
             const asyncRoutes = filterDynamicRoutes(dynamicRoutes)
             asyncRoutes.forEach(route => { router.addRoute(route) })
             this.setRoutes(rewriteRoutes)
             this.setSidebarRouters(constantRoutes.concat(sidebarRoutes))
             this.setDefaultRoutes(sidebarRoutes)
-            this.setTopbarRoutes(defaultRoutes)
+            this.setTopbarRoutes(sidebarRoutes)
             resolve(rewriteRoutes)
           })
         })
@@ -61,9 +59,11 @@ function filterAsyncRouter(asyncRouterMap, lastRouter = false, type = false) {
     if (type && route.children) {
       route.children = filterChildren(route.children)
     }
+
     if (route.component) {
       // Layout ParentView 组件特殊处理
-      if (route.component === 'Layout') {
+      if (route.component === "Layout") {
+
         route.component = Layout
       } else if (route.component === 'ParentView') {
         route.component = ParentView
@@ -86,6 +86,7 @@ function filterAsyncRouter(asyncRouterMap, lastRouter = false, type = false) {
 function filterChildren(childrenMap, lastRouter = false) {
   var children = []
   childrenMap.forEach((el, index) => {
+
     if (el.children && el.children.length) {
       if (el.component === 'ParentView' && !lastRouter) {
         el.children.forEach(c => {
