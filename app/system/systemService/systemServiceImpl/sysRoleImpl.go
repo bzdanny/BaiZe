@@ -61,7 +61,17 @@ func (roleService *RoleService) InsertRole(sysRole *systemModels.SysRoleAdd) {
 		}
 	}()
 	roleService.roleDao.InsertRole(tx, sysRole)
-	roleService.insertRoleMenu(tx, sysRole)
+	menuIds := sysRole.MenuIds
+	l := len(menuIds)
+	if l != 0 {
+		list := make([]*systemModels.SysRoleMenu, 0, l)
+		for _, menuId := range menuIds {
+			intMenuId, _ := strconv.ParseInt(menuId, 10, 64)
+			list = append(list, &systemModels.SysRoleMenu{RoleId: sysRole.RoleId, MenuId: intMenuId})
+		}
+		roleService.insertRoleMenu(tx, list)
+	}
+
 	return
 }
 
@@ -80,8 +90,16 @@ func (roleService *RoleService) UpdateRole(sysRole *systemModels.SysRoleEdit) {
 	}()
 	roleService.roleDao.UpdateRole(tx, sysRole)
 	roleService.roleMenuDao.DeleteRoleMenuByRoleId(tx, sysRole.RoleId)
-	//TODO
-	//roleService.insertRoleMenu(tx, sysRole)
+	menuIds := sysRole.MenuIds
+	l := len(menuIds)
+	if l != 0 {
+		list := make([]*systemModels.SysRoleMenu, 0, l)
+		for _, menuId := range menuIds {
+			intMenuId, _ := strconv.ParseInt(menuId, 10, 64)
+			list = append(list, &systemModels.SysRoleMenu{RoleId: sysRole.RoleId, MenuId: intMenuId})
+		}
+		roleService.insertRoleMenu(tx, list)
+	}
 	return
 }
 
@@ -152,17 +170,10 @@ func (roleService *RoleService) SelectRoleListByUserId(userId int64) (list []int
 
 }
 
-func (roleService *RoleService) insertRoleMenu(db dataUtil.DB, sysRole *systemModels.SysRoleAdd) {
-	menuIds := sysRole.MenuIds
-	if len(menuIds) != 0 {
-		list := make([]*systemModels.SysRoleMenu, 0, len(menuIds))
-		for _, menuId := range menuIds {
-			intMenuId, _ := strconv.ParseInt(menuId, 10, 64)
-			list = append(list, &systemModels.SysRoleMenu{RoleId: sysRole.RoleId, MenuId: intMenuId})
-		}
+func (roleService *RoleService) insertRoleMenu(db dataUtil.DB, list []*systemModels.SysRoleMenu) {
+	if len(list) != 0 {
 		roleService.roleMenuDao.BatchRoleMenu(db, list)
 	}
-
 	return
 }
 
