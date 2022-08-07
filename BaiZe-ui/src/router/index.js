@@ -125,7 +125,7 @@ export const permissionsRoutes = [
             permissions: ['system:permission:list'],
             component: () => import('@/views/system/permission/index'),
             alwaysShow: false,
-            meta: {title: "菜单管理", icon: "tree-table", noCache: false},
+            meta: {title: "权限管理", icon: "tree-table", noCache: false},
             children: null
         }, {
             name: "Dept",

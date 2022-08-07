@@ -25,7 +25,7 @@ type SysPermissionVo struct {
 	PermissionId   int64   `json:"permissionId,string" db:"permission_id"`
 	PermissionName string  `json:"permissionName" db:"permission_name"`
 	ParentName     string  `json:"parentName" db:"parent_name"`
-	ParentId       int64   `json:"parentId" db:"parent_id"`
+	ParentId       int64   `json:"parentId,string" db:"parent_id"`
 	Status         string  `json:"status" db:"status"`
 	Perms          string  `json:"perms" db:"perms"`
 	Remark         *string `json:"remark" db:"remark"`
