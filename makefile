@@ -12,7 +12,7 @@ wire:
 	cd cmd/ && wire
 
 swag:
-	cd cmd/ && swag init
+	cd cmd/ && swag init --output ../docs
 
 build:
 	make wire;
