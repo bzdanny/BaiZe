@@ -19,16 +19,16 @@ type SysRoleDQL struct {
 }
 
 type SysRoleVo struct {
-	RoleId            int64   `json:"roleId,string" db:"role_id"`
-	RoleName          string  `json:"roleName" db:"role_name"`
-	RoleKey           string  `json:"roleKey" db:"role_key"`
-	RoleSort          int     `json:"roleSort" db:"role_sort"`
-	DataScope         string  `json:"dataScope" db:"data_scope"`
-	MenuCheckStrictly bool    `json:"menuCheckStrictly" db:"menu_check_strictly"`
-	DeptCheckStrictly bool    `json:"deptCheckStrictly" db:"dept_check_strictly"`
-	Status            string  `json:"status"  db:"status"`
-	DelFlag           string  `json:"delFlag" db:"del_flag"`
-	Remark            *string `json:"remark" db:"remark"`
+	RoleId                  int64   `json:"roleId,string" db:"role_id"`
+	RoleName                string  `json:"roleName" db:"role_name"`
+	RoleKey                 string  `json:"roleKey" db:"role_key"`
+	RoleSort                int     `json:"roleSort" db:"role_sort"`
+	DataScope               string  `json:"dataScope" db:"data_scope"`
+	PermissionCheckStrictly bool    `json:"PermissionCheckStrictly" db:"Permission_check_strictly"`
+	DeptCheckStrictly       bool    `json:"deptCheckStrictly" db:"dept_check_strictly"`
+	Status                  string  `json:"status"  db:"status"`
+	DelFlag                 string  `json:"delFlag" db:"del_flag"`
+	Remark                  *string `json:"remark" db:"remark"`
 	baizeEntity.BaseEntity
 }
 
@@ -52,37 +52,37 @@ func SysRoleListToRows(roles []*SysRoleVo) (rows [][]string) {
 }
 
 type SysRoleAdd struct {
-	RoleId            int64    `json:"RoleId,string" db:"role_id"`
-	RoleName          string   `json:"roleName" db:"role_name"`
-	RoleKey           string   `json:"roleKey" db:"role_key"`
-	RoleSort          int      `json:"roleSort" db:"role_sort"`
-	DataScope         string   `json:"dataScope" db:"data_scope"`
-	MenuCheckStrictly *bool    `json:"menuCheckStrictly" db:"menu_check_strictly"`
-	DeptCheckStrictly *bool    `json:"deptCheckStrictly" db:"dept_check_strictly" `
-	Status            string   `json:"status" db:"status"`
-	Remake            string   `json:"remake" db:"remake "`
-	MenuIds           []string `json:"menuIds"`
-	DeptIds           []string `json:"deptIds"`
+	RoleId                  int64    `json:"RoleId,string" db:"role_id"`
+	RoleName                string   `json:"roleName" db:"role_name"`
+	RoleKey                 string   `json:"roleKey" db:"role_key"`
+	RoleSort                int      `json:"roleSort" db:"role_sort"`
+	DataScope               string   `json:"dataScope" db:"data_scope"`
+	PermissionCheckStrictly *bool    `json:"PermissionCheckStrictly" db:"Permission_check_strictly"`
+	DeptCheckStrictly       *bool    `json:"deptCheckStrictly" db:"dept_check_strictly" `
+	Status                  string   `json:"status" db:"status"`
+	Remake                  string   `json:"remake" db:"remake "`
+	PermissionIds           []string `json:"PermissionIds"`
+	DeptIds                 []string `json:"deptIds"`
 	baizeEntity.BaseEntityAdd
 }
 type SysRoleEdit struct {
-	RoleId            int64    `json:"RoleId,string" db:"role_id"`
-	RoleName          string   `json:"roleName" db:"role_name"`
-	RoleKey           string   `json:"roleKey" db:"role_key"`
-	RoleSort          int      `json:"roleSort" db:"role_sort"`
-	DataScope         string   `json:"dataScope" db:"data_scope"`
-	MenuCheckStrictly *bool    `json:"menuCheckStrictly" db:"menu_check_strictly"`
-	DeptCheckStrictly *bool    `json:"deptCheckStrictly" db:"dept_check_strictly" `
-	Status            string   `json:"status" db:"status"`
-	Remake            string   `json:"remake" db:"remake "`
-	MenuIds           []string `json:"menuIds"`
-	DeptIds           []string `json:"deptIds"`
+	RoleId                  int64    `json:"RoleId,string" db:"role_id"`
+	RoleName                string   `json:"roleName" db:"role_name"`
+	RoleKey                 string   `json:"roleKey" db:"role_key"`
+	RoleSort                int      `json:"roleSort" db:"role_sort"`
+	DataScope               string   `json:"dataScope" db:"data_scope"`
+	PermissionCheckStrictly *bool    `json:"permissionCheckStrictly" db:"permission_check_strictly"`
+	DeptCheckStrictly       *bool    `json:"deptCheckStrictly" db:"dept_check_strictly" `
+	Status                  string   `json:"status" db:"status"`
+	Remake                  string   `json:"remake" db:"remake "`
+	PermissionIds           []string `json:"permissionIds"`
+	DeptIds                 []string `json:"deptIds"`
 	baizeEntity.BaseEntityEdit
 }
 
-type SysRoleMenu struct {
-	RoleId int64 `db:"role_id"`
-	MenuId int64 `db:"menu_id"`
+type SysRolePermission struct {
+	RoleId       int64 `db:"role_id"`
+	PermissionId int64 `db:"permission_id"`
 }
 
 type SysRoleDept struct {

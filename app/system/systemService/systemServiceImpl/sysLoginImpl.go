@@ -21,15 +21,15 @@ import (
 )
 
 type LoginService struct {
-	data        *datasource.Data
-	userDao     systemDao.IUserDao
-	menuDao     systemDao.IMenuDao
-	roleDao     systemDao.IRoleDao
-	loginforDao monitorDao.ILogininforDao
+	data          *datasource.Data
+	userDao       systemDao.IUserDao
+	permissionDao systemDao.IPermissionDao
+	roleDao       systemDao.IRoleDao
+	loginforDao   monitorDao.ILogininforDao
 }
 
-func NewLoginService(data *datasource.Data, ud *systemDaoImpl.SysUserDao, md *systemDaoImpl.SysMenuDao, rd *systemDaoImpl.SysRoleDao, ld *monitorDaoImpl.LogininforDao) *LoginService {
-	return &LoginService{data: data, userDao: ud, menuDao: md, roleDao: rd, loginforDao: ld}
+func NewLoginService(data *datasource.Data, ud *systemDaoImpl.SysUserDao, md *systemDaoImpl.SysPermissionDao, rd *systemDaoImpl.SysRoleDao, ld *monitorDaoImpl.LogininforDao) *LoginService {
+	return &LoginService{data: data, userDao: ud, permissionDao: md, roleDao: rd, loginforDao: ld}
 }
 
 func (loginService *LoginService) Login(user *systemModels.User, l *monitorModels.Logininfor) *string {
@@ -41,7 +41,7 @@ func (loginService *LoginService) Login(user *systemModels.User, l *monitorModel
 	byRoles, loginRoles := loginService.RolePermissionByRoles(roles)
 	loginUser.User.Roles = loginRoles
 	loginUser.RolePerms = byRoles
-	permission := loginService.getMenuPermission(user.UserId)
+	permission := loginService.getPermissionPermission(user.UserId)
 	loginUser.Permissions = permission
 	loginUser.User.LoginIp = l.IpAddr
 	now := time.Now()
@@ -69,12 +69,12 @@ func (loginService *LoginService) RecordLoginInfo(loginUser *monitorModels.Login
 
 }
 
-func (loginService *LoginService) getMenuPermission(userId int64) []string {
+func (loginService *LoginService) getPermissionPermission(userId int64) []string {
 	perms := make([]string, 0, 1)
 	if utils.IsAdmin(userId) {
 		perms = append(perms, "*:*:*")
 	} else {
-		mysqlPerms := loginService.menuDao.SelectMenuPermsByUserId(loginService.data.GetMasterDb(), userId)
+		mysqlPerms := loginService.permissionDao.SelectPermissionPermsByUserId(loginService.data.GetMasterDb(), userId)
 
 		for _, perm := range mysqlPerms {
 			if len(perm) != 0 {

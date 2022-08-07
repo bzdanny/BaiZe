@@ -169,7 +169,7 @@ onMounted(() => {
   color: #303133;
 }
 
-/* sub-menu item */
+/* sub-permission item */
 .topmenu-container.el-menu--horizontal > .el-sub-menu .el-sub-menu__title {
   float: left;
   height: 50px !important;

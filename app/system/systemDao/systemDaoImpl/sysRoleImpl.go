@@ -11,7 +11,7 @@ import (
 
 func NewSysRoleDao() *SysRoleDao {
 	return &SysRoleDao{
-		selectSql: ` select distinct r.role_id, r.role_name, r.role_key, r.role_sort, r.data_scope, r.menu_check_strictly, r.dept_check_strictly, r.status, r.del_flag, r.create_time, r.remark from sys_role r
+		selectSql: ` select distinct r.role_id, r.role_name, r.role_key, r.role_sort, r.data_scope, r.Permission_check_strictly, r.dept_check_strictly, r.status, r.del_flag, r.create_time, r.remark from sys_role r
 	        left join sys_user_role ur on ur.role_id = r.role_id
 	        left join sys_user u on u.user_id = ur.user_id
 	        left join sys_dept d on u.dept_id = d.dept_id`,
@@ -119,9 +119,9 @@ func (rd *SysRoleDao) InsertRole(db dataUtil.DB, sysRole *systemModels.SysRoleAd
 		key += ",data_scope"
 		value += ",:data_scope"
 	}
-	if sysRole.MenuCheckStrictly != nil {
-		key += ",menu_check_strictly"
-		value += ",:menu_check_strictly"
+	if sysRole.PermissionCheckStrictly != nil {
+		key += ",Permission_check_strictly"
+		value += ",:Permission_check_strictly"
 	}
 	if sysRole.DeptCheckStrictly != nil {
 		key += ",dept_check_strictly"
@@ -159,8 +159,8 @@ func (rd *SysRoleDao) UpdateRole(db dataUtil.DB, sysRole *systemModels.SysRoleEd
 	if sysRole.DataScope != "" {
 		updateSQL += ",data_scope = :data_scope"
 	}
-	if sysRole.MenuCheckStrictly != nil {
-		updateSQL += ",menu_check_strictly = :menu_check_strictly"
+	if sysRole.PermissionCheckStrictly != nil {
+		updateSQL += ",permission_check_strictly = :permission_check_strictly"
 	}
 	if sysRole.DeptCheckStrictly != nil {
 		updateSQL += ",dept_check_strictly = :dept_check_strictly"

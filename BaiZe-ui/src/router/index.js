@@ -122,8 +122,8 @@ export const permissionsRoutes = [
             path: "menu",
             hidden: false,
             redirect: "",
-            permissions: ['system:menu:list'],
-            component: () => import('@/views/system/menu/index'),
+            permissions: ['system:permission:list'],
+            component: () => import('@/views/system/permission/index'),
             alwaysShow: false,
             meta: {title: "菜单管理", icon: "tree-table", noCache: false},
             children: null

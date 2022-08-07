@@ -1,6 +1,5 @@
 import auth from '@/plugins/auth'
 import router, {constantRoutes, dynamicRoutes, permissionsRoutes} from '@/router'
-import {getRouters} from '@/api/menu'
 import Layout from '@/layout/index'
 import ParentView from '@/components/ParentView'
 import InnerLink from '@/layout/components/InnerLink'

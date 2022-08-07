@@ -15,11 +15,10 @@ import (
 type LoginController struct {
 	ls systemService.ILoginService
 	us systemService.IUserService
-	ms systemService.IMenuService
 }
 
-func NewLoginController(ls *systemServiceImpl.LoginService, us *systemServiceImpl.UserService, ms *systemServiceImpl.MenuService) *LoginController {
-	return &LoginController{ls: ls, us: us, ms: ms}
+func NewLoginController(ls *systemServiceImpl.LoginService, us *systemServiceImpl.UserService) *LoginController {
+	return &LoginController{ls: ls, us: us}
 }
 
 func (lc *LoginController) Login(c *gin.Context) {
@@ -74,13 +73,6 @@ func (lc *LoginController) GetInfo(c *gin.Context) {
 	data["permissions"] = loginUser.Permissions
 	bzc.SuccessData(data)
 
-}
-
-func (lc *LoginController) GetRouters(c *gin.Context) {
-	bzc := baizeContext.NewBaiZeContext(c)
-	menus := lc.ms.SelectMenuTreeByUserId(bzc.GetUserId())
-	buildMenus := lc.ms.BuildMenus(menus)
-	bzc.SuccessData(buildMenus)
 }
 
 func (lc *LoginController) Logout(c *gin.Context) {

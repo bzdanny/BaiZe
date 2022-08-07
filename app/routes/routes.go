@@ -56,19 +56,19 @@ func RegisterServer(router *Router) *gin.Engine {
 	group.Use(middlewares.JWTAuthMiddleware())
 	{
 
-		systemRoutes.InitGetUser(group, router.Sys.Login)              //获取登录信息
-		systemRoutes.InitSysProfileRouter(group, router.Sys.Profile)   //个人信息
-		systemRoutes.InitSysUserRouter(group, router.Sys.User)         //用户相关
-		systemRoutes.InitSysDeptRouter(group, router.Sys.Dept)         //部门相关
-		systemRoutes.InitSysDictDataRouter(group, router.Sys.DictData) //数据字典信息
-		systemRoutes.InitSysRoleRouter(group, router.Sys.Role)         //角色相关
-		systemRoutes.InitSysMenuRouter(group, router.Sys.Menu)         //菜单相关
-		//systemRoutes.InitSysConfigRouter(group)      //参数配置
+		systemRoutes.InitGetUser(group, router.Sys.Login)                       //获取登录信息
+		systemRoutes.InitSysProfileRouter(group, router.Sys.Profile)            //个人信息
+		systemRoutes.InitSysUserRouter(group, router.Sys.User)                  //用户相关
+		systemRoutes.InitSysDeptRouter(group, router.Sys.Dept)                  //部门相关
+		systemRoutes.InitSysDictDataRouter(group, router.Sys.DictData)          //数据字典信息
+		systemRoutes.InitSysRoleRouter(group, router.Sys.Role)                  //角色相关
+		systemRoutes.InitSysPermissionRouter(group, router.Sys.Permission)      //权限相关
 		systemRoutes.InitSysDictTypeRouter(group, router.Sys.DictType)          //数据字典属性
 		systemRoutes.InitSysPostRouter(group, router.Sys.Post)                  //岗位属性
 		monitorRoutes.InitSysUserOnlineRouter(group, router.Monitor.UserOnline) //在线用户监控
 		monitorRoutes.InitSysLogininforRouter(group, router.Monitor.Logininfor) //登录用户日志
 		monitorRoutes.InitServerRouter(group, router.Monitor.Info)              //服务监控
+		//systemRoutes.InitSysConfigRouter(group)      //参数配置
 		//genTableRoutes.InitGenTableRouter(group)     //代码生成
 		//quartzRoutes.InitJobRouter(group)            //定时任务
 	}
