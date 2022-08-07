@@ -1,10 +1,10 @@
 /*
  Navicat Premium Data Transfer
 
- Source Server         : 华为
+ Source Server         : 华为云
  Source Server Type    : MySQL
  Source Server Version : 80021
- Source Host           : 116.63.188.235:3306
+ Source Host           : :3306
  Source Schema         : baize
 
  Target Server Type    : MySQL
