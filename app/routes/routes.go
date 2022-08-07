@@ -4,19 +4,19 @@ import (
 	"github.com/bzdanny/BaiZe/app/monitor/monitorController"
 	"github.com/bzdanny/BaiZe/app/routes/monitorRoutes"
 	"github.com/bzdanny/BaiZe/app/routes/systemRoutes"
-	"github.com/bzdanny/BaiZe/app/setting"
 	"github.com/bzdanny/BaiZe/app/system/systemController"
 	"github.com/bzdanny/BaiZe/baize/middlewares"
+	"github.com/bzdanny/BaiZe/baize/setting"
 	"github.com/bzdanny/BaiZe/baize/utils/logger"
 	"github.com/google/wire"
+	"github.com/swaggo/files"
 
 	"fmt"
 	"net/http"
 	"strings"
 
-	_ "github.com/bzdanny/BaiZe/docs"
+	"github.com/bzdanny/BaiZe/app/docs"
 	gs "github.com/swaggo/gin-swagger"
-	"github.com/swaggo/gin-swagger/swaggerFiles"
 
 	"github.com/gin-gonic/gin"
 )
@@ -45,6 +45,10 @@ func RegisterServer(router *Router) *gin.Engine {
 	r.Use(logger.GinLogger(), logger.GinRecovery(true))
 	r.Use(Cors())
 	group := r.Group("")
+
+	host := setting.Conf.Host
+	docs.SwaggerInfo.Host = host[strings.Index(host, "//")+2:]
+	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 	group.GET("/swagger/*any", gs.WrapHandler(swaggerFiles.Handler))
 
 	//不做鉴权的

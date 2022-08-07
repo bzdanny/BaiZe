@@ -5,7 +5,7 @@ import (
 	"github.com/bzdanny/BaiZe/app/monitor/monitorDao/monitorDaoImpl"
 	"github.com/bzdanny/BaiZe/app/monitor/monitorModels"
 	"github.com/bzdanny/BaiZe/baize/datasource"
-	"github.com/bzdanny/BaiZe/pkg/snowflake"
+	"github.com/bzdanny/BaiZe/baize/utils/snowflake"
 )
 
 type LogininforService struct {

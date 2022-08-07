@@ -9,10 +9,10 @@ init:
 	go get -u github.com/nicksnyder/go-i18n/v2/goi18n
 
 wire:
-	cd cmd/ && wire
+	cd app/ && wire
 
 swag:
-	cd cmd/ && swag init --output ../docs
+	cd app/ && swag init
 
 build:
 	make wire;

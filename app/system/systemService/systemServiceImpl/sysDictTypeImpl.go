@@ -6,7 +6,7 @@ import (
 	"github.com/bzdanny/BaiZe/app/system/systemModels"
 	"github.com/bzdanny/BaiZe/baize/datasource"
 	"github.com/bzdanny/BaiZe/baize/utils/exceLize"
-	"github.com/bzdanny/BaiZe/pkg/snowflake"
+	"github.com/bzdanny/BaiZe/baize/utils/snowflake"
 )
 
 type DictTypeService struct {

@@ -1,11 +1,11 @@
 package systemServiceImpl
 
 import (
-	systemDao "github.com/bzdanny/BaiZe/app/system/systemDao"
+	"github.com/bzdanny/BaiZe/app/system/systemDao"
 	"github.com/bzdanny/BaiZe/app/system/systemDao/systemDaoImpl"
 	"github.com/bzdanny/BaiZe/app/system/systemModels"
 	"github.com/bzdanny/BaiZe/baize/datasource"
-	"github.com/bzdanny/BaiZe/pkg/snowflake"
+	"github.com/bzdanny/BaiZe/baize/utils/snowflake"
 )
 
 type DeptService struct {

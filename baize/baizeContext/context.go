@@ -3,7 +3,7 @@ package baizeContext
 import (
 	"github.com/bzdanny/BaiZe/app/monitor/monitorModels"
 	"github.com/bzdanny/BaiZe/baize/utils/ipUtils"
-	"github.com/bzdanny/BaiZe/pkg/snowflake"
+	"github.com/bzdanny/BaiZe/baize/utils/snowflake"
 	"github.com/gin-gonic/gin"
 	"github.com/mssola/user_agent"
 )

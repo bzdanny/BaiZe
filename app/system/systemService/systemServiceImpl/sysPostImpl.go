@@ -6,7 +6,7 @@ import (
 	"github.com/bzdanny/BaiZe/app/system/systemModels"
 	"github.com/bzdanny/BaiZe/baize/datasource"
 	"github.com/bzdanny/BaiZe/baize/utils/exceLize"
-	"github.com/bzdanny/BaiZe/pkg/snowflake"
+	"github.com/bzdanny/BaiZe/baize/utils/snowflake"
 	"strings"
 )
 
@@ -30,7 +30,6 @@ func (postService *PostService) SelectPostAll() (list []*systemModels.SysPostVo)
 }
 
 //SelectPostListByUserId 根据用户ID获取岗位选择框列表
-//@param userId 用户ID
 //@return 选中岗位ID列表
 func (postService *PostService) SelectPostListByUserId(userId int64) (list []int64) {
 	return postService.postDao.SelectPostListByUserId(postService.data.GetSlaveDb(), userId)

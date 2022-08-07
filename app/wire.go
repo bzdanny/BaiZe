@@ -8,11 +8,11 @@ import (
 	"github.com/bzdanny/BaiZe/app/monitor/monitorDao/monitorDaoImpl"
 	"github.com/bzdanny/BaiZe/app/monitor/monitorService/monitorServiceImpl"
 	"github.com/bzdanny/BaiZe/app/routes"
-	"github.com/bzdanny/BaiZe/app/setting"
 	"github.com/bzdanny/BaiZe/app/system/systemController"
 	"github.com/bzdanny/BaiZe/app/system/systemDao/systemDaoImpl"
 	"github.com/bzdanny/BaiZe/app/system/systemService/systemServiceImpl"
 	"github.com/bzdanny/BaiZe/baize/datasource"
+	"github.com/bzdanny/BaiZe/baize/setting"
 	"github.com/gin-gonic/gin"
 	"github.com/google/wire"
 )

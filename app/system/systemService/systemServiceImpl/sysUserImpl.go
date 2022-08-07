@@ -9,7 +9,7 @@ import (
 	"github.com/bzdanny/BaiZe/baize/datasource/dataUtil"
 	"github.com/bzdanny/BaiZe/baize/utils/bCryptPasswordEncoder"
 	"github.com/bzdanny/BaiZe/baize/utils/exceLize"
-	"github.com/bzdanny/BaiZe/pkg/snowflake"
+	"github.com/bzdanny/BaiZe/baize/utils/snowflake"
 	"github.com/gogf/gf/v2/util/gconv"
 	"strconv"
 )

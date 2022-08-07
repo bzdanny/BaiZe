@@ -2,7 +2,7 @@ package datasource
 
 import (
 	"fmt"
-	"github.com/bzdanny/BaiZe/app/setting"
+	"github.com/bzdanny/BaiZe/baize/setting"
 	"github.com/go-redis/redis"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/google/wire"

@@ -14,6 +14,7 @@ type AppConfig struct {
 	Version      string `mapstructure:"version"`
 	StartTime    string `mapstructure:"start_time"`
 	Port         int    `mapstructure:"port"`
+	Host         string `mapstructure:"host"`
 	*TokenConfig `mapstructure:"token"`
 	*LogConfig   `mapstructure:"log"`
 	*Datasource  `mapstructure:"datasource"`

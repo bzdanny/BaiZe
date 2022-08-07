@@ -1,0 +1,115 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "baize接口文档",
+        "title": "baize",
+        "contact": {
+            "name": "danny",
+            "email": "zhao_402295440@126.com"
+        },
+        "version": "2.0.x"
+    },
+    "paths": {
+        "/login": {
+            "post": {
+                "description": "用户登录",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理端登录"
+                ],
+                "summary": "用户登录",
+                "parameters": [
+                    {
+                        "description": "登录信息",
+                        "name": "object",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/systemModels.LoginBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "登录成功",
+                        "schema": {
+                            "$ref": "#/definitions/commonModels.ResponseData"
+                        }
+                    },
+                    "412": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/commonModels.ResponseData"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器错误",
+                        "schema": {
+                            "$ref": "#/definitions/commonModels.ResponseData"
+                        }
+                    },
+                    "601": {
+                        "description": "用户名密码错误",
+                        "schema": {
+                            "$ref": "#/definitions/commonModels.ResponseData"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "commonModels.ResponseData": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "相应状态码",
+                    "type": "integer"
+                },
+                "data": {
+                    "description": "数据"
+                },
+                "msg": {
+                    "description": "提示信息",
+                    "type": "string"
+                }
+            }
+        },
+        "systemModels.LoginBody": {
+            "type": "object",
+            "required": [
+                "code",
+                "password",
+                "username",
+                "uuid"
+            ],
+            "properties": {
+                "code": {
+                    "description": "验证码",
+                    "type": "string"
+                },
+                "password": {
+                    "description": "密码",
+                    "type": "string"
+                },
+                "username": {
+                    "description": "用户名",
+                    "type": "string"
+                },
+                "uuid": {
+                    "description": "uuid",
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}

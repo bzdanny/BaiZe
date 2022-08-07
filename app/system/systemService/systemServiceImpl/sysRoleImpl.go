@@ -8,7 +8,7 @@ import (
 	"github.com/bzdanny/BaiZe/baize/datasource"
 	"github.com/bzdanny/BaiZe/baize/datasource/dataUtil"
 	"github.com/bzdanny/BaiZe/baize/utils/exceLize"
-	"github.com/bzdanny/BaiZe/pkg/snowflake"
+	"github.com/bzdanny/BaiZe/baize/utils/snowflake"
 	"strconv"
 	"strings"
 )

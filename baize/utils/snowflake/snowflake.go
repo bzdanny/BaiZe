@@ -1,7 +1,7 @@
 package snowflake
 
 import (
-	"github.com/bzdanny/BaiZe/app/setting"
+	"github.com/bzdanny/BaiZe/baize/setting"
 	"github.com/bzdanny/BaiZe/baize/utils/node"
 	"github.com/gogf/gf/v2/util/gconv"
 

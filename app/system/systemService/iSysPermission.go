@@ -8,7 +8,6 @@ type IPermissionService interface {
 	InsertPermission(Permission *systemModels.SysPermissionDML)
 	UpdatePermission(Permission *systemModels.SysPermissionDML)
 	DeletePermissionById(PermissionId int64)
-	BuildPermissions(sysPermissions []*systemModels.SysPermissionVo) []*systemModels.RouterVo
 	CheckPermissionNameUnique(Permission *systemModels.SysPermissionDML) bool
 	HasChildByPermissionId(PermissionId int64) bool
 	CheckPermissionExistRole(PermissionId int64) bool

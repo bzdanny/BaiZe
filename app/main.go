@@ -3,10 +3,8 @@ package main
 import (
 	"fmt"
 	"github.com/bzdanny/BaiZe/app/routes"
-	"github.com/bzdanny/BaiZe/app/setting"
-	"github.com/bzdanny/BaiZe/baize/utils/logger"
-	"github.com/bzdanny/BaiZe/baize/utils/token"
-	"github.com/bzdanny/BaiZe/pkg/snowflake"
+	"github.com/bzdanny/BaiZe/baize/setting"
+	"github.com/bzdanny/BaiZe/baize/utils"
 	"github.com/gin-gonic/gin"
 	"os"
 )
@@ -17,15 +15,12 @@ func init() {
 	} else {
 		setting.Init(os.Args[1])
 	}
-
 }
 
 func newApp(r *routes.Router) *gin.Engine {
-
+	utils.Init()
 	return routes.RegisterServer(r)
 }
-
-// localhost:9000
 
 // @title baize
 // @version 2.0.x
@@ -33,8 +28,6 @@ func newApp(r *routes.Router) *gin.Engine {
 
 // @contact.name danny
 // @contact.email zhao_402295440@126.com
-
-// @host localhost:9000
 
 // @securityDefinitions.apikey BearerAuth
 // @in header
@@ -46,9 +39,6 @@ func main() {
 		panic(err)
 	}
 	defer cleanup()
-	snowflake.Init()
-	logger.Init()
-	token.Init()
 	app.Run(fmt.Sprintf(":%d", setting.Conf.Port))
 
 }

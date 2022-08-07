@@ -21,6 +21,17 @@ func NewLoginController(ls *systemServiceImpl.LoginService, us *systemServiceImp
 	return &LoginController{ls: ls, us: us}
 }
 
+// Login 用户登录
+// @Summary 用户登录
+// @Description 用户登录
+// @Tags 管理端登录
+// @Param  object body systemModels.LoginBody true "登录信息"
+// @Produce application/json
+// @Success 200 {object}  commonModels.ResponseData "登录成功"
+// @Failure 412 {object}  commonModels.ResponseData "参数错误"
+// @Failure 500 {object}  commonModels.ResponseData "服务器错误"
+// @Failure 601 {object}  commonModels.ResponseData "用户名密码错误"
+// @Router /login [post]
 func (lc *LoginController) Login(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	var login systemModels.LoginBody

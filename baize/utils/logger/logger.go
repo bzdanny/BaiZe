@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/bzdanny/BaiZe/app/commonModels"
 	"github.com/bzdanny/BaiZe/app/constant/httpStatus"
-	"github.com/bzdanny/BaiZe/app/setting"
+	"github.com/bzdanny/BaiZe/baize/setting"
 	"net/http"
 
 	"net"
