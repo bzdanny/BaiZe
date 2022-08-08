@@ -55,6 +55,11 @@ func Keys(pattern string) []string {
 
 func Delete(key string) {
 	go func() {
+		defer func() {
+			if err := recover(); err != nil {
+				zap.L().Error("redisUtils", zap.Any("error", err))
+			}
+		}()
 		datasource.GetRedisClient().Del(key)
 	}()
 }

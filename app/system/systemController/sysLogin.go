@@ -24,7 +24,7 @@ func NewLoginController(ls *systemServiceImpl.LoginService, us *systemServiceImp
 // Login 用户登录
 // @Summary 用户登录
 // @Description 用户登录
-// @Tags 管理端登录
+// @Tags 登录
 // @Param  object body systemModels.LoginBody true "登录信息"
 // @Produce application/json
 // @Success 200 {object}  commonModels.ResponseData "登录成功"
@@ -75,25 +75,51 @@ func (lc *LoginController) Login(c *gin.Context) {
 	}
 	bzc.SuccessData(lc.ls.Login(user, logininfor))
 }
+
+// GetInfo 获取用户个人信息
+// @Summary 获取用户个人信息
+// @Description 获取用户个人信息
+// @Tags 登录
+// @Security BearerAuth
+// @Produce application/json
+// @Success 200 {object}  commonModels.ResponseData{data=systemModels.GetInfo}  "获取成功"
+// @Router /getInfo [post]
 func (lc *LoginController) GetInfo(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	loginUser := bzc.GetCurrentUser()
-	data := make(map[string]interface{})
-	data["user"] = loginUser.User
-	data["roles"] = loginUser.RolePerms
-	data["permissions"] = loginUser.Permissions
-	bzc.SuccessData(data)
+	getInfo := new(systemModels.GetInfo)
+	getInfo.User = loginUser.User
+	getInfo.RolePerms = loginUser.RolePerms
+	getInfo.Permissions = loginUser.Permissions
+	bzc.SuccessData(getInfo)
 
 }
 
+// Logout 退出
+// @Summary 退出
+// @Description 退出
+// @Tags 登录
+// @Security BearerAuth
+// @Produce application/json
+// @Success 200 {object}  commonModels.ResponseData "退出成功"
+// @Router /logout [post]
 func (lc *LoginController) Logout(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	loginUser := bzc.GetCurrentUser()
 	if loginUser != nil {
-		//iUserOnline.ForceLogout(loginUser.Token)
+		lc.ls.ForceLogout(loginUser.Token)
 	}
 	bzc.Success()
 }
+
+// GetCode 获取验证码
+// @Summary 获取验证码
+// @Description 获取验证码
+// @Tags 登录
+// @Security BearerAuth
+// @Produce application/json
+// @Success 200 {object}  commonModels.ResponseData "退出成功"
+// @Router /logout [post]
 func (lc *LoginController) GetCode(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	code := lc.ls.GenerateCode()

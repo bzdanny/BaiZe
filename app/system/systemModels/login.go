@@ -64,3 +64,9 @@ type JWT struct {
 	TokenId string
 	jwt.StandardClaims
 }
+
+type GetInfo struct {
+	User        *User    `json:"user"`
+	RolePerms   []string `json:"rolePerms"`
+	Permissions []string `json:"permissions"`
+}

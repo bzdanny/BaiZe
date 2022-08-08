@@ -1,6 +1,7 @@
 package systemServiceImpl
 
 import (
+	"github.com/bzdanny/BaiZe/app/constant/constants"
 	"github.com/bzdanny/BaiZe/app/monitor/monitorDao"
 	"github.com/bzdanny/BaiZe/app/monitor/monitorDao/monitorDaoImpl"
 	"github.com/bzdanny/BaiZe/app/monitor/monitorModels"
@@ -11,6 +12,7 @@ import (
 	"github.com/bzdanny/BaiZe/app/utils/jwt"
 	"github.com/bzdanny/BaiZe/baize/baizeEntity"
 	"github.com/bzdanny/BaiZe/baize/datasource"
+	"github.com/bzdanny/BaiZe/baize/utils/redisUtils"
 	"github.com/bzdanny/BaiZe/baize/utils/snowflake"
 	"github.com/bzdanny/BaiZe/baize/utils/token"
 	"github.com/mojocn/base64Captcha"
@@ -105,6 +107,11 @@ func (loginService *LoginService) GenerateCode() (m *systemModels.CaptchaVo) {
 func (loginService *LoginService) VerityCaptcha(id, base64 string) bool {
 	return store.Verify(id, base64, true)
 }
+
+func (loginService *LoginService) ForceLogout(token string) {
+	redisUtils.Delete(constants.LoginTokenKey + token)
+}
+
 func (loginService *LoginService) RolePermissionByRoles(roles []*systemModels.SysRole) (rolePerms []string, loginRoles []*baizeEntity.Role) {
 	loginRoles = make([]*baizeEntity.Role, 0, len(roles))
 	rolePerms = make([]string, 0, len(roles))

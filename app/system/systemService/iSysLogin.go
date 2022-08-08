@@ -10,4 +10,5 @@ type ILoginService interface {
 	RecordLoginInfo(loginUser *monitorModels.Logininfor)
 	GenerateCode() (m *systemModels.CaptchaVo)
 	VerityCaptcha(id, base64 string) bool
+	ForceLogout(token string)
 }
