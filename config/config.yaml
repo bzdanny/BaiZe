@@ -46,7 +46,7 @@ datasource:
 token:
   expire_time: 600
   secret: abcdefghijklmnopqrstuvwxyz
-  issuer: knit
+  issuer: baize
 
 upload_file:
   type: aws    #上传地点   亚马逊->s3  移动云->eos 本地->localhost(集群部署会出问题,不建议使用)
