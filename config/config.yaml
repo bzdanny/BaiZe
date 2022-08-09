@@ -15,7 +15,7 @@ datasource:
     driver_name: mysql
     host: 127.0.0.1
     user: root
-    password: 1q2w3e4r5t@"
+    password: 123456
     dbname: baize
     port: 3306
     max_open_conns: 200
@@ -27,13 +27,13 @@ datasource:
     users: root
     passwords: 123456
     dbnames: baize
-    ports: 3306
+    ports: 33060
     max_open_conns: 200
     max_idle_conns: 50
   redis:
     host: 127.0.0.1
     port: 6379
-    password: 1q2w3e4r5t~
+    password: 123456
     db: 0
     pool_size: 100
   mq:
