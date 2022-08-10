@@ -1,7 +1,6 @@
 package systemServiceImpl
 
 import (
-	"github.com/bzdanny/BaiZe/app/constant/constants"
 	"github.com/bzdanny/BaiZe/app/monitor/monitorDao"
 	"github.com/bzdanny/BaiZe/app/monitor/monitorDao/monitorDaoImpl"
 	"github.com/bzdanny/BaiZe/app/monitor/monitorModels"
@@ -11,6 +10,7 @@ import (
 	"github.com/bzdanny/BaiZe/app/utils"
 	"github.com/bzdanny/BaiZe/app/utils/jwt"
 	"github.com/bzdanny/BaiZe/baize/baizeEntity"
+	"github.com/bzdanny/BaiZe/baize/constants"
 	"github.com/bzdanny/BaiZe/baize/datasource"
 	"github.com/bzdanny/BaiZe/baize/utils/redisUtils"
 	"github.com/bzdanny/BaiZe/baize/utils/snowflake"

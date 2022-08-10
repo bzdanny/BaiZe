@@ -1,8 +1,8 @@
 package jwt
 
 import (
-	"github.com/bzdanny/BaiZe/app/constant/constants"
 	"github.com/bzdanny/BaiZe/app/system/systemModels"
+	"github.com/bzdanny/BaiZe/baize/constants"
 	"github.com/bzdanny/BaiZe/baize/setting"
 	"github.com/bzdanny/BaiZe/baize/utils/redisUtils"
 	"github.com/dgrijalva/jwt-go"

@@ -1,9 +1,9 @@
 package monitorServiceImpl
 
 import (
-	"github.com/bzdanny/BaiZe/app/constant/constants"
 	"github.com/bzdanny/BaiZe/app/monitor/monitorModels"
 	"github.com/bzdanny/BaiZe/app/system/systemModels"
+	"github.com/bzdanny/BaiZe/baize/constants"
 	"github.com/bzdanny/BaiZe/baize/utils/redisUtils"
 )
 

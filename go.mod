@@ -15,6 +15,9 @@ require (
 
 require (
 	github.com/360EntSecGroup-Skylar/excelize v1.4.1
+	github.com/aws/aws-sdk-go-v2 v1.16.10
+	github.com/aws/aws-sdk-go-v2/credentials v1.12.12
+	github.com/aws/aws-sdk-go-v2/service/s3 v1.27.4
 	github.com/bwmarrin/snowflake v0.3.0
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-redis/redis v6.15.9+incompatible
@@ -40,6 +43,15 @@ require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/PuerkitoBio/purell v1.1.1 // indirect
 	github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578 // indirect
+	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.4.4 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/configsources v1.1.17 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.4.11 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/v4a v1.0.8 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.9.4 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/checksum v1.1.12 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.9.11 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.13.11 // indirect
+	github.com/aws/smithy-go v1.12.1 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/go-openapi/jsonpointer v0.19.5 // indirect

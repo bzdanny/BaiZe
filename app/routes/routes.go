@@ -5,6 +5,8 @@ import (
 	"github.com/bzdanny/BaiZe/app/routes/monitorRoutes"
 	"github.com/bzdanny/BaiZe/app/routes/systemRoutes"
 	"github.com/bzdanny/BaiZe/app/system/systemController"
+	"github.com/bzdanny/BaiZe/baize/IOFile"
+	"github.com/bzdanny/BaiZe/baize/constants"
 	"github.com/bzdanny/BaiZe/baize/middlewares"
 	"github.com/bzdanny/BaiZe/baize/setting"
 	"github.com/bzdanny/BaiZe/baize/utils/logger"
@@ -50,6 +52,14 @@ func RegisterServer(router *Router) *gin.Engine {
 	docs.SwaggerInfo.Host = host[strings.Index(host, "//")+2:]
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 	group.GET("/swagger/*any", gs.WrapHandler(swaggerFiles.Handler))
+
+	if !IOFile.FileType.Contains(setting.Conf.UploadFile.Type) {
+		path := setting.Conf.UploadFile.Localhost.PublicResourcePrefix
+		if path == "" {
+			path = constants.DefaultPublicPath
+		}
+		group.Static(constants.ResourcePrefix, path)
+	}
 
 	//不做鉴权的
 	{

@@ -1,9 +1,9 @@
 package middlewares
 
 import (
-	"github.com/bzdanny/BaiZe/app/constant/constants"
 	"github.com/bzdanny/BaiZe/app/utils/jwt"
 	"github.com/bzdanny/BaiZe/baize/baizeContext"
+	constants2 "github.com/bzdanny/BaiZe/baize/constants"
 	"github.com/bzdanny/BaiZe/baize/utils/token"
 	"strings"
 	"time"
@@ -25,7 +25,7 @@ func JWTAuthMiddleware() func(c *gin.Context) {
 		}
 		// 按空格分割
 		parts := strings.SplitN(authHeader, " ", 2)
-		if !(len(parts) == 2 && parts[0] == constants.TokenPrefix) {
+		if !(len(parts) == 2 && parts[0] == constants2.TokenPrefix) {
 			bzc.InvalidToken()
 			c.Abort()
 			return
@@ -41,7 +41,7 @@ func JWTAuthMiddleware() func(c *gin.Context) {
 			go token.RefreshToken(loginUser)
 		}
 		// 将当前请求的userID信息保存到请求的上下文c上
-		c.Set(constants.LoginUserKey, loginUser)
+		c.Set(constants2.LoginUserKey, loginUser)
 
 		c.Next() // 后续的处理请求的函数中 可以用过c.Get(CtxUserIDKey) 来获取当前请求的用户信息
 	}

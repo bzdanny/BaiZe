@@ -1,8 +1,8 @@
 package baizeContext
 
 import (
-	"github.com/bzdanny/BaiZe/app/constant/constants"
 	"github.com/bzdanny/BaiZe/app/system/systemModels"
+	"github.com/bzdanny/BaiZe/baize/constants"
 )
 
 func (bzc *BaiZeContext) GetCurrentUser() (loginUser *systemModels.LoginUser) {

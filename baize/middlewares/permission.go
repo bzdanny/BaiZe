@@ -1,11 +1,11 @@
 package middlewares
 
 import (
-	"github.com/bzdanny/BaiZe/app/constant/constants"
 	"github.com/bzdanny/BaiZe/app/system/systemModels"
 	"github.com/bzdanny/BaiZe/app/utils"
 	"github.com/bzdanny/BaiZe/baize/baizeContext"
 	"github.com/bzdanny/BaiZe/baize/baizeSet"
+	"github.com/bzdanny/BaiZe/baize/constants"
 	"github.com/gin-gonic/gin"
 )
 

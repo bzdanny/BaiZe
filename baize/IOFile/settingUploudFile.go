@@ -1,4 +1,4 @@
-package uploadFile
+package IOFile
 
 type UploadFile struct {
 	Type       string `mapstructure:"type"`

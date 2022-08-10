@@ -1,5 +1,6 @@
 .idea/
 tmp/
 
+config/config.yaml
 config/config1.yaml
 config/config2.yaml
