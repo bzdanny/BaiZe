@@ -49,7 +49,7 @@ token:
   issuer: baize
 
 upload_file:
-  type: aws    #上传地点 本地->localhost(集群部署需要做硬盘挂载,挂载路径需一直)  亚马逊->s3   移动云->eos  如果不填则默认本地当前目录
+  type: s3    #上传地点 本地->localhost(集群部署需要做硬盘挂载,挂载路径需一直)  亚马逊->s3   移动云->eos  如果不填则默认本地当前目录
   domain_name: https://file.ibaize.vip
   localhost:
     public_resource_prefix: /Volumes/disk01/public/   #如果type=localhost不填则默认启动目录./public
