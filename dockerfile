@@ -22,6 +22,6 @@ FROM ubuntu:jammy-20220801
 WORKDIR /usr/local/knitServer
 COPY --from=builder /build/baize .
 
-VOLUME ["/usr/local/baize/config"]
+VOLUME ["/usr/local/baize/config","/usr/local/baize/file","/usr/local/baize/log"]
 EXPOSE 8080
 ENTRYPOINT ["./baize"]

@@ -1,4 +1,4 @@
-package IOFile
+package setting
 
 type UploadFile struct {
 	Type       string `mapstructure:"type"`
@@ -8,13 +8,13 @@ type UploadFile struct {
 	*Localhost `mapstructure:"localhost"`
 }
 type S3 struct {
-	accessKeyId     string `mapstructure:"access_key_id"`
+	AccessKeyId     string `mapstructure:"access_key_id"`
 	SecretAccessKey string `mapstructure:"Secret_access_key"`
 	Region          string `mapstructure:"region"`
 	BucketName      string `mapstructure:"bucket_name"`
 }
 type Eos struct {
-	accessKeyId     string `mapstructure:"access_key_id"`
+	AccessKeyId     string `mapstructure:"access_key_id"`
 	SecretAccessKey string `mapstructure:"Secret_access_key"`
 	Url             string `mapstructure:"url"`
 	BucketName      string `mapstructure:"bucket_name"`

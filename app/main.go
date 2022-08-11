@@ -34,6 +34,11 @@ func newApp(r *routes.Router) *gin.Engine {
 // @name Authorization
 
 func main() {
+	if _, err := os.Stat("/.dockerenv"); err == nil {
+		fmt.Println(true)
+	} else {
+		fmt.Println(false)
+	}
 	app, cleanup, err := wireApp(setting.Conf.Datasource)
 	if err != nil {
 		panic(err)

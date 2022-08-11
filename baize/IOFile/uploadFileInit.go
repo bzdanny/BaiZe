@@ -36,7 +36,7 @@ func Init() {
 	switch setting.Conf.UploadFile.Type {
 	case awsS3:
 		config := aws.Config{
-			Credentials: credentials.NewStaticCredentialsProvider(setting.Conf.UploadFile.S3.accessKeyId, setting.Conf.UploadFile.S3.SecretAccessKey, ""),
+			Credentials: credentials.NewStaticCredentialsProvider(setting.Conf.UploadFile.S3.AccessKeyId, setting.Conf.UploadFile.S3.SecretAccessKey, ""),
 			Region:      setting.Conf.UploadFile.S3.Region,
 		}
 		s := new(s3IOFile)
@@ -45,7 +45,7 @@ func Init() {
 		s.domainName = setting.Conf.UploadFile.DomainName
 	case yiDong:
 		config := aws.Config{
-			Credentials: credentials.NewStaticCredentialsProvider(setting.Conf.UploadFile.Eos.accessKeyId, setting.Conf.UploadFile.Eos.SecretAccessKey, ""),
+			Credentials: credentials.NewStaticCredentialsProvider(setting.Conf.UploadFile.Eos.AccessKeyId, setting.Conf.UploadFile.Eos.SecretAccessKey, ""),
 			EndpointResolverWithOptions: aws.EndpointResolverWithOptionsFunc(func(service, region string, options ...interface{}) (aws.Endpoint, error) {
 				return aws.Endpoint{
 					PartitionID: "aws",

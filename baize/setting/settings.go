@@ -2,7 +2,6 @@ package setting
 
 import (
 	"fmt"
-	"github.com/bzdanny/BaiZe/baize/IOFile"
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
 )
@@ -10,16 +9,16 @@ import (
 var Conf = new(AppConfig)
 
 type AppConfig struct {
-	Name               string `mapstructure:"name"`
-	Mode               string `mapstructure:"mode"`
-	Version            string `mapstructure:"version"`
-	StartTime          string `mapstructure:"start_time"`
-	Port               int    `mapstructure:"port"`
-	Host               string `mapstructure:"host"`
-	*TokenConfig       `mapstructure:"token"`
-	*LogConfig         `mapstructure:"log"`
-	*Datasource        `mapstructure:"datasource"`
-	*IOFile.UploadFile `mapstructure:"upload_file"`
+	Name         string `mapstructure:"name"`
+	Mode         string `mapstructure:"mode"`
+	Version      string `mapstructure:"version"`
+	StartTime    string `mapstructure:"start_time"`
+	Port         int    `mapstructure:"port"`
+	Host         string `mapstructure:"host"`
+	*TokenConfig `mapstructure:"token"`
+	*LogConfig   `mapstructure:"log"`
+	*Datasource  `mapstructure:"datasource"`
+	*UploadFile  `mapstructure:"upload_file"`
 }
 
 type TokenConfig struct {
