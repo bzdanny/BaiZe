@@ -6,7 +6,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/aws/aws-sdk-go-v2/service/s3/types"
 	"github.com/bzdanny/BaiZe/baize/setting"
-	"io"
 )
 
 type s3IOFile struct {
@@ -15,30 +14,32 @@ type s3IOFile struct {
 	domainName string
 }
 
-func (s *s3IOFile) PublicUploadFile(key string, data io.Reader) (string, error) {
+func (s *s3IOFile) PublicUploadFile(file *fileParams) (string, error) {
 	obj := &s3.PutObjectInput{
-		Bucket: aws.String(s.bucket),
-		Key:    aws.String(key),
-		Body:   data,
-		ACL:    types.ObjectCannedACLPublicRead,
+		Bucket:      aws.String(s.bucket),
+		Key:         aws.String(file.keyName),
+		Body:        file.data,
+		ContentType: aws.String(file.contentType),
+		ACL:         types.ObjectCannedACLPublicRead,
 	}
 	_, err := s.s3Config.PutObject(context.TODO(), obj)
 	if err != nil {
 		return "", err
 	}
-	return s.domainName + key, nil
+	return s.domainName + file.keyName, nil
 }
 
-func (s *s3IOFile) privateUploadFile(key string, data io.Reader) (string, error) {
+func (s *s3IOFile) privateUploadFile(file *fileParams) (string, error) {
 	obj := &s3.PutObjectInput{
-		Bucket: aws.String(s.bucket),
-		Key:    aws.String(key),
-		Body:   data,
-		ACL:    types.ObjectCannedACLPrivate,
+		Bucket:      aws.String(s.bucket),
+		Key:         aws.String(file.keyName),
+		Body:        file.data,
+		ContentType: aws.String(file.contentType),
+		ACL:         types.ObjectCannedACLPrivate,
 	}
 	_, err := s.s3Config.PutObject(context.TODO(), obj)
 	if err != nil {
 		return "", err
 	}
-	return setting.Conf.UploadFile.DomainName + key, nil
+	return setting.Conf.UploadFile.DomainName + file.keyName, nil
 }

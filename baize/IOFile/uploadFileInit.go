@@ -7,7 +7,6 @@ import (
 	"github.com/bzdanny/BaiZe/baize/baizeSet"
 	"github.com/bzdanny/BaiZe/baize/constants"
 	"github.com/bzdanny/BaiZe/baize/setting"
-	"io"
 )
 
 const (
@@ -19,8 +18,8 @@ const (
 var FileType = baizeSet.Set[string]{}
 
 type IOFile interface {
-	PublicUploadFile(key string, data io.Reader) (string, error)
-	privateUploadFile(key string, data io.Reader) (string, error)
+	PublicUploadFile(file *fileParams) (string, error)
+	privateUploadFile(file *fileParams) (string, error)
 }
 
 var ioFile IOFile
@@ -43,6 +42,7 @@ func Init() {
 		s.s3Config = s3.NewFromConfig(config)
 		s.bucket = setting.Conf.UploadFile.S3.BucketName
 		s.domainName = setting.Conf.UploadFile.DomainName
+		ioFile = s
 	case yiDong:
 		config := aws.Config{
 			Credentials: credentials.NewStaticCredentialsProvider(setting.Conf.UploadFile.Eos.AccessKeyId, setting.Conf.UploadFile.Eos.SecretAccessKey, ""),
@@ -74,5 +74,4 @@ func Init() {
 		l.privatePath = priPath
 		ioFile = l
 	}
-	return
 }

@@ -3,7 +3,6 @@ package stringUtils
 import (
 	"github.com/gogf/gf/v2/util/gconv"
 	"mime/multipart"
-	"path"
 	"path/filepath"
 	"time"
 )
@@ -16,21 +15,13 @@ var fileExtension = map[string]string{
 	"image/gif":  "gif",
 }
 
-func GetTenantRandomName(userId int64, fileName string) string {
+func GetTenantRandomName(userId int64, extensionName string) string {
 	t := time.Now()
-	nameKey := "/" + gconv.String(userId) + "/" + t.Format("06/01/02") + "/" + GetUUID() + path.Ext(fileName)
-	return nameKey
-}
-func GetTenantOriginalName(userId int64, fileName string) string {
-	if fileName == "" {
-		return GetTenantRandomName(userId, fileName)
-	}
-	t := time.Now()
-	nameKey := "/" + gconv.String(userId) + "/" + t.Format("06/01/02") + "/" + GetUUID() + "/" + fileName
+	nameKey := gconv.String(userId) + "/" + t.Format("06/01/02") + "/" + GetUUID() + "." + extensionName
 	return nameKey
 }
 
-func getExtension(file *multipart.FileHeader) string {
+func GetExtension(file *multipart.FileHeader) string {
 	ext := filepath.Ext(file.Filename)
 	if ext == "" {
 		return fileExtension[file.Header["Content-Type"][0]]

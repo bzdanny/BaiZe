@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/bzdanny/BaiZe/app/routes"
+	"github.com/bzdanny/BaiZe/baize/IOFile"
 	"github.com/bzdanny/BaiZe/baize/setting"
 	"github.com/bzdanny/BaiZe/baize/utils"
 	"github.com/gin-gonic/gin"
@@ -18,6 +19,7 @@ func init() {
 }
 
 func newApp(r *routes.Router) *gin.Engine {
+	IOFile.Init()
 	utils.Init()
 	return routes.RegisterServer(r)
 }
