@@ -1,6 +1,9 @@
 package systemService
 
-import "github.com/bzdanny/BaiZe/app/system/systemModels"
+import (
+	"github.com/bzdanny/BaiZe/app/system/systemModels"
+	"mime/multipart"
+)
 
 type IUserService interface {
 	SelectUserByUserName(userName string) *systemModels.User
@@ -17,7 +20,7 @@ type IUserService interface {
 	DeleteUserByIds(ids []int64)
 	UserImportData(rows [][]string, operName string, deptId *int64) (msg string, failureNum int)
 	UpdateLoginInformation(userId int64, ip string)
-	UpdateUserAvatar(userId int64, avatar string)
+	UpdateUserAvatar(loginUser *systemModels.LoginUser, file *multipart.FileHeader) string
 	ResetUserPwd(userId int64, password string)
 	UpdateUserProfile(sysUser *systemModels.SysUserEdit)
 	MatchesPassword(rawPassword string, userId int64) bool

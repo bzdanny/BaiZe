@@ -5,12 +5,16 @@ import (
 	"github.com/bzdanny/BaiZe/app/system/systemDao"
 	"github.com/bzdanny/BaiZe/app/system/systemDao/systemDaoImpl"
 	"github.com/bzdanny/BaiZe/app/system/systemModels"
+	"github.com/bzdanny/BaiZe/baize/IOFile"
 	"github.com/bzdanny/BaiZe/baize/datasource"
 	"github.com/bzdanny/BaiZe/baize/datasource/dataUtil"
 	"github.com/bzdanny/BaiZe/baize/utils/bCryptPasswordEncoder"
 	"github.com/bzdanny/BaiZe/baize/utils/exceLize"
 	"github.com/bzdanny/BaiZe/baize/utils/snowflake"
+	"github.com/bzdanny/BaiZe/baize/utils/stringUtils"
+	"github.com/bzdanny/BaiZe/baize/utils/token"
 	"github.com/gogf/gf/v2/util/gconv"
+	"mime/multipart"
 	"strconv"
 )
 
@@ -217,8 +221,17 @@ func (userService *UserService) UserImportData(rows [][]string, operName string,
 func (userService *UserService) UpdateLoginInformation(userId int64, ip string) {
 	userService.userDao.UpdateLoginInformation(userService.data.GetMasterDb(), userId, ip)
 }
-func (userService *UserService) UpdateUserAvatar(userId int64, avatar string) {
+func (userService *UserService) UpdateUserAvatar(loginUser *systemModels.LoginUser, file *multipart.FileHeader) string {
+	userId := loginUser.User.UserId
+	open, err := file.Open()
+	if err != nil {
+		panic(err)
+	}
+	avatar, err := IOFile.GetConfig().PublicUploadFile(stringUtils.GetTenantRandomName(userId, file.Filename), open)
+	loginUser.User.Avatar = &avatar
+	go token.RefreshToken(loginUser)
 	userService.userDao.UpdateUserAvatar(userService.data.GetMasterDb(), userId, avatar)
+	return avatar
 }
 
 func (userService *UserService) ResetUserPwd(userId int64, password string) {

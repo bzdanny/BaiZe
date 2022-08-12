@@ -77,18 +77,11 @@ func (pc *ProfileController) ProfileUpdatePwd(c *gin.Context) {
 }
 
 func (pc *ProfileController) ProfileAvatar(c *gin.Context) {
-	//bzc := baizeContext.NewBaiZeContext(c)
-	//bzc.SetLog("个人信息", "UPDATE")
-	//file, err := c.FormFile("avatarfile")
-	//if err != nil {
-	//	bzc.ParameterError()
-	//	return
-	//}
-	//filename := fileUploadUtils.Upload(constants.AvatarPath, file)
-	//loginUser := bzc.GetCurrentLoginUser()
-	//avatar := constants.ResourcePrefix + filename
-	//iUser.UpdateUserAvatar(loginUser.User.UserId, avatar)
-	//loginUser.User.Avatar = &avatar
-	//go token.RefreshToken(loginUser)
-	//bzc.SuccessData(avatar)
+	bzc := baizeContext.NewBaiZeContext(c)
+	file, err := c.FormFile("avatarfile")
+	if err != nil {
+		bzc.ParameterError()
+		return
+	}
+	bzc.SuccessData(pc.us.UpdateUserAvatar(bzc.GetCurrentUser(), file))
 }
