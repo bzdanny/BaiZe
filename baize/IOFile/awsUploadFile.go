@@ -31,7 +31,7 @@ func (s *s3IOFile) PublicUploadFile(file *fileParams) (string, error) {
 func (s *s3IOFile) privateUploadFile(file *fileParams) (string, error) {
 	obj := &s3.PutObjectInput{
 		Bucket:      aws.String(s.bucket),
-		Key:         aws.String(file.keyName),
+		Key:         aws.String("private/" + file.keyName),
 		Body:        file.data,
 		ContentType: aws.String(file.contentType),
 		ACL:         types.ObjectCannedACLPrivate,

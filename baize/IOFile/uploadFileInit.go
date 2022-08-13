@@ -70,7 +70,7 @@ func Init() {
 
 		priPath := setting.Conf.UploadFile.Localhost.PrivateResourcePrefix
 		if setting.Conf.IsDocker || priPath == "" {
-			priPath = constants.DefaultPublicPath
+			priPath = constants.DefaultPrivatePath
 		}
 		l.privatePath = priPath
 		ioFile = l
