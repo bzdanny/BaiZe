@@ -24,7 +24,14 @@ var lg *zap.Logger
 
 // Init 初始化lg
 func Init() {
-	writeSyncer := getLogWriter(setting.Conf.LogConfig.Filename, setting.Conf.LogConfig.MaxSize, setting.Conf.LogConfig.MaxBackups, setting.Conf.LogConfig.MaxAge)
+	var filename string
+	if setting.Conf.IsDocker {
+		filename = "./baizeLog/baizeLog.log"
+	} else {
+		filename = setting.Conf.LogConfig.Filename
+	}
+
+	writeSyncer := getLogWriter(filename, setting.Conf.LogConfig.MaxSize, setting.Conf.LogConfig.MaxBackups, setting.Conf.LogConfig.MaxAge)
 	encoder := getEncoder()
 	var l = new(zapcore.Level)
 	err := l.UnmarshalText([]byte(setting.Conf.LogConfig.Level))

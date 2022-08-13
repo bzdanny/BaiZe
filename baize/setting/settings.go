@@ -2,8 +2,8 @@ package setting
 
 import (
 	"fmt"
-	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
+	"os"
 )
 
 var Conf = new(AppConfig)
@@ -15,6 +15,7 @@ type AppConfig struct {
 	StartTime    string `mapstructure:"start_time"`
 	Port         int    `mapstructure:"port"`
 	Host         string `mapstructure:"host"`
+	IsDocker     bool
 	*TokenConfig `mapstructure:"token"`
 	*LogConfig   `mapstructure:"log"`
 	*Datasource  `mapstructure:"datasource"`
@@ -118,18 +119,23 @@ func Init(filePath string) {
 	}
 
 	// 把读取到的配置信息反序列化到 Conf 变量中
-	if err := viper.Unmarshal(Conf); err != nil {
+	if err = viper.Unmarshal(Conf); err != nil {
 		fmt.Printf("viper.Unmarshal failed, err:%v\n", err)
 		panic(err)
 	}
 
+	if _, err = os.Stat("/.dockerenv"); err == nil {
+		Conf.IsDocker = true
+	} else {
+		Conf.IsDocker = false
+	}
 	viper.WatchConfig()
-	viper.OnConfigChange(func(in fsnotify.Event) {
-		fmt.Println("配置文件修改了...")
-		if err := viper.Unmarshal(Conf); err != nil {
-			fmt.Printf("viper.Unmarshal failed, err:%v\n", err)
-			panic(err)
-		}
-	})
+	//viper.OnConfigChange(func(in fsnotify.Event) {
+	//	fmt.Println("配置文件修改了...")
+	//	if err := viper.Unmarshal(Conf); err != nil {
+	//		fmt.Printf("viper.Unmarshal failed, err:%v\n", err)
+	//		panic(err)
+	//	}
+	//})
 	return
 }

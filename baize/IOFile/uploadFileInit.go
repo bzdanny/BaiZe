@@ -49,7 +49,7 @@ func Init() {
 			EndpointResolverWithOptions: aws.EndpointResolverWithOptionsFunc(func(service, region string, options ...interface{}) (aws.Endpoint, error) {
 				return aws.Endpoint{
 					PartitionID: "aws",
-					URL:         "https://eos-wuxi-1.cmecloud.cn",
+					URL:         setting.Conf.UploadFile.Eos.Url,
 				}, nil
 			}),
 		}
@@ -63,12 +63,13 @@ func Init() {
 		l.domainName = setting.Conf.UploadFile.DomainName
 		pubPath := setting.Conf.UploadFile.Localhost.PublicResourcePrefix
 
-		if pubPath == "" {
+		if setting.Conf.IsDocker || pubPath == "" {
 			pubPath = constants.DefaultPublicPath
 		}
 		l.publicPath = pubPath
+
 		priPath := setting.Conf.UploadFile.Localhost.PrivateResourcePrefix
-		if priPath == "" {
+		if setting.Conf.IsDocker || priPath == "" {
 			priPath = constants.DefaultPublicPath
 		}
 		l.privatePath = priPath

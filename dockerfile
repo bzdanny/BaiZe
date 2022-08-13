@@ -19,9 +19,9 @@ RUN cd app/ && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ../baize
 FROM ubuntu:jammy-20220801
 
 
-WORKDIR /usr/local/knitServer
+WORKDIR /usr/local/baize
 COPY --from=builder /build/baize .
 
-VOLUME ["/usr/local/baize/config","/usr/local/baize/file","/usr/local/baize/log"]
+VOLUME ["/usr/local/baize/config","/usr/local/baize/file","/usr/local/baize/baizeLog"]
 EXPOSE 8080
 ENTRYPOINT ["./baize"]
