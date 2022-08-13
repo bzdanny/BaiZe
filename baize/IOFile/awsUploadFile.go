@@ -5,7 +5,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/aws/aws-sdk-go-v2/service/s3/types"
-	"github.com/bzdanny/BaiZe/baize/setting"
 )
 
 type s3IOFile struct {
@@ -26,7 +25,7 @@ func (s *s3IOFile) PublicUploadFile(file *fileParams) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return s.domainName + file.keyName, nil
+	return s.domainName + "/" + file.keyName, nil
 }
 
 func (s *s3IOFile) privateUploadFile(file *fileParams) (string, error) {
@@ -41,5 +40,5 @@ func (s *s3IOFile) privateUploadFile(file *fileParams) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return setting.Conf.UploadFile.DomainName + file.keyName, nil
+	return file.keyName, nil
 }

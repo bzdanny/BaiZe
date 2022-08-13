@@ -228,8 +228,10 @@ func (userService *UserService) UpdateUserAvatar(loginUser *systemModels.LoginUs
 		panic(err)
 	}
 	extension := stringUtils.GetExtension(file)
-
 	avatar, err := IOFile.GetConfig().PublicUploadFile(IOFile.NewFileParamsRandomName(stringUtils.GetTenantRandomName(userId, extension), open))
+	if err != nil {
+		panic(err)
+	}
 	loginUser.User.Avatar = &avatar
 	go token.RefreshToken(loginUser)
 	userService.userDao.UpdateUserAvatar(userService.data.GetMasterDb(), userId, avatar)
