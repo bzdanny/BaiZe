@@ -36,7 +36,6 @@ const useUserStore = defineStore(
             const res =resData.data
             const user = res.user
             const avatar = (user.avatar == "" || user.avatar == null) ? defAva :  user.avatar;
-
             if (res.roles && res.roles.length > 0) { // 验证返回的roles是否是一个非空数组
               this.roles = res.roles
               this.permissions = res.permissions

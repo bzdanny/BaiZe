@@ -89,7 +89,7 @@ func (lc *LoginController) GetInfo(c *gin.Context) {
 	loginUser := bzc.GetCurrentUser()
 	getInfo := new(systemModels.GetInfo)
 	getInfo.User = loginUser.User
-	getInfo.RolePerms = loginUser.RolePerms
+	getInfo.Roles = loginUser.RolePerms
 	getInfo.Permissions = loginUser.Permissions
 	bzc.SuccessData(getInfo)
 

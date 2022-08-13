@@ -90,9 +90,7 @@ func (userDao *SysUserDao) UpdateUser(db dataUtil.DB, sysUser *systemModels.SysU
 	if sysUser.Email != "" {
 		updateSQL += ",email = :email"
 	}
-	if sysUser.Password != "" {
-		updateSQL += ",password = :password"
-	}
+
 	if sysUser.Avatar != "" {
 		updateSQL += ",avatar = :avatar"
 	}

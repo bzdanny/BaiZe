@@ -23,18 +23,37 @@ func NewUserController(us *systemServiceImpl.UserService, ps *systemServiceImpl.
 	return &UserController{us: us, ps: ps, rs: rs}
 }
 
+// ChangeStatus 修改用户状态
+// @Summary 修改用户状态
+// @Description 修改用户状态
+// @Tags 用户相关
+// @Param  object body systemModels.EditUserStatus true "用户信息"
+// @Security BearerAuth
+// @Produce application/json
+// @Success 200 {object}  commonModels.ResponseData  "成功"
+// @Router /system/user/changeStatus [put]
 func (uc *UserController) ChangeStatus(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 
-	sysUser := new(systemModels.SysUserEdit)
+	sysUser := new(systemModels.EditUserStatus)
 	if err := c.ShouldBindJSON(sysUser); err != nil {
 		bzc.ParameterError()
 		return
 	}
 	sysUser.SetUpdateBy(bzc.GetUserId())
-	uc.us.UpdateuserStatus(sysUser)
+	uc.us.UpdateUserStatus(sysUser)
 	bzc.Success()
 }
+
+// ResetPwd 重置密码
+// @Summary 重置密码
+// @Description 重置密码
+// @Tags 用户相关
+// @Param  object body systemModels.ResetPwd true "密码"
+// @Security BearerAuth
+// @Produce application/json
+// @Success 200 {object}  commonModels.ResponseData  "成功"
+// @Router /system/user/resetPwd [put]
 func (uc *UserController) ResetPwd(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 
@@ -43,14 +62,20 @@ func (uc *UserController) ResetPwd(c *gin.Context) {
 		bzc.ParameterError()
 		return
 	}
-	sysUser := new(systemModels.SysUserEdit)
-	sysUser.UserId = resetPwd.UserId
-	sysUser.Password = resetPwd.Password
-	sysUser.SetUpdateBy(bzc.GetUserId())
-	uc.us.ResetPwd(sysUser)
+	uc.us.ResetPwd(resetPwd.UserId, resetPwd.Password)
 	bzc.Success()
 
 }
+
+// UserEdit 修改用户
+// @Summary 修改用户
+// @Description 修改用户
+// @Tags 用户相关
+// @Param  object body systemModels.SysUserEdit true "用户信息"
+// @Security BearerAuth
+// @Produce application/json
+// @Success 200 {object}  commonModels.ResponseData  "成功"
+// @Router /system/user  [put]
 func (uc *UserController) UserEdit(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 
@@ -73,6 +98,15 @@ func (uc *UserController) UserEdit(c *gin.Context) {
 	bzc.Success()
 }
 
+// UserAdd 添加用户
+// @Summary 添加用户
+// @Description 添加用户
+// @Tags 用户相关
+// @Param  object body systemModels.SysUserAdd true "用户信息"
+// @Security BearerAuth
+// @Produce application/json
+// @Success 200 {object}  commonModels.ResponseData  "成功"
+// @Router /system/user  [post]
 func (uc *UserController) UserAdd(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 
@@ -102,6 +136,16 @@ func (uc *UserController) UserAdd(c *gin.Context) {
 	uc.us.InsertUser(sysUser)
 	bzc.Success()
 }
+
+// UserList 添加用户
+// @Summary 添加用户
+// @Description 添加用户
+// @Tags 用户相关
+// @Param  object query systemModels.SysUserDQL true "查询信息"
+// @Security BearerAuth
+// @Produce application/json
+// @Success 200 {object}  commonModels.ResponseData{data=commonModels.ListData{Rows=[]systemModels.SysUserVo}}  "成功"
+// @Router /system/user  [get]
 func (uc *UserController) UserList(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	user := new(systemModels.SysUserDQL)
@@ -111,10 +155,19 @@ func (uc *UserController) UserList(c *gin.Context) {
 	bzc.SuccessListData(list, count)
 
 }
+
+// UserGetInfo 获取当前用户信息
+// @Summary 获取当前用户信息
+// @Description 获取当前用户信息
+// @Tags 用户相关
+// @Security BearerAuth
+// @Produce application/json
+// @Success 200 {object}  commonModels.ResponseData{data=systemModels.UserInfo}  "成功"
+// @Router /system/user/  [get]
 func (uc *UserController) UserGetInfo(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-	m := make(map[string]interface{})
-	m["posts"] = uc.ps.SelectPostAll()
+	ui := new(systemModels.UserInfo)
+	ui.Posts = uc.ps.SelectPostAll()
 	user := bzc.GetUser()
 	role := new(systemModels.SysRoleDQL)
 	c.ShouldBind(role)
@@ -128,10 +181,19 @@ func (uc *UserController) UserGetInfo(c *gin.Context) {
 			}
 		}
 	}
-	m["roles"] = roleList
-	bzc.SuccessData(m)
+	ui.Roles = roleList
+	bzc.SuccessData(ui)
 
 }
+
+// UserAuthRole 获取当前用户信息
+// @Summary 获取当前用户信息
+// @Description 获取当前用户信息
+// @Tags 用户相关
+// @Security BearerAuth
+// @Produce application/json
+// @Success 200 {object}  commonModels.ResponseData{data=systemModels.UserInfo}  "成功"
+// @Router /system/user/authRole/{userId}  [get]
 func (uc *UserController) UserAuthRole(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	userId := bzc.ParamInt64("userId")
@@ -231,7 +293,6 @@ func (uc *UserController) ImportTemplate(c *gin.Context) {
 
 func (uc *UserController) InsertAuthRole(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-
 	array := bzc.QueryInt64Array("roleIds")
 	uc.us.InsertUserAuth(bzc.QueryInt64("userId"), array)
 	bzc.Success()

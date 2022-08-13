@@ -67,6 +67,6 @@ type JWT struct {
 
 type GetInfo struct {
 	User        *User    `json:"user"`
-	RolePerms   []string `json:"rolePerms"`
+	Roles       []string `json:"roles"`
 	Permissions []string `json:"permissions"`
 }

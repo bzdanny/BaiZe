@@ -102,13 +102,16 @@ func (userService *UserService) UpdateUser(sysUser *systemModels.SysUserEdit) {
 
 }
 
-func (userService *UserService) UpdateuserStatus(sysUser *systemModels.SysUserEdit) {
-	userService.userDao.UpdateUser(userService.data.GetMasterDb(), sysUser)
+func (userService *UserService) UpdateUserStatus(sysUser *systemModels.EditUserStatus) {
+	s := new(systemModels.SysUserEdit)
+	s.UserId = sysUser.UserId
+	s.Status = sysUser.Status
+	s.BaseEntityEdit = sysUser.BaseEntityEdit
+	userService.userDao.UpdateUser(userService.data.GetMasterDb(), s)
 
 }
-func (userService *UserService) ResetPwd(sysUser *systemModels.SysUserEdit) {
-	sysUser.Password = bCryptPasswordEncoder.HashPassword(sysUser.Password)
-	userService.userDao.UpdateUser(userService.data.GetMasterDb(), sysUser)
+func (userService *UserService) ResetPwd(userId int64, password string) {
+	userService.userDao.ResetUserPwd(userService.data.GetMasterDb(), userId, bCryptPasswordEncoder.HashPassword(password))
 
 }
 

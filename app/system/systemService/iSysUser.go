@@ -12,8 +12,8 @@ type IUserService interface {
 	SelectUserById(userId int64) (sysUser *systemModels.SysUserVo)
 	InsertUser(sysUser *systemModels.SysUserAdd)
 	UpdateUser(sysUser *systemModels.SysUserEdit)
-	UpdateuserStatus(sysUser *systemModels.SysUserEdit)
-	ResetPwd(sysUser *systemModels.SysUserEdit)
+	UpdateUserStatus(sysUser *systemModels.EditUserStatus)
+	ResetPwd(userId int64, password string)
 	CheckUserNameUnique(userName string) bool
 	CheckPhoneUnique(id int64, phonenumber string) bool
 	CheckEmailUnique(id int64, email string) bool

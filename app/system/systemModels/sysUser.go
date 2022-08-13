@@ -7,51 +7,54 @@ import (
 )
 
 type SysUserDQL struct {
-	UserName    string `form:"userName" db:"user_name"`
-	Status      string `form:"status" db:"status"`
-	Phonenumber string `form:"phonenumber" db:"phonenumber"`
-	BeginTime   string `form:"beginTime" db:"begin_time"`
-	EndTime     string `form:"endTime" db:"end_time"`
-	DeptId      *int64 `form:"deptId" db:"dept_id"`
+	UserName    string `form:"userName" db:"user_name"`      //用户名
+	Status      string `form:"status" db:"status"`           //状态
+	Phonenumber string `form:"phonenumber" db:"phonenumber"` //电话
+	BeginTime   string `form:"beginTime" db:"begin_time"`    //注册开始时间
+	EndTime     string `form:"endTime" db:"end_time"`        //注册结束时间
+	DeptId      *int64 `form:"deptId" db:"dept_id"`          //部门ID
 	baizeEntity.BaseEntityDQL
 }
 
 type SysUserAdd struct {
-	UserId      int64    `json:"userId,string" db:"user_id"`
-	DeptId      *int64   `json:"deptId,string" db:"dept_id"`
-	UserName    string   `json:"userName" db:"user_name"`
-	NickName    string   `json:"nickName" db:"nick_name"`
-	Email       string   `json:"email" db:"email"`
-	Avatar      string   `json:"avatar" db:"avatar"`
-	Phonenumber string   `json:"phonenumber" db:"phonenumber"`
-	Sex         string   `json:"sex" db:"sex"  binding:"required"`
-	Password    string   `json:"password" db:"password"`
-	Status      string   `json:"status" db:"status"`
-	Remake      string   `json:"remake" db:"remake "`
-	PostIds     []string `json:"postIds"`
-	RoleIds     []string `json:"roleIds"`
+	UserId      int64    `json:"userId,string" db:"user_id"`                    //用户ID
+	DeptId      *int64   `json:"deptId,string" db:"dept_id" binding:"required"` //部门ID
+	UserName    string   `json:"userName" db:"user_name" binding:"required"`    //用户名
+	NickName    string   `json:"nickName" db:"nick_name" binding:"required"`    //用户昵称
+	Email       string   `json:"email" db:"email"`                              //邮箱
+	Avatar      string   `json:"avatar" db:"avatar"`                            //头像
+	Phonenumber string   `json:"phonenumber" db:"phonenumber"`                  //手机号
+	Sex         string   `json:"sex" db:"sex"  binding:"required"`              //性别
+	Password    string   `json:"password" db:"password" binding:"required"`     //密码
+	Status      string   `json:"status" db:"status"`                            //状态
+	Remake      string   `json:"remake" db:"remake "`                           //备注
+	PostIds     []string `json:"postIds"`                                       //岗位IDS
+	RoleIds     []string `json:"roleIds"`                                       //角色IDS
 	baizeEntity.BaseEntityAdd
 }
 
 type ResetPwd struct {
-	UserId   int64  `json:"userId,string" db:"user_id"binding:"required"`
-	Password string `json:"password" db:"password"binding:"required"`
+	UserId   int64  `json:"userId,string" db:"user_id"binding:"required"` //用户ID
+	Password string `json:"password" db:"password"binding:"required"`     //新密码
+}
+type EditUserStatus struct {
+	UserId int64  `json:"userId,string"binding:"required"` //用户id
+	Status string `json:"status"`                          //状态
+	baizeEntity.BaseEntityEdit
 }
 
 type SysUserEdit struct {
-	UserId      int64    `json:"userId,string" db:"user_id"binding:"required"`
-	DeptId      *int64   `json:"deptId,string" db:"dept_id"binding:"required"`
-	UserName    string   `json:"userName" db:"user_name"`
-	NickName    string   `json:"nickName" db:"nick_name"`
-	Email       string   `json:"email" db:"email"`
-	Avatar      string   `json:"avatar" db:"avatar"`
-	Phonenumber string   `json:"phonenumber" db:"phonenumber"`
-	Sex         string   `json:"sex" db:"sex"  binding:"required"`
-	Password    string   `json:"password" db:"password"`
-	Status      string   `json:"status" db:"status"`
-	Remake      string   `json:"remake" db:"remake "`
-	PostIds     []string `json:"postIds"`
-	RoleIds     []string `json:"roleIds"`
+	UserId      int64    `json:"userId,string" db:"user_id"binding:"required"` //用户id
+	DeptId      *int64   `json:"deptId,string" db:"dept_id"`                   //部门id
+	NickName    string   `json:"nickName" db:"nick_name"`                      //昵称
+	Email       string   `json:"email" db:"email"`                             //邮箱
+	Avatar      string   `json:"avatar" db:"avatar"`                           //头像
+	Phonenumber string   `json:"phonenumber" db:"phonenumber"`                 //电话
+	Sex         string   `json:"sex" db:"sex"`                                 //性别
+	Status      string   `json:"status" db:"status"`                           //状态
+	Remake      string   `json:"remake" db:"remake"`                           //备注
+	PostIds     []string `json:"postIds"`                                      //岗位ids
+	RoleIds     []string `json:"roleIds"`                                      //角色ids
 	baizeEntity.BaseEntityEdit
 }
 
@@ -99,12 +102,10 @@ type SysUserVo struct {
 	baizeEntity.BaseEntity
 }
 
-//sysUser.UserName = row[0]
-//sysUser.NickName = row[1]
-//sysUser.Email = row[2]
-//sysUser.Phonenumber = row[3]
-//sysUser.Sex = row[4]
-//sysUser.Status = row[5]
+type UserInfo struct {
+	Posts []*SysPostVo `json:"posts"`
+	Roles []*SysRoleVo `json:"roles"`
+}
 
 func SysUserImportTemplate() (row []string) {
 	row = []string{"登录名称(*)", "用户姓名(*)", "用户邮箱", "手机号码", "用户性别(0男 1女)", "帐号状态(0正常 1停用)", "*号为必填项"}
