@@ -31,9 +31,8 @@ func (sysDeptDao *SysDeptDao) SelectDeptList(db dataUtil.DB, dept *systemModels.
 	if dept.DataScope != "" {
 		whereSql += " AND " + dept.DataScope
 	}
-	whereSql += " order by d.parent_id, d.order_num"
 
-	return dataUtil.NamedQueryList(db, list, dept, sysDeptDao.deptSql+whereSql, "", "")
+	return dataUtil.NamedQueryList(db, list, dept, sysDeptDao.deptSql+whereSql, "order by d.parent_id, d.order_num", "")
 
 }
 func (sysDeptDao *SysDeptDao) SelectDeptById(db dataUtil.DB, deptId int64) (dept *systemModels.SysDeptVo) {

@@ -103,8 +103,15 @@ type SysUserVo struct {
 }
 
 type UserInfo struct {
-	Posts []*SysPostVo `json:"posts"`
-	Roles []*SysRoleVo `json:"roles"`
+	Posts []*SysPostVo `json:"posts"` //岗位
+	Roles []*SysRoleVo `json:"roles"` //角色
+}
+type Auth struct {
+	User    *SysUserVo   `json:"user"`              //user
+	Roles   []*SysRoleVo `json:"roles"`             //角色
+	RoleIds []string     `json:"roleIds"`           //选择的角色Id
+	Posts   []*SysPostVo `json:"posts,omitempty"`   //岗位
+	PostIds []string     `json:"postIds,omitempty"` //选择的岗位Id
 }
 
 func SysUserImportTemplate() (row []string) {

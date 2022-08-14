@@ -39,9 +39,8 @@ func (md *SysPermissionDao) SelectPermissionList(db dataUtil.DB, Permission *sys
 	if whereSql != "" {
 		whereSql = " where " + whereSql[4:]
 	}
-	whereSql += " order by m.permission_id"
 
-	return dataUtil.NamedQueryList(db, list, Permission, md.PermissionSql+whereSql, "", "")
+	return dataUtil.NamedQueryList(db, list, Permission, md.PermissionSql+whereSql, "order by m.permission_id", "")
 
 }
 

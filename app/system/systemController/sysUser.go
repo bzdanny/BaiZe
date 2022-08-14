@@ -10,7 +10,6 @@ import (
 	"github.com/bzdanny/BaiZe/baize/baizeContext"
 	"github.com/gin-gonic/gin"
 	"github.com/gogf/gf/v2/util/gconv"
-	"go.uber.org/zap"
 )
 
 type UserController struct {
@@ -186,23 +185,23 @@ func (uc *UserController) UserGetInfo(c *gin.Context) {
 
 }
 
-// UserAuthRole 获取当前用户信息
-// @Summary 获取当前用户信息
-// @Description 获取当前用户信息
+// UserAuthRole 根据用户编号获取授权角色
+// @Summary 根据用户编号获取授权角色
+// @Description 根据用户编号获取授权角色
 // @Tags 用户相关
+// @Param id path string true "userId"
 // @Security BearerAuth
 // @Produce application/json
-// @Success 200 {object}  commonModels.ResponseData{data=systemModels.UserInfo}  "成功"
+// @Success 200 {object}  commonModels.ResponseData{data=systemModels.Auth}  "成功"
 // @Router /system/user/authRole/{userId}  [get]
 func (uc *UserController) UserAuthRole(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	userId := bzc.ParamInt64("userId")
 	if userId == 0 {
-		zap.L().Error("参数错误")
 		bzc.ParameterError()
 	}
-	m := make(map[string]interface{})
-	m["user"] = uc.us.SelectUserById(userId)
+	ar := new(systemModels.Auth)
+	ar.User = uc.us.SelectUserById(userId)
 	role := new(systemModels.SysRoleDQL)
 	user := bzc.GetUser()
 	role.SetDataScope(user, "d", "")
@@ -215,20 +214,29 @@ func (uc *UserController) UserAuthRole(c *gin.Context) {
 			}
 		}
 	}
-	m["roles"] = roles
-	m["roleIds"] = gconv.Strings(uc.rs.SelectRoleListByUserId(userId))
-	bzc.SuccessData(m)
+	ar.Roles = roles
+	ar.RoleIds = gconv.Strings(uc.rs.SelectRoleListByUserId(userId))
+	bzc.SuccessData(ar)
 }
 
+// UserGetInfoById 根据用户ID获取用户信息
+// @Summary 根据用户ID获取用户信息
+// @Description 根据用户ID获取用户信息
+// @Tags 用户相关
+// @Param id path string true "userId"
+// @Security BearerAuth
+// @Produce application/json
+// @Success 200 {object}  commonModels.ResponseData{data=systemModels.Auth}  "成功"
+// @Router /system/user/{userId}  [get]
 func (uc *UserController) UserGetInfoById(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	userId := bzc.ParamInt64("userId")
 	if userId == 0 {
 		bzc.ParameterError()
 	}
-	m := make(map[string]interface{})
+	ar := new(systemModels.Auth)
 	postList := uc.ps.SelectPostAll()
-	m["posts"] = postList
+
 	user := bzc.GetUser()
 	role := new(systemModels.SysRoleDQL)
 	role.SetDataScope(user, "d", "")
@@ -241,20 +249,30 @@ func (uc *UserController) UserGetInfoById(c *gin.Context) {
 			}
 		}
 	}
-	m["roles"] = roleList
-	m["postIds"] = gconv.Strings(uc.ps.SelectPostListByUserId(userId))
-	m["roleIds"] = gconv.Strings(uc.rs.SelectRoleListByUserId(userId))
-	m["sysUser"] = uc.us.SelectUserById(userId)
-	bzc.SuccessData(m)
+	ar.Posts = postList
+	ar.Roles = roleList
+	ar.PostIds = gconv.Strings(uc.ps.SelectPostListByUserId(userId))
+	ar.RoleIds = gconv.Strings(uc.rs.SelectRoleListByUserId(userId))
+	ar.User = uc.us.SelectUserById(userId)
+	bzc.SuccessData(ar)
 
 }
 
+// UserRemove 删除用户
+// @Summary 删除用户
+// @Description 删除用户
+// @Tags 系统用户
+// @Param userIds path  []string true "userIds"
+// @Security BearerAuth
+// @Produce application/json
+// @Success 200 {object} commonModels.ResponseData
+// @Router /system/user/{userIds} [delete]
 func (uc *UserController) UserRemove(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
-
 	uc.us.DeleteUserByIds(bzc.ParamInt64Array("userIds"))
 	bzc.Success()
 }
+
 func (uc *UserController) UserImportData(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 

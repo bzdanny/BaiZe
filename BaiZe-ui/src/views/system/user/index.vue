@@ -142,7 +142,8 @@
                            :show-overflow-tooltip="true"/>
           <el-table-column label="部门" align="center" key="deptName" prop="deptName" v-if="columns[3].visible"
                            :show-overflow-tooltip="true"/>
-          <el-table-column label="手机号码" align="center" key="phonenumber" prop="phonenumber" v-if="columns[4].visible"
+          <el-table-column label="手机号码" align="center" key="phonenumber" prop="phonenumber"
+                           v-if="columns[4].visible"
                            width="120"/>
           <el-table-column label="状态" align="center" key="status" v-if="columns[5].visible">
             <template #default="scope">
@@ -248,7 +249,8 @@
           </el-col>
           <el-col :span="12">
             <el-form-item v-if="form.userId == undefined" label="用户密码" prop="password">
-              <el-input v-model="form.password" placeholder="请输入用户密码" type="password" maxlength="20" show-password/>
+              <el-input v-model="form.password" placeholder="请输入用户密码" type="password" maxlength="20"
+                        show-password/>
             </el-form-item>
           </el-col>
         </el-row>
@@ -647,7 +649,7 @@ function handleUpdate(row) {
   initTreeData();
   const userId = row.userId || ids.value;
   getUser(userId).then(response => {
-    form.value = response.data.sysUser;
+    form.value = response.data.user;
     postOptions.value = response.data.posts;
     roleOptions.value = response.data.roles;
     form.value.postIds = response.data.postIds;
