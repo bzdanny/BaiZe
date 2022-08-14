@@ -43,7 +43,7 @@ type User struct {
 	Remark      *string                `json:"remark" db:"remark" db:"remark"`
 	ParentId    *int64                 `json:"parentId" db:"parent_id" db:"parent_id"`
 	DeptName    *string                `json:"deptName" db:"dept_name" db:"dept_name"`
-	CreateTime  *baizeEntity.BaiZeTime `json:"createTime" db:"create_time" db:"create_time"`
+	CreateTime  *baizeEntity.BaiZeTime `json:"createTime" db:"create_time" db:"create_time"  swaggertype:"integer"`
 	Roles       []*baizeEntity.Role    `json:"roles"`
 }
 

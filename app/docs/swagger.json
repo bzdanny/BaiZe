@@ -10,6 +10,43 @@
         "version": "2.0.x"
     },
     "paths": {
+        "/getInfo": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "获取用户个人信息",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "登录"
+                ],
+                "summary": "获取用户个人信息",
+                "responses": {
+                    "200": {
+                        "description": "获取成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/commonModels.ResponseData"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/systemModels.GetInfo"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/login": {
             "post": {
                 "description": "用户登录",
@@ -17,7 +54,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "管理端登录"
+                    "登录"
                 ],
                 "summary": "用户登录",
                 "parameters": [
@@ -58,9 +95,573 @@
                     }
                 }
             }
+        },
+        "/logout": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "获取验证码",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "登录"
+                ],
+                "summary": "获取验证码",
+                "responses": {
+                    "200": {
+                        "description": "退出成功",
+                        "schema": {
+                            "$ref": "#/definitions/commonModels.ResponseData"
+                        }
+                    }
+                }
+            }
+        },
+        "/system/user": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "添加用户",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户相关"
+                ],
+                "summary": "添加用户",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "注册开始时间",
+                        "name": "beginTime",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "部门ID",
+                        "name": "deptId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "注册结束时间",
+                        "name": "endTime",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "排序规则  降序desc   asc升序",
+                        "name": "isAsc",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "排序字段",
+                        "name": "orderBy",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "第几页",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "电话",
+                        "name": "phonenumber",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "数量",
+                        "name": "size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "状态",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "用户名",
+                        "name": "userName",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/commonModels.ResponseData"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/definitions/commonModels.ListData"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "Rows": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "$ref": "#/definitions/systemModels.SysUserVo"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "授权角色",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户相关"
+                ],
+                "summary": "授权角色",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "角色id",
+                        "name": "string",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "用户id",
+                        "name": "string",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/commonModels.ResponseData"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/definitions/commonModels.ListData"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "Rows": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "$ref": "#/definitions/systemModels.SysUserVo"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "添加用户",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户相关"
+                ],
+                "summary": "添加用户",
+                "parameters": [
+                    {
+                        "description": "用户信息",
+                        "name": "object",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/systemModels.SysUserAdd"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/commonModels.ResponseData"
+                        }
+                    }
+                }
+            }
+        },
+        "/system/user/": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "获取当前用户信息",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户相关"
+                ],
+                "summary": "获取当前用户信息",
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/commonModels.ResponseData"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/systemModels.UserInfo"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/system/user/authRole/{userId}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "根据用户编号获取授权角色",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户相关"
+                ],
+                "summary": "根据用户编号获取授权角色",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "userId",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/commonModels.ResponseData"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/systemModels.Auth"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/system/user/changeStatus": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "修改用户状态",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户相关"
+                ],
+                "summary": "修改用户状态",
+                "parameters": [
+                    {
+                        "description": "用户信息",
+                        "name": "object",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/systemModels.EditUserStatus"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/commonModels.ResponseData"
+                        }
+                    }
+                }
+            }
+        },
+        "/system/user/export": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "导出用户",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统用户"
+                ],
+                "summary": "导出用户",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/system/user/importData": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "导入用户",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统用户"
+                ],
+                "summary": "导入用户",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "file",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/commonModels.ResponseData"
+                        }
+                    }
+                }
+            }
+        },
+        "/system/user/resetPwd": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "重置密码",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户相关"
+                ],
+                "summary": "重置密码",
+                "parameters": [
+                    {
+                        "description": "密码",
+                        "name": "object",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/systemModels.ResetPwd"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/commonModels.ResponseData"
+                        }
+                    }
+                }
+            }
+        },
+        "/system/user/{userIds}": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "删除用户",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统用户"
+                ],
+                "summary": "删除用户",
+                "parameters": [
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "userIds",
+                        "name": "userIds",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/commonModels.ResponseData"
+                        }
+                    }
+                }
+            }
+        },
+        "/system/user/{userId}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "根据用户ID获取用户信息",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户相关"
+                ],
+                "summary": "根据用户ID获取用户信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "userId",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/commonModels.ResponseData"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/systemModels.Auth"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "baizeEntity.Role": {
+            "type": "object",
+            "properties": {
+                "dataScope": {
+                    "type": "string"
+                },
+                "roleId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "commonModels.ListData": {
+            "type": "object",
+            "properties": {
+                "rows": {},
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
         "commonModels.ResponseData": {
             "type": "object",
             "properties": {
@@ -74,6 +675,80 @@
                 "msg": {
                     "description": "提示信息",
                     "type": "string"
+                }
+            }
+        },
+        "systemModels.Auth": {
+            "type": "object",
+            "properties": {
+                "postIds": {
+                    "description": "选择的岗位Id",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "posts": {
+                    "description": "岗位",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/systemModels.SysPostVo"
+                    }
+                },
+                "roleIds": {
+                    "description": "选择的角色Id",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "roles": {
+                    "description": "角色",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/systemModels.SysRoleVo"
+                    }
+                },
+                "user": {
+                    "description": "user",
+                    "$ref": "#/definitions/systemModels.SysUserVo"
+                }
+            }
+        },
+        "systemModels.EditUserStatus": {
+            "type": "object",
+            "required": [
+                "userId"
+            ],
+            "properties": {
+                "status": {
+                    "description": "状态",
+                    "type": "string"
+                },
+                "userId": {
+                    "description": "用户id",
+                    "type": "string",
+                    "example": "0"
+                }
+            }
+        },
+        "systemModels.GetInfo": {
+            "type": "object",
+            "properties": {
+                "permissions": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "roles": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "user": {
+                    "$ref": "#/definitions/systemModels.User"
                 }
             }
         },
@@ -101,6 +776,421 @@
                 "uuid": {
                     "description": "uuid",
                     "type": "string"
+                }
+            }
+        },
+        "systemModels.ResetPwd": {
+            "type": "object",
+            "required": [
+                "password",
+                "userId"
+            ],
+            "properties": {
+                "password": {
+                    "description": "新密码",
+                    "type": "string"
+                },
+                "userId": {
+                    "description": "用户ID",
+                    "type": "string",
+                    "example": "0"
+                }
+            }
+        },
+        "systemModels.SysPostVo": {
+            "type": "object",
+            "properties": {
+                "createBy": {
+                    "description": "创建人",
+                    "type": "integer"
+                },
+                "createTime": {
+                    "description": "创建时间",
+                    "type": "integer"
+                },
+                "postCode": {
+                    "type": "string"
+                },
+                "postId": {
+                    "type": "string",
+                    "example": "0"
+                },
+                "postName": {
+                    "type": "string"
+                },
+                "postSort": {
+                    "type": "integer"
+                },
+                "remark": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "updateBy": {
+                    "description": "修改人",
+                    "type": "integer"
+                },
+                "updateTime": {
+                    "description": "修改时间",
+                    "type": "integer"
+                }
+            }
+        },
+        "systemModels.SysRole": {
+            "type": "object",
+            "properties": {
+                "dataScope": {
+                    "type": "string"
+                },
+                "roleId": {
+                    "type": "integer"
+                },
+                "roleKey": {
+                    "type": "string"
+                },
+                "roleName": {
+                    "type": "string"
+                }
+            }
+        },
+        "systemModels.SysRoleVo": {
+            "type": "object",
+            "properties": {
+                "createBy": {
+                    "description": "创建人",
+                    "type": "integer"
+                },
+                "createTime": {
+                    "description": "创建时间",
+                    "type": "integer"
+                },
+                "dataScope": {
+                    "type": "string"
+                },
+                "delFlag": {
+                    "type": "string"
+                },
+                "deptCheckStrictly": {
+                    "type": "boolean"
+                },
+                "permissionCheckStrictly": {
+                    "type": "boolean"
+                },
+                "remark": {
+                    "type": "string"
+                },
+                "roleId": {
+                    "type": "string",
+                    "example": "0"
+                },
+                "roleKey": {
+                    "type": "string"
+                },
+                "roleName": {
+                    "type": "string"
+                },
+                "roleSort": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "updateBy": {
+                    "description": "修改人",
+                    "type": "integer"
+                },
+                "updateTime": {
+                    "description": "修改时间",
+                    "type": "integer"
+                }
+            }
+        },
+        "systemModels.SysUserAdd": {
+            "type": "object",
+            "required": [
+                "deptId",
+                "nickName",
+                "password",
+                "sex",
+                "userName"
+            ],
+            "properties": {
+                "avatar": {
+                    "description": "头像",
+                    "type": "string"
+                },
+                "deptId": {
+                    "description": "部门ID",
+                    "type": "string",
+                    "example": "0"
+                },
+                "email": {
+                    "description": "邮箱",
+                    "type": "string"
+                },
+                "nickName": {
+                    "description": "用户昵称",
+                    "type": "string"
+                },
+                "password": {
+                    "description": "密码",
+                    "type": "string"
+                },
+                "phonenumber": {
+                    "description": "手机号",
+                    "type": "string"
+                },
+                "postIds": {
+                    "description": "岗位IDS",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "remake": {
+                    "description": "备注",
+                    "type": "string"
+                },
+                "roleIds": {
+                    "description": "角色IDS",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "sex": {
+                    "description": "性别",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "状态",
+                    "type": "string"
+                },
+                "userId": {
+                    "description": "用户ID",
+                    "type": "string",
+                    "example": "0"
+                },
+                "userName": {
+                    "description": "用户名",
+                    "type": "string"
+                }
+            }
+        },
+        "systemModels.SysUserEdit": {
+            "type": "object",
+            "required": [
+                "userId"
+            ],
+            "properties": {
+                "avatar": {
+                    "description": "头像",
+                    "type": "string"
+                },
+                "deptId": {
+                    "description": "部门id",
+                    "type": "string",
+                    "example": "0"
+                },
+                "email": {
+                    "description": "邮箱",
+                    "type": "string"
+                },
+                "nickName": {
+                    "description": "昵称",
+                    "type": "string"
+                },
+                "phonenumber": {
+                    "description": "电话",
+                    "type": "string"
+                },
+                "postIds": {
+                    "description": "岗位ids",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "remake": {
+                    "description": "备注",
+                    "type": "string"
+                },
+                "roleIds": {
+                    "description": "角色ids",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "sex": {
+                    "description": "性别",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "状态",
+                    "type": "string"
+                },
+                "userId": {
+                    "description": "用户id",
+                    "type": "string",
+                    "example": "0"
+                }
+            }
+        },
+        "systemModels.SysUserVo": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "createBy": {
+                    "description": "创建人",
+                    "type": "integer"
+                },
+                "createTime": {
+                    "description": "创建时间",
+                    "type": "integer"
+                },
+                "delFlag": {
+                    "type": "string"
+                },
+                "deptId": {
+                    "type": "string",
+                    "example": "0"
+                },
+                "deptName": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "leader": {
+                    "type": "string"
+                },
+                "loginDate": {
+                    "type": "string"
+                },
+                "loginIp": {
+                    "type": "string"
+                },
+                "nickName": {
+                    "type": "string"
+                },
+                "phonenumber": {
+                    "type": "string"
+                },
+                "remark": {
+                    "type": "string"
+                },
+                "roleId": {
+                    "type": "integer"
+                },
+                "roles": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/systemModels.SysRole"
+                    }
+                },
+                "sex": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "updateBy": {
+                    "description": "修改人",
+                    "type": "integer"
+                },
+                "updateTime": {
+                    "description": "修改时间",
+                    "type": "integer"
+                },
+                "userId": {
+                    "type": "string",
+                    "example": "0"
+                },
+                "userName": {
+                    "type": "string"
+                }
+            }
+        },
+        "systemModels.User": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "createTime": {
+                    "type": "integer"
+                },
+                "delFlag": {
+                    "type": "string"
+                },
+                "deptId": {
+                    "type": "integer"
+                },
+                "deptName": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "loginDate": {
+                    "type": "string"
+                },
+                "loginIp": {
+                    "type": "string"
+                },
+                "nickName": {
+                    "type": "string"
+                },
+                "parentId": {
+                    "type": "integer"
+                },
+                "phonenumber": {
+                    "type": "string"
+                },
+                "remark": {
+                    "type": "string"
+                },
+                "roles": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/baizeEntity.Role"
+                    }
+                },
+                "sex": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "userId": {
+                    "type": "string",
+                    "example": "0"
+                },
+                "userName": {
+                    "type": "string"
+                }
+            }
+        },
+        "systemModels.UserInfo": {
+            "type": "object",
+            "properties": {
+                "posts": {
+                    "description": "岗位",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/systemModels.SysPostVo"
+                    }
+                },
+                "roles": {
+                    "description": "角色",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/systemModels.SysRoleVo"
+                    }
                 }
             }
         }

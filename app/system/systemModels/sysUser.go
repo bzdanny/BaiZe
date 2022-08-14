@@ -74,8 +74,16 @@ func RowsToSysUserDMLList(rows [][]string) (list []*SysUserAdd, str string, fail
 		sysUser.NickName = row[1]
 		sysUser.Email = row[2]
 		sysUser.Phonenumber = row[3]
-		sysUser.Sex = row[4]
-		sysUser.Status = row[5]
+		sex := row[4]
+		if sex == "" {
+			sex = "2"
+		}
+		sysUser.Sex = sex
+		status := row[5]
+		if status == "" {
+			status = "0"
+		}
+		sysUser.Status = status
 		list = append(list, sysUser)
 	}
 	return

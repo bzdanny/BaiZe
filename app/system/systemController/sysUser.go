@@ -273,6 +273,16 @@ func (uc *UserController) UserRemove(c *gin.Context) {
 	bzc.Success()
 }
 
+// UserImportData 导入用户
+// @Summary 导入用户
+// @Description 导入用户
+// @Tags 系统用户
+// @Param file formData file true "file"
+// @Accept multipart/form-data
+// @Security BearerAuth
+// @Produce application/json
+// @Success 200 {object} commonModels.ResponseData
+// @Router /system/user/importData [post]
 func (uc *UserController) UserImportData(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 
@@ -285,7 +295,7 @@ func (uc *UserController) UserImportData(c *gin.Context) {
 	excelFile, _ := excelize.OpenReader(file)
 	rows := excelFile.GetRows("Sheet1")
 	loginUser := bzc.GetUser()
-	data, num := uc.us.UserImportData(rows, loginUser.UserName, loginUser.DeptId)
+	data, num := uc.us.UserImportData(rows, loginUser.UserId, loginUser.DeptId)
 	if num > 0 {
 		bzc.Waring(data)
 		return
@@ -293,6 +303,15 @@ func (uc *UserController) UserImportData(c *gin.Context) {
 	bzc.SuccessMsg(data)
 }
 
+// UserExport 导出用户
+// @Summary 导出用户
+// @Description 导出用户
+// @Tags 系统用户
+// @Param  object query systemModels.SysUserDQL true "查询信息"
+// @Security BearerAuth
+// @Produce application/json
+// @Success 200 {object} []byte
+// @Router /system/user/export [post]
 func (uc *UserController) UserExport(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	user := new(systemModels.SysUserDQL)
@@ -302,6 +321,14 @@ func (uc *UserController) UserExport(c *gin.Context) {
 	return
 }
 
+// ImportTemplate 获取导入末班
+// @Summary 导出用户
+// @Description 导出用户
+// @Tags 系统用户
+// @Security BearerAuth
+// @Produce application/json
+// @Success 200 {object} []byte
+// @Router /system/user/export [post]
 func (uc *UserController) ImportTemplate(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	data := uc.us.ImportTemplate()
@@ -309,6 +336,16 @@ func (uc *UserController) ImportTemplate(c *gin.Context) {
 	return
 }
 
+// InsertAuthRole 授权角色
+// @Summary 授权角色
+// @Description 授权角色
+// @Tags 用户相关
+// @Param  string query string true "角色id"
+// @Param  string query string true "用户id"
+// @Security BearerAuth
+// @Produce application/json
+// @Success 200 {object}  commonModels.ResponseData{data=commonModels.ListData{Rows=[]systemModels.SysUserVo}}  "成功"
+// @Router /system/user  [put]
 func (uc *UserController) InsertAuthRole(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	array := bzc.QueryInt64Array("roleIds")

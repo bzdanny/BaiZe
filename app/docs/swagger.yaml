@@ -1,4 +1,17 @@
 definitions:
+  baizeEntity.Role:
+    properties:
+      dataScope:
+        type: string
+      roleId:
+        type: integer
+    type: object
+  commonModels.ListData:
+    properties:
+      rows: {}
+      total:
+        type: integer
+    type: object
   commonModels.ResponseData:
     properties:
       code:
@@ -9,6 +22,57 @@ definitions:
       msg:
         description: 提示信息
         type: string
+    type: object
+  systemModels.Auth:
+    properties:
+      postIds:
+        description: 选择的岗位Id
+        items:
+          type: string
+        type: array
+      posts:
+        description: 岗位
+        items:
+          $ref: '#/definitions/systemModels.SysPostVo'
+        type: array
+      roleIds:
+        description: 选择的角色Id
+        items:
+          type: string
+        type: array
+      roles:
+        description: 角色
+        items:
+          $ref: '#/definitions/systemModels.SysRoleVo'
+        type: array
+      user:
+        $ref: '#/definitions/systemModels.SysUserVo'
+        description: user
+    type: object
+  systemModels.EditUserStatus:
+    properties:
+      status:
+        description: 状态
+        type: string
+      userId:
+        description: 用户id
+        example: "0"
+        type: string
+    required:
+    - userId
+    type: object
+  systemModels.GetInfo:
+    properties:
+      permissions:
+        items:
+          type: string
+        type: array
+      roles:
+        items:
+          type: string
+        type: array
+      user:
+        $ref: '#/definitions/systemModels.User'
     type: object
   systemModels.LoginBody:
     properties:
@@ -30,6 +94,298 @@ definitions:
     - username
     - uuid
     type: object
+  systemModels.ResetPwd:
+    properties:
+      password:
+        description: 新密码
+        type: string
+      userId:
+        description: 用户ID
+        example: "0"
+        type: string
+    required:
+    - password
+    - userId
+    type: object
+  systemModels.SysPostVo:
+    properties:
+      createBy:
+        description: 创建人
+        type: integer
+      createTime:
+        description: 创建时间
+        type: integer
+      postCode:
+        type: string
+      postId:
+        example: "0"
+        type: string
+      postName:
+        type: string
+      postSort:
+        type: integer
+      remark:
+        type: string
+      status:
+        type: string
+      updateBy:
+        description: 修改人
+        type: integer
+      updateTime:
+        description: 修改时间
+        type: integer
+    type: object
+  systemModels.SysRole:
+    properties:
+      dataScope:
+        type: string
+      roleId:
+        type: integer
+      roleKey:
+        type: string
+      roleName:
+        type: string
+    type: object
+  systemModels.SysRoleVo:
+    properties:
+      createBy:
+        description: 创建人
+        type: integer
+      createTime:
+        description: 创建时间
+        type: integer
+      dataScope:
+        type: string
+      delFlag:
+        type: string
+      deptCheckStrictly:
+        type: boolean
+      permissionCheckStrictly:
+        type: boolean
+      remark:
+        type: string
+      roleId:
+        example: "0"
+        type: string
+      roleKey:
+        type: string
+      roleName:
+        type: string
+      roleSort:
+        type: integer
+      status:
+        type: string
+      updateBy:
+        description: 修改人
+        type: integer
+      updateTime:
+        description: 修改时间
+        type: integer
+    type: object
+  systemModels.SysUserAdd:
+    properties:
+      avatar:
+        description: 头像
+        type: string
+      deptId:
+        description: 部门ID
+        example: "0"
+        type: string
+      email:
+        description: 邮箱
+        type: string
+      nickName:
+        description: 用户昵称
+        type: string
+      password:
+        description: 密码
+        type: string
+      phonenumber:
+        description: 手机号
+        type: string
+      postIds:
+        description: 岗位IDS
+        items:
+          type: string
+        type: array
+      remake:
+        description: 备注
+        type: string
+      roleIds:
+        description: 角色IDS
+        items:
+          type: string
+        type: array
+      sex:
+        description: 性别
+        type: string
+      status:
+        description: 状态
+        type: string
+      userId:
+        description: 用户ID
+        example: "0"
+        type: string
+      userName:
+        description: 用户名
+        type: string
+    required:
+    - deptId
+    - nickName
+    - password
+    - sex
+    - userName
+    type: object
+  systemModels.SysUserEdit:
+    properties:
+      avatar:
+        description: 头像
+        type: string
+      deptId:
+        description: 部门id
+        example: "0"
+        type: string
+      email:
+        description: 邮箱
+        type: string
+      nickName:
+        description: 昵称
+        type: string
+      phonenumber:
+        description: 电话
+        type: string
+      postIds:
+        description: 岗位ids
+        items:
+          type: string
+        type: array
+      remake:
+        description: 备注
+        type: string
+      roleIds:
+        description: 角色ids
+        items:
+          type: string
+        type: array
+      sex:
+        description: 性别
+        type: string
+      status:
+        description: 状态
+        type: string
+      userId:
+        description: 用户id
+        example: "0"
+        type: string
+    required:
+    - userId
+    type: object
+  systemModels.SysUserVo:
+    properties:
+      avatar:
+        type: string
+      createBy:
+        description: 创建人
+        type: integer
+      createTime:
+        description: 创建时间
+        type: integer
+      delFlag:
+        type: string
+      deptId:
+        example: "0"
+        type: string
+      deptName:
+        type: string
+      email:
+        type: string
+      leader:
+        type: string
+      loginDate:
+        type: string
+      loginIp:
+        type: string
+      nickName:
+        type: string
+      phonenumber:
+        type: string
+      remark:
+        type: string
+      roleId:
+        type: integer
+      roles:
+        items:
+          $ref: '#/definitions/systemModels.SysRole'
+        type: array
+      sex:
+        type: string
+      status:
+        type: string
+      updateBy:
+        description: 修改人
+        type: integer
+      updateTime:
+        description: 修改时间
+        type: integer
+      userId:
+        example: "0"
+        type: string
+      userName:
+        type: string
+    type: object
+  systemModels.User:
+    properties:
+      avatar:
+        type: string
+      createTime:
+        type: integer
+      delFlag:
+        type: string
+      deptId:
+        type: integer
+      deptName:
+        type: string
+      email:
+        type: string
+      loginDate:
+        type: string
+      loginIp:
+        type: string
+      nickName:
+        type: string
+      parentId:
+        type: integer
+      phonenumber:
+        type: string
+      remark:
+        type: string
+      roles:
+        items:
+          $ref: '#/definitions/baizeEntity.Role'
+        type: array
+      sex:
+        type: string
+      status:
+        type: string
+      userId:
+        example: "0"
+        type: string
+      userName:
+        type: string
+    type: object
+  systemModels.UserInfo:
+    properties:
+      posts:
+        description: 岗位
+        items:
+          $ref: '#/definitions/systemModels.SysPostVo'
+        type: array
+      roles:
+        description: 角色
+        items:
+          $ref: '#/definitions/systemModels.SysRoleVo'
+        type: array
+    type: object
 info:
   contact:
     email: zhao_402295440@126.com
@@ -38,6 +394,26 @@ info:
   title: baize
   version: 2.0.x
 paths:
+  /getInfo:
+    post:
+      description: 获取用户个人信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/commonModels.ResponseData'
+            - properties:
+                data:
+                  $ref: '#/definitions/systemModels.GetInfo'
+              type: object
+      security:
+      - BearerAuth: []
+      summary: 获取用户个人信息
+      tags:
+      - 登录
   /login:
     post:
       description: 用户登录
@@ -69,7 +445,329 @@ paths:
             $ref: '#/definitions/commonModels.ResponseData'
       summary: 用户登录
       tags:
-      - 管理端登录
+      - 登录
+  /logout:
+    post:
+      description: 获取验证码
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 退出成功
+          schema:
+            $ref: '#/definitions/commonModels.ResponseData'
+      security:
+      - BearerAuth: []
+      summary: 获取验证码
+      tags:
+      - 登录
+  /system/user:
+    get:
+      description: 添加用户
+      parameters:
+      - description: 注册开始时间
+        in: query
+        name: beginTime
+        type: string
+      - description: 部门ID
+        in: query
+        name: deptId
+        type: integer
+      - description: 注册结束时间
+        in: query
+        name: endTime
+        type: string
+      - description: 排序规则  降序desc   asc升序
+        in: query
+        name: isAsc
+        type: string
+      - description: 排序字段
+        in: query
+        name: orderBy
+        type: string
+      - default: 1
+        description: 第几页
+        in: query
+        name: page
+        type: integer
+      - description: 电话
+        in: query
+        name: phonenumber
+        type: string
+      - default: 10
+        description: 数量
+        in: query
+        name: size
+        type: integer
+      - description: 状态
+        in: query
+        name: status
+        type: string
+      - description: 用户名
+        in: query
+        name: userName
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/commonModels.ResponseData'
+            - properties:
+                data:
+                  allOf:
+                  - $ref: '#/definitions/commonModels.ListData'
+                  - properties:
+                      Rows:
+                        items:
+                          $ref: '#/definitions/systemModels.SysUserVo'
+                        type: array
+                    type: object
+              type: object
+      security:
+      - BearerAuth: []
+      summary: 添加用户
+      tags:
+      - 用户相关
+    post:
+      description: 添加用户
+      parameters:
+      - description: 用户信息
+        in: body
+        name: object
+        required: true
+        schema:
+          $ref: '#/definitions/systemModels.SysUserAdd'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/commonModels.ResponseData'
+      security:
+      - BearerAuth: []
+      summary: 添加用户
+      tags:
+      - 用户相关
+    put:
+      description: 授权角色
+      parameters:
+      - description: 角色id
+        in: query
+        name: string
+        required: true
+        type: string
+      - description: 用户id
+        in: query
+        name: string
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/commonModels.ResponseData'
+            - properties:
+                data:
+                  allOf:
+                  - $ref: '#/definitions/commonModels.ListData'
+                  - properties:
+                      Rows:
+                        items:
+                          $ref: '#/definitions/systemModels.SysUserVo'
+                        type: array
+                    type: object
+              type: object
+      security:
+      - BearerAuth: []
+      summary: 授权角色
+      tags:
+      - 用户相关
+  /system/user/:
+    get:
+      description: 获取当前用户信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/commonModels.ResponseData'
+            - properties:
+                data:
+                  $ref: '#/definitions/systemModels.UserInfo'
+              type: object
+      security:
+      - BearerAuth: []
+      summary: 获取当前用户信息
+      tags:
+      - 用户相关
+  /system/user/{userId}:
+    get:
+      description: 根据用户ID获取用户信息
+      parameters:
+      - description: userId
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/commonModels.ResponseData'
+            - properties:
+                data:
+                  $ref: '#/definitions/systemModels.Auth'
+              type: object
+      security:
+      - BearerAuth: []
+      summary: 根据用户ID获取用户信息
+      tags:
+      - 用户相关
+  /system/user/{userIds}:
+    delete:
+      description: 删除用户
+      parameters:
+      - description: userIds
+        in: path
+        items:
+          type: string
+        name: userIds
+        required: true
+        type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/commonModels.ResponseData'
+      security:
+      - BearerAuth: []
+      summary: 删除用户
+      tags:
+      - 系统用户
+  /system/user/authRole/{userId}:
+    get:
+      description: 根据用户编号获取授权角色
+      parameters:
+      - description: userId
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/commonModels.ResponseData'
+            - properties:
+                data:
+                  $ref: '#/definitions/systemModels.Auth'
+              type: object
+      security:
+      - BearerAuth: []
+      summary: 根据用户编号获取授权角色
+      tags:
+      - 用户相关
+  /system/user/changeStatus:
+    put:
+      description: 修改用户状态
+      parameters:
+      - description: 用户信息
+        in: body
+        name: object
+        required: true
+        schema:
+          $ref: '#/definitions/systemModels.EditUserStatus'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/commonModels.ResponseData'
+      security:
+      - BearerAuth: []
+      summary: 修改用户状态
+      tags:
+      - 用户相关
+  /system/user/export:
+    post:
+      description: 导出用户
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: integer
+            type: array
+      security:
+      - BearerAuth: []
+      summary: 导出用户
+      tags:
+      - 系统用户
+  /system/user/importData:
+    post:
+      consumes:
+      - multipart/form-data
+      description: 导入用户
+      parameters:
+      - description: file
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/commonModels.ResponseData'
+      security:
+      - BearerAuth: []
+      summary: 导入用户
+      tags:
+      - 系统用户
+  /system/user/resetPwd:
+    put:
+      description: 重置密码
+      parameters:
+      - description: 密码
+        in: body
+        name: object
+        required: true
+        schema:
+          $ref: '#/definitions/systemModels.ResetPwd'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/commonModels.ResponseData'
+      security:
+      - BearerAuth: []
+      summary: 重置密码
+      tags:
+      - 用户相关
 securityDefinitions:
   BearerAuth:
     in: header

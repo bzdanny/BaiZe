@@ -185,7 +185,7 @@ func (userService *UserService) DeleteUserByIds(ids []int64) {
 
 }
 
-func (userService *UserService) UserImportData(rows [][]string, operName string, deptId *int64) (msg string, failureNum int) {
+func (userService *UserService) UserImportData(rows [][]string, userId int64, deptId *int64) (msg string, failureNum int) {
 	successNum := 0
 	list, failureMsg, failureNum := systemModels.RowsToSysUserDMLList(rows)
 	password := bCryptPasswordEncoder.HashPassword("123456")
@@ -206,8 +206,7 @@ func (userService *UserService) UserImportData(rows [][]string, operName string,
 		if unique < 1 {
 			user.DeptId = deptId
 			user.Password = password
-			//TODO
-			//user.SetCreateBy(operName)
+			user.SetCreateBy(userId)
 			userService.userDao.InsertUser(tx, user)
 			successNum++
 		} else {

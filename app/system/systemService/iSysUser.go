@@ -18,7 +18,7 @@ type IUserService interface {
 	CheckPhoneUnique(id int64, phonenumber string) bool
 	CheckEmailUnique(id int64, email string) bool
 	DeleteUserByIds(ids []int64)
-	UserImportData(rows [][]string, operName string, deptId *int64) (msg string, failureNum int)
+	UserImportData(rows [][]string, userId int64, deptId *int64) (msg string, failureNum int)
 	UpdateLoginInformation(userId int64, ip string)
 	UpdateUserAvatar(loginUser *systemModels.LoginUser, file *multipart.FileHeader) string
 	ResetUserPwd(userId int64, password string)

@@ -12,7 +12,7 @@ wire:
 	cd app/ && wire
 
 swag:
-	cd app/ && swag init
+	cd app/ && swag init  -d ./,../baize
 
 build:
 	make wire;
@@ -22,3 +22,4 @@ build:
 
 help:
 	@echo "make - 格式化 Go 代码,并编译成二进制文件"
+
