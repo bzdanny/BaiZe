@@ -31,18 +31,20 @@ const usePermissionStore = defineStore(
             setSidebarRouters(routes) {
                 this.sidebarRouters = routes
             },
-            generateRoutes(roles) {
+            generateRoutes() {
                 return new Promise(resolve => {
                     // 向后端请求路由数据
                     const asyncRoutes = filterDynamicRoutes(dynamicRoutes)
+                    const asyncPermissionsRoutes = filterDynamicRoutes(permissionsRoutes)
+
                     asyncRoutes.forEach(route => {
                         router.addRoute(route)
                     })
-                    this.setRoutes(permissionsRoutes)
-                    this.setSidebarRouters(constantRoutes.concat(permissionsRoutes))
-                    this.setDefaultRoutes(permissionsRoutes)
-                    this.setTopbarRoutes(permissionsRoutes)
-                    resolve(permissionsRoutes)
+                    this.setRoutes(asyncPermissionsRoutes)
+                    this.setSidebarRouters(constantRoutes.concat(asyncPermissionsRoutes))
+                    this.setDefaultRoutes(asyncPermissionsRoutes)
+                    this.setTopbarRoutes(asyncPermissionsRoutes)
+                    resolve(asyncPermissionsRoutes)
                 })
             }
         }
@@ -121,6 +123,11 @@ export function filterDynamicRoutes(routes) {
                 }
                 res.push(route)
             }
+        } else if (!route.permissions&&!route.roles){
+            if (route.children) {
+                route.children = filterDynamicRoutes(route.children)
+            }
+            res.push(route)
         }
     })
     return res
