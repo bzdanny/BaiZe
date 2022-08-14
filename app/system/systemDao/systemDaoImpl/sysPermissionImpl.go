@@ -56,10 +56,8 @@ func (md *SysPermissionDao) SelectPermissionListByUserId(db dataUtil.DB, Permiss
 	if Permission.PermissionName != "" {
 		whereSql += "  AND status = :status"
 	}
-	whereSql += " m.parent_id"
-	list = make([]*systemModels.SysPermissionVo, 0, 2)
 
-	return dataUtil.NamedQueryList(db, list, Permission, md.PermissionSql+whereSql, "", "")
+	return dataUtil.NamedQueryList(db, list, Permission, md.PermissionSql+whereSql, "order by m.permission_id", "")
 
 }
 

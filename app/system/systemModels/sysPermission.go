@@ -15,7 +15,7 @@ type SysPermissionDML struct {
 }
 
 type SysPermissionDQL struct {
-	UserId         int64  `db:"userId"`
+	UserId         int64  `db:"user_id"`
 	PermissionName string `form:"permissionName" db:"permission_name"`
 	Status         string `form:"status" db:"status"`
 	baizeEntity.BaseEntityDQL

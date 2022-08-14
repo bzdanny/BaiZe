@@ -24,7 +24,7 @@ type SysRoleVo struct {
 	RoleKey                 string  `json:"roleKey" db:"role_key"`
 	RoleSort                int     `json:"roleSort" db:"role_sort"`
 	DataScope               string  `json:"dataScope" db:"data_scope"`
-	PermissionCheckStrictly bool    `json:"PermissionCheckStrictly" db:"Permission_check_strictly"`
+	PermissionCheckStrictly bool    `json:"permissionCheckStrictly" db:"permission_check_strictly"`
 	DeptCheckStrictly       bool    `json:"deptCheckStrictly" db:"dept_check_strictly"`
 	Status                  string  `json:"status"  db:"status"`
 	DelFlag                 string  `json:"delFlag" db:"del_flag"`
