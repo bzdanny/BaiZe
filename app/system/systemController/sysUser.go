@@ -136,9 +136,9 @@ func (uc *UserController) UserAdd(c *gin.Context) {
 	bzc.Success()
 }
 
-// UserList 添加用户
-// @Summary 添加用户
-// @Description 添加用户
+// UserList 查询用户列表
+// @Summary 查询用户列表
+// @Description 查询用户列表
 // @Tags 用户相关
 // @Param  object query systemModels.SysUserDQL true "查询信息"
 // @Security BearerAuth

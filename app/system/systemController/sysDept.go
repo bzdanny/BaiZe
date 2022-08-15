@@ -18,7 +18,15 @@ func NewDeptController(ds *systemServiceImpl.DeptService) *DeptController {
 	return &DeptController{ds: ds}
 }
 
-//DeptList 部门列表查询
+// DeptList 查询部门列表查询
+// @Summary 查询部门列表查询
+// @Description 查询部门列表查询
+// @Tags 部门相关
+// @Param  object query systemModels.SysDeptDQL true "查询信息"
+// @Security BearerAuth
+// @Produce application/json
+// @Success 200 {object}  commonModels.ResponseData{data=commonModels.ListData{Rows=[]systemModels.SysDeptVo}}  "成功"
+// @Router /system/dept  [get]
 func (dc *DeptController) DeptList(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	dept := new(systemModels.SysDeptDQL)
@@ -28,6 +36,15 @@ func (dc *DeptController) DeptList(c *gin.Context) {
 
 }
 
+// DeptGetInfo 根据用户ID获取用户信息
+// @Summary 根据用户ID获取用户信息
+// @Description 根据用户ID获取用户信息
+// @Tags 用户相关
+// @Param id path string true "deptId"
+// @Security BearerAuth
+// @Produce application/json
+// @Success 200 {object}  commonModels.ResponseData{data=systemModels.SysDeptVo}  "成功"
+// @Router /system/dept/{deptId}  [get]
 func (dc *DeptController) DeptGetInfo(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	deptId := bzc.ParamInt64("deptId")
