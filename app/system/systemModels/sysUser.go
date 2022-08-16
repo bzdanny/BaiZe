@@ -17,19 +17,19 @@ type SysUserDQL struct {
 }
 
 type SysUserAdd struct {
-	UserId      int64    `json:"userId,string" db:"user_id"`                    //用户ID
-	DeptId      *int64   `json:"deptId,string" db:"dept_id" binding:"required"` //部门ID
-	UserName    string   `json:"userName" db:"user_name" binding:"required"`    //用户名
-	NickName    string   `json:"nickName" db:"nick_name" binding:"required"`    //用户昵称
-	Email       string   `json:"email" db:"email"`                              //邮箱
-	Avatar      string   `json:"avatar" db:"avatar"`                            //头像
-	Phonenumber string   `json:"phonenumber" db:"phonenumber"`                  //手机号
-	Sex         string   `json:"sex" db:"sex"  binding:"required"`              //性别
-	Password    string   `json:"password" db:"password" binding:"required"`     //密码
-	Status      string   `json:"status" db:"status"`                            //状态
-	Remake      string   `json:"remake" db:"remake "`                           //备注
-	PostIds     []string `json:"postIds"`                                       //岗位IDS
-	RoleIds     []string `json:"roleIds"`                                       //角色IDS
+	UserId      int64    `json:"userId,string" db:"user_id"swaggerignore:"true"` //用户ID
+	DeptId      *int64   `json:"deptId,string" db:"dept_id" binding:"required"`  //部门ID
+	UserName    string   `json:"userName" db:"user_name" binding:"required"`     //用户名
+	NickName    string   `json:"nickName" db:"nick_name" binding:"required"`     //用户昵称
+	Email       string   `json:"email" db:"email"`                               //邮箱
+	Avatar      string   `json:"avatar" db:"avatar"`                             //头像
+	Phonenumber string   `json:"phonenumber" db:"phonenumber"`                   //手机号
+	Sex         string   `json:"sex" db:"sex"  binding:"required"`               //性别
+	Password    string   `json:"password" db:"password" binding:"required"`      //密码
+	Status      string   `json:"status" db:"status"`                             //状态
+	Remake      string   `json:"remake" db:"remake "`                            //备注
+	PostIds     []string `json:"postIds"`                                        //岗位IDS
+	RoleIds     []string `json:"roleIds"`                                        //角色IDS
 	baizeEntity.BaseEntityAdd
 }
 
@@ -39,7 +39,7 @@ type ResetPwd struct {
 }
 type EditUserStatus struct {
 	UserId int64  `json:"userId,string"binding:"required"` //用户id
-	Status string `json:"status"`                          //状态
+	Status string `json:"status"binding:"required"`        //状态
 	baizeEntity.BaseEntityEdit
 }
 

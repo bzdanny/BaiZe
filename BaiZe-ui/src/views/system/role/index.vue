@@ -276,7 +276,7 @@
 <script setup name="Role">
 import {addRole, changeRoleStatus, dataScope, delRole, getRole, listRole, updateRole} from "@/api/system/role";
 import {rolePermissionTreeselect, treeselect as permissionTreeselect} from "@/api/system/permission";
-import {treeselect as deptTreeselect, roleDeptTreeselect} from "@/api/system/dept";
+import {treeselect as deptTreeselect, roleDeptTreeSelect} from "@/api/system/dept";
 import {listPermission} from "../../../api/system/permission";
 
 const router = useRouter();
@@ -491,8 +491,8 @@ function getRolePermissionTreeselect(roleId) {
 }
 
 /** 根据角色ID查询部门树结构 */
-function getRoleDeptTreeselect(roleId) {
-  return roleDeptTreeselect(roleId).then(response => {
+function getRoleDeptTreeSelect(roleId) {
+  return roleDeptTreeSelect(roleId).then(response => {
     deptOptions.value = proxy.handleProps(response.data.depts, "deptId", "deptName");
     return response;
   });
@@ -580,16 +580,17 @@ function dataScopeSelectChange(value) {
 /** 分配数据权限操作 */
 function handleDataScope(row) {
   reset();
-  const roleDeptTreeselect = getRoleDeptTreeselect(row.roleId);
+  const roleDeptTreeSelect = getRoleDeptTreeSelect(row.roleId);
   getRole(row.roleId).then(response => {
     form.value = response.data;
     openDataScope.value = true;
     nextTick(() => {
-      roleDeptTreeselect.then(res => {
-        nextTick(() => {
-          if (deptRef.value) {
-            deptRef.value.setCheckedKeys(res.checkedKeys);
-          }
+      roleDeptTreeSelect.then(res => {
+        let checkedKeys = res.data.checkedKeys;
+        checkedKeys.forEach((v) => {
+          nextTick(() => {
+            deptRef.value.setChecked(v, true, false);
+          });
         });
       });
     });

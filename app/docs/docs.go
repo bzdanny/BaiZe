@@ -130,6 +130,296 @@ const docTemplate = `{
                 }
             }
         },
+        "/system/dept": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "查询部门列表查询",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "部门相关"
+                ],
+                "summary": "查询部门列表查询",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "部门名称",
+                        "name": "deptName",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "排序规则  降序desc   asc升序",
+                        "name": "isAsc",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "排序字段",
+                        "name": "orderBy",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "第几页",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "上级id",
+                        "name": "parentId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "数量",
+                        "name": "size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "状态",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/commonModels.ResponseData"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/definitions/commonModels.ListData"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "Rows": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "$ref": "#/definitions/systemModels.SysDeptVo"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "修改部门",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "部门相关"
+                ],
+                "summary": "修改部门",
+                "parameters": [
+                    {
+                        "description": "公司信息",
+                        "name": "object",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/systemModels.SysDeptEdit"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/commonModels.ResponseData"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "添加部门",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "部门相关"
+                ],
+                "summary": "添加部门",
+                "parameters": [
+                    {
+                        "description": "公司信息",
+                        "name": "object",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/systemModels.SysDeptAdd"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/commonModels.ResponseData"
+                        }
+                    }
+                }
+            }
+        },
+        "/system/dept/roleDeptTreeSelect/{roleId}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "获取角色部门",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "部门相关"
+                ],
+                "summary": "获取角色部门",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "roleId",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/commonModels.ResponseData"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/systemModels.RoleDeptTree"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/system/dept/{deptId}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "根据用户ID获取用户信息",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "部门相关"
+                ],
+                "summary": "根据用户ID获取用户信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "deptId",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/commonModels.ResponseData"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/systemModels.SysDeptVo"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "删除部门",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "部门相关"
+                ],
+                "summary": "删除部门",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "deptId",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/commonModels.ResponseData"
+                        }
+                    }
+                }
+            }
+        },
         "/system/user": {
             "get": {
                 "security": [
@@ -137,14 +427,14 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "添加用户",
+                "description": "查询用户列表",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "用户相关"
                 ],
-                "summary": "添加用户",
+                "summary": "查询用户列表",
                 "parameters": [
                     {
                         "type": "string",
@@ -727,6 +1017,7 @@ const docTemplate = `{
         "systemModels.EditUserStatus": {
             "type": "object",
             "required": [
+                "status",
                 "userId"
             ],
             "properties": {
@@ -803,6 +1094,164 @@ const docTemplate = `{
                     "description": "用户ID",
                     "type": "string",
                     "example": "0"
+                }
+            }
+        },
+        "systemModels.RoleDeptTree": {
+            "type": "object",
+            "properties": {
+                "checkedKeys": {
+                    "description": "keys",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "depts": {
+                    "description": "部门",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/systemModels.SysDeptVo"
+                    }
+                }
+            }
+        },
+        "systemModels.SysDeptAdd": {
+            "type": "object",
+            "required": [
+                "deptName",
+                "parentId"
+            ],
+            "properties": {
+                "deptName": {
+                    "description": "部门名称",
+                    "type": "string"
+                },
+                "email": {
+                    "description": "邮箱",
+                    "type": "string"
+                },
+                "leader": {
+                    "description": "负责人",
+                    "type": "string"
+                },
+                "orderNum": {
+                    "description": "排序",
+                    "type": "integer"
+                },
+                "parentId": {
+                    "description": "上级id",
+                    "type": "string",
+                    "example": "0"
+                },
+                "phone": {
+                    "description": "电话",
+                    "type": "string"
+                }
+            }
+        },
+        "systemModels.SysDeptEdit": {
+            "type": "object",
+            "required": [
+                "DeptId"
+            ],
+            "properties": {
+                "DeptId": {
+                    "description": "id",
+                    "type": "string",
+                    "example": "0"
+                },
+                "deptName": {
+                    "description": "部门名称",
+                    "type": "string"
+                },
+                "email": {
+                    "description": "邮箱",
+                    "type": "string"
+                },
+                "leader": {
+                    "description": "负责人",
+                    "type": "string"
+                },
+                "orderNum": {
+                    "description": "排序",
+                    "type": "integer"
+                },
+                "parentId": {
+                    "description": "上级id",
+                    "type": "string",
+                    "example": "0"
+                },
+                "phone": {
+                    "description": "电话",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "状态",
+                    "type": "string"
+                }
+            }
+        },
+        "systemModels.SysDeptVo": {
+            "type": "object",
+            "properties": {
+                "ancestors": {
+                    "description": "祖级列表",
+                    "type": "string"
+                },
+                "createBy": {
+                    "description": "创建人",
+                    "type": "integer"
+                },
+                "createTime": {
+                    "description": "创建时间",
+                    "type": "integer"
+                },
+                "delFag": {
+                    "description": "删除标志",
+                    "type": "string"
+                },
+                "deptId": {
+                    "description": "id",
+                    "type": "string",
+                    "example": "0"
+                },
+                "deptName": {
+                    "description": "部门名称",
+                    "type": "string"
+                },
+                "email": {
+                    "description": "邮箱",
+                    "type": "string"
+                },
+                "leader": {
+                    "description": "负责人",
+                    "type": "string"
+                },
+                "orderNum": {
+                    "description": "排序",
+                    "type": "string"
+                },
+                "parentId": {
+                    "description": "上级id",
+                    "type": "string",
+                    "example": "0"
+                },
+                "phone": {
+                    "description": "电话",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "状态",
+                    "type": "string"
+                },
+                "updateBy": {
+                    "description": "修改人",
+                    "type": "integer"
+                },
+                "updateTime": {
+                    "description": "修改时间",
+                    "type": "integer"
                 }
             }
         },
@@ -975,11 +1424,6 @@ const docTemplate = `{
                 "status": {
                     "description": "状态",
                     "type": "string"
-                },
-                "userId": {
-                    "description": "用户ID",
-                    "type": "string",
-                    "example": "0"
                 },
                 "userName": {
                     "description": "用户名",

@@ -39,7 +39,7 @@ func (dc *DeptController) DeptList(c *gin.Context) {
 // DeptGetInfo 根据用户ID获取用户信息
 // @Summary 根据用户ID获取用户信息
 // @Description 根据用户ID获取用户信息
-// @Tags 用户相关
+// @Tags 部门相关
 // @Param id path string true "deptId"
 // @Security BearerAuth
 // @Produce application/json
@@ -55,19 +55,38 @@ func (dc *DeptController) DeptGetInfo(c *gin.Context) {
 	}
 	bzc.SuccessData(dc.ds.SelectDeptById(deptId))
 }
-func (dc *DeptController) RoleDeptTreeselect(c *gin.Context) {
+
+// RoleDeptTreeSelect 获取角色部门
+// @Summary 获取角色部门
+// @Description 获取角色部门
+// @Tags 部门相关
+// @Param id path string true "roleId"
+// @Security BearerAuth
+// @Produce application/json
+// @Success 200 {object}  commonModels.ResponseData{data=systemModels.RoleDeptTree}  "成功"
+// @Router /system/dept/roleDeptTreeSelect/{roleId}  [get]
+func (dc *DeptController) RoleDeptTreeSelect(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	roleId := bzc.ParamInt64("roleId")
 	if roleId == 0 {
 		zap.L().Error("参数错误")
 		bzc.ParameterError()
 	}
-	m := make(map[string]interface{})
-	m["checkedKeys"] = dc.ds.SelectDeptListByRoleId(roleId)
-	m["depts"] = dc.ds.SelectDeptList(new(systemModels.SysDeptDQL))
-	bzc.SuccessData(m)
+	rdt := new(systemModels.RoleDeptTree)
+	rdt.CheckedKeys = dc.ds.SelectDeptListByRoleId(roleId)
+	rdt.Depts = dc.ds.SelectDeptList(new(systemModels.SysDeptDQL))
+	bzc.SuccessData(rdt)
 }
 
+// DeptAdd 添加部门
+// @Summary 添加部门
+// @Description 添加部门
+// @Tags 部门相关
+// @Param  object body systemModels.SysDeptAdd true "公司信息"
+// @Security BearerAuth
+// @Produce application/json
+// @Success 200 {object}  commonModels.ResponseData "成功"
+// @Router /system/dept  [post]
 func (dc *DeptController) DeptAdd(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	sysDept := new(systemModels.SysDeptAdd)
@@ -84,6 +103,16 @@ func (dc *DeptController) DeptAdd(c *gin.Context) {
 	dc.ds.InsertDept(sysDept)
 	bzc.Success()
 }
+
+// DeptEdit 修改部门
+// @Summary 修改部门
+// @Description 修改部门
+// @Tags 部门相关
+// @Param  object body systemModels.SysDeptEdit true "公司信息"
+// @Security BearerAuth
+// @Produce application/json
+// @Success 200 {object}  commonModels.ResponseData "成功"
+// @Router /system/dept  [put]
 func (dc *DeptController) DeptEdit(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	sysDept := new(systemModels.SysDeptEdit)
@@ -99,6 +128,16 @@ func (dc *DeptController) DeptEdit(c *gin.Context) {
 	dc.ds.UpdateDept(sysDept)
 	bzc.Success()
 }
+
+// DeptRemove 删除部门
+// @Summary 删除部门
+// @Description 删除部门
+// @Tags 部门相关
+// @Param id path string true "deptId"
+// @Security BearerAuth
+// @Produce application/json
+// @Success 200 {object}  commonModels.ResponseData "成功"
+// @Router /system/dept/{deptId}  [delete]
 func (dc *DeptController) DeptRemove(c *gin.Context) {
 	bzc := baizeContext.NewBaiZeContext(c)
 	deptId := bzc.ParamInt64("deptId")
