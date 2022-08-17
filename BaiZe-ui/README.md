@@ -3,7 +3,7 @@
 ```bash
 
 # 进入项目目录
-cd RuoYi-Vue3
+cd BaiZe-ui
 
 # 安装依赖
 yarn --registry=https://registry.npmmirror.com

@@ -223,7 +223,7 @@
 </template>
 
 <script setup>
-import { listMenu } from "@/api/system/permission";
+import { listPermission } from "@/api/system/permission";
 
 const subColumns = ref([]);
 const menuOptions = ref({});
@@ -268,7 +268,7 @@ function setSubTableColumns(value) {
 }
 /** 查询菜单下拉树结构 */
 function getMenuTreeselect() {
-  listMenu().then(response => {
+  listPermission().then(response => {
     menuOptions.value = proxy.handleTree(response.data, "menuId");
   });
 }
