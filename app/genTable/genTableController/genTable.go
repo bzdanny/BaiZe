@@ -14,7 +14,7 @@ type GenTableController struct {
 	gts genTableService.IGenTableService
 }
 
-func NewDeptController(gtc *genTableServiceImpl.GenTabletColumnService, gts *genTableServiceImpl.GenTabletService) *GenTableController {
+func NewGenTableController(gtc *genTableServiceImpl.GenTabletColumnService, gts *genTableServiceImpl.GenTabletService) *GenTableController {
 	return &GenTableController{gtc: gtc, gts: gts}
 }
 

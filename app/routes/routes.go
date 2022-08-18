@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"github.com/bzdanny/BaiZe/app/genTable/genTableController"
 	"github.com/bzdanny/BaiZe/app/monitor/monitorController"
 	"github.com/bzdanny/BaiZe/app/routes/monitorRoutes"
 	"github.com/bzdanny/BaiZe/app/routes/systemRoutes"
@@ -26,8 +27,9 @@ import (
 var ProviderSet = wire.NewSet(NewRouter)
 
 type Router struct {
-	Sys     *systemController.SystemController
-	Monitor *monitorController.MonitorController
+	Sys      *systemController.SystemController
+	Monitor  *monitorController.MonitorController
+	GenTable *genTableController.GenTableController
 }
 
 func NewRouter(sys *systemController.SystemController,
