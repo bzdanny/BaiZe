@@ -3,6 +3,7 @@ package routes
 import (
 	"github.com/bzdanny/BaiZe/app/genTable/genTableController"
 	"github.com/bzdanny/BaiZe/app/monitor/monitorController"
+	"github.com/bzdanny/BaiZe/app/routes/genTableRoutes"
 	"github.com/bzdanny/BaiZe/app/routes/monitorRoutes"
 	"github.com/bzdanny/BaiZe/app/routes/systemRoutes"
 	"github.com/bzdanny/BaiZe/app/system/systemController"
@@ -85,7 +86,7 @@ func RegisterServer(router *Router) *gin.Engine {
 		monitorRoutes.InitSysLogininforRouter(group, router.Monitor.Logininfor) //登录用户日志
 		monitorRoutes.InitServerRouter(group, router.Monitor.Info)              //服务监控
 		//systemRoutes.InitSysConfigRouter(group)      //参数配置
-		//genTableRoutes.InitGenTableRouter(group)     //代码生成
+		genTableRoutes.InitGenTableRouter(group, router.GenTable) //代码生成
 		//quartzRoutes.InitJobRouter(group)            //定时任务
 	}
 
