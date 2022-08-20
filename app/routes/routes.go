@@ -34,10 +34,13 @@ type Router struct {
 }
 
 func NewRouter(sys *systemController.SystemController,
-	monitor *monitorController.MonitorController) *Router {
+	monitor *monitorController.MonitorController,
+	genTable *genTableController.GenTableController,
+) *Router {
 	return &Router{
-		Sys:     sys,
-		Monitor: monitor,
+		Sys:      sys,
+		Monitor:  monitor,
+		GenTable: genTable,
 	}
 }
 

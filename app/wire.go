@@ -4,6 +4,9 @@
 package main
 
 import (
+	"github.com/bzdanny/BaiZe/app/genTable/genTableController"
+	"github.com/bzdanny/BaiZe/app/genTable/genTableDao/genTableDaoImpl"
+	"github.com/bzdanny/BaiZe/app/genTable/genTableService/genTableServiceImpl"
 	"github.com/bzdanny/BaiZe/app/monitor/monitorController"
 	"github.com/bzdanny/BaiZe/app/monitor/monitorDao/monitorDaoImpl"
 	"github.com/bzdanny/BaiZe/app/monitor/monitorService/monitorServiceImpl"
@@ -26,6 +29,9 @@ func wireApp(*setting.Datasource) (*gin.Engine, func(), error) {
 		systemDaoImpl.ProviderSet,
 		systemServiceImpl.ProviderSet,
 		systemController.ProviderSet,
+		genTableDaoImpl.ProviderSet,
+		genTableServiceImpl.ProviderSet,
+		genTableController.ProviderSet,
 		routes.ProviderSet,
 		newApp))
 }

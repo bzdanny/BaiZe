@@ -7,6 +7,9 @@
 package main
 
 import (
+	"github.com/bzdanny/BaiZe/app/genTable/genTableController"
+	"github.com/bzdanny/BaiZe/app/genTable/genTableDao/genTableDaoImpl"
+	"github.com/bzdanny/BaiZe/app/genTable/genTableService/genTableServiceImpl"
 	"github.com/bzdanny/BaiZe/app/monitor/monitorController"
 	"github.com/bzdanny/BaiZe/app/monitor/monitorDao/monitorDaoImpl"
 	"github.com/bzdanny/BaiZe/app/monitor/monitorService/monitorServiceImpl"
@@ -62,7 +65,12 @@ func wireApp(settingDatasource *setting.Datasource) (*gin.Engine, func(), error)
 	userOnlineService := monitorServiceImpl.NewUserOnlineService()
 	userOnlineController := monitorController.NewUserOnlineController(userOnlineService)
 	monitorControllerMonitorController := monitorController.NewMonitorController(infoServerController, logininforController, userOnlineController)
-	router := routes.NewRouter(systemControllerSystemController, monitorControllerMonitorController)
+	genTableColumnDao := genTableDaoImpl.NewGenTableColumnDao()
+	genTabletColumnService := genTableServiceImpl.GetGenTabletColumnService(data, genTableColumnDao)
+	genTableDao := genTableDaoImpl.NewGenTableDao()
+	genTabletService := genTableServiceImpl.GetGenTabletService(data, genTableColumnDao, genTableDao)
+	genTableControllerGenTableController := genTableController.NewGenTableController(genTabletColumnService, genTabletService)
+	router := routes.NewRouter(systemControllerSystemController, monitorControllerMonitorController, genTableControllerGenTableController)
 	engine := newApp(router)
 	return engine, func() {
 		cleanup()
