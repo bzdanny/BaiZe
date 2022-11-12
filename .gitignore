@@ -1,4 +1,4 @@
 .idea/
 tmp/
 
-config/*
+config/config1.yaml
